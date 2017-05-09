@@ -7,7 +7,7 @@ import static java.util.Comparator.comparing;
 import static org.lwjgl.input.Keyboard.KEY_LEFT;
 import static org.lwjgl.input.Keyboard.KEY_RIGHT;
 import static org.lwjgl.input.Keyboard.KEY_UP;
-import static org.newdawn.slick.Input.KEY_DOWN;
+import static org.lwjgl.input.Keyboard.KEY_DOWN;
 
 import akostenko.aicars.Game;
 import akostenko.aicars.GameSettings;
@@ -37,14 +37,14 @@ public class RaceState extends BasicGameState {
     private Collection<Car<?>> cars;
     private Car<Player> playerCar;
 
-    private IsKeyDownListener accelerateListener = new IsKeyDownListener(KEY_UP);
-    private IsKeyDownListener brakeListener = new IsKeyDownListener(KEY_DOWN);
-    private IsKeyDownListener turnLeftListener = new IsKeyDownListener(KEY_LEFT);
-    private IsKeyDownListener turnRightListener = new IsKeyDownListener(KEY_RIGHT);
+    private final IsKeyDownListener accelerateListener = new IsKeyDownListener(KEY_UP);
+    private final IsKeyDownListener brakeListener = new IsKeyDownListener(KEY_DOWN);
+    private final IsKeyDownListener turnLeftListener = new IsKeyDownListener(KEY_LEFT);
+    private final IsKeyDownListener turnRightListener = new IsKeyDownListener(KEY_RIGHT);
     private final int telemetryTextSize = 14;
     private final int lineWidth = 3;
     private final int fatLineWidth = 5;
-    private TrueTypeFont telemetryFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true);
+    private final TrueTypeFont telemetryFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true);
 
     @Override
     public int getID() {
@@ -144,11 +144,11 @@ public class RaceState extends BasicGameState {
                 driver.breaks() ? breakingColor : grey,
                 driver.breaks() ? fatLineWidth : lineWidth);
         left.draw(g,
-                driver.turnesLeft() ? textColor : grey,
-                driver.turnesLeft() ? fatLineWidth : lineWidth);
+                driver.turnsLeft() ? textColor : grey,
+                driver.turnsLeft() ? fatLineWidth : lineWidth);
         right.draw(g,
-                driver.turnesRight() ? textColor : grey,
-                driver.turnesRight() ? fatLineWidth : lineWidth);
+                driver.turnsRight() ? textColor : grey,
+                driver.turnsRight() ? fatLineWidth : lineWidth);
     }
 
     private Car getFocusedCar() {

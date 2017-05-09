@@ -39,12 +39,12 @@ public class Player extends Driver {
     }
 
     @Override
-    public boolean turnesLeft() {
+    public boolean turnsLeft() {
         return isTurningLeft;
     }
 
     @Override
-    public boolean turnesRight() {
+    public boolean turnsRight() {
         return isTurningRight;
     }
 

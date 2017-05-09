@@ -5,8 +5,8 @@ import static java.lang.StrictMath.atan;
 import static java.lang.StrictMath.sqrt;
 
 public class Decart implements Vector {
-    public double x;
-    public double y;
+    public final double x;
+    public final double y;
 
     public Decart(double x, double y) {
         this.x = x;
@@ -103,8 +103,7 @@ public class Decart implements Vector {
             decart = ((Polar) o).toDecart();
         } else return false;
 
-        if (decart.x - x >= PRECISION) return false;
-        return decart.y - y < PRECISION;
+        return (decart.x - x < PRECISION) && (decart.y - y < PRECISION);
     }
 
     @Override

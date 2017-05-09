@@ -24,12 +24,12 @@ public class AccelerationTest extends Driver {
     }
 
     @Override
-    public boolean turnesLeft() {
+    public boolean turnsLeft() {
         return false;
     }
 
     @Override
-    public boolean turnesRight() {
+    public boolean turnsRight() {
         return false;
     }
 

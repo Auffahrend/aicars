@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameStateIds {
-    private static Map<Class<? extends GameState>, Integer> ids = new HashMap<>();
+    private static final Map<Class<? extends GameState>, Integer> ids = new HashMap<>();
 
     static {
         ids.put(MenuState.class, 1);

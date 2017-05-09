@@ -97,8 +97,7 @@ public class Polar implements Vector {
             polar = ((Decart) o).toPolar();
         } else return false;
 
-        if (polar.r - r >= PRECISION) return false;
-        return polar.d - d < PRECISION;
+        return (polar.r - r < PRECISION) && (polar.d - d < PRECISION);
     }
 
     @Override

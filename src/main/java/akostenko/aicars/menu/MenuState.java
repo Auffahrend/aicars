@@ -46,17 +46,17 @@ public class MenuState extends BasicGameState{
 
     private int currentMenu = 0;
 
-    private int lineWidth = 3;
-    private Color fontColor = new Color(220, 200, 50);
-    private float leftMargin = Game.WIDTH * 0.2f;
-    private float rightMargin = Game.WIDTH * 0.2f;
-    private float topMargin = Game.HEIGHT * 0.2f;
+    private final int lineWidth = 3;
+    private final Color fontColor = new Color(220, 200, 50);
+    private final float leftMargin = Game.WIDTH * 0.2f;
+    private final float rightMargin = Game.WIDTH * 0.2f;
+    private final float topMargin = Game.HEIGHT * 0.2f;
     private float bottomMargin = Game.HEIGHT * 0.2f;
-    private int subMenuHeight = 36;
-    private int subMenuItemHeight = 24;
-    private float subMenuWidth = Game.WIDTH * 0.2f;
-    private TrueTypeFont submenuFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, subMenuHeight), true);
-    private TrueTypeFont itemFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, subMenuItemHeight), true);
+    private final int subMenuHeight = 36;
+    private final int subMenuItemHeight = 24;
+    private final float subMenuWidth = Game.WIDTH * 0.2f;
+    private final TrueTypeFont submenuFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, subMenuHeight), true);
+    private final TrueTypeFont itemFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, subMenuItemHeight), true);
 
     @Override
     public int getID() {

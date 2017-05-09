@@ -5,7 +5,6 @@ import static akostenko.aicars.race.CarTelemetryItem.breakingColor;
 import static akostenko.aicars.race.CarTelemetryItem.textColor;
 import static akostenko.aicars.race.CarTelemetryItem.velocityColor;
 import static java.lang.Math.PI;
-import static java.lang.Math.random;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.min;
 import static java.time.Instant.now;
@@ -102,7 +101,7 @@ public class Car<DRIVER extends Driver> {
     }
 
     /** m/s^2 */
-    public double accelerateA() {
+    private double accelerateA() {
         if (driver.accelerates()) {
             double engineForce = torqueMap.get(rps()) * gearbox.ratio() / tyreRadius;
             return min(engineForce, weightF() * tyreStiction) / mass;
@@ -123,7 +122,7 @@ public class Car<DRIVER extends Driver> {
     }
 
     /** m/s^2 */
-    public double breakingA() {
+    private double breakingA() {
         return dragF()/mass
                 + rollingFrictionF()/mass
                 + breakingF()/mass;
@@ -207,7 +206,7 @@ public class Car<DRIVER extends Driver> {
         private int current;
 
         public Gearbox() {
-            gears.add(new Gear(75./3.6, 12000, tyreRadius));
+            gears.add(new Gear(60./3.6, 10000, tyreRadius));
             gears.add(new Gear(125./3.6, 12000, tyreRadius));
             gears.add(new Gear(155./3.6, 12000, tyreRadius));
             gears.add(new Gear(190./3.6, 12000, tyreRadius));
@@ -224,8 +223,7 @@ public class Car<DRIVER extends Driver> {
         private int chooseCurrentGear() {
             double shaftRPS = velocity / (2*PI*tyreRadius);
             for (int i=0; i < gears.size(); i++) {
-                Gear gear = gears.get(i);
-                double gearRPS = gear.ratio * shaftRPS;
+                double gearRPS = gears.get(i).ratio * shaftRPS;
                 if (gearRPS < max_rpm/60) {
                     return i;
                 }
@@ -248,6 +246,10 @@ public class Car<DRIVER extends Driver> {
         private final double ratio;
 
         Gear(double maxSpeed, double rpm, double tyreRadius) {
+            if (rpm <= 0 || maxSpeed <= 0 || tyreRadius <= 0) {
+                throw new IllegalArgumentException("Must be > 0");
+            }
+
             this.ratio = (rpm / 60) / (maxSpeed / (2*PI*tyreRadius));
         }
     }

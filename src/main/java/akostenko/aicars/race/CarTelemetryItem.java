@@ -46,14 +46,6 @@ class CarTelemetryItem {
         return name;
     }
 
-    public int precision() {
-        return precision;
-    }
-
-    public String units() {
-        return units;
-    }
-
     public String value() {
         return textValue == null ? String.format("%." + precision + "f " + units, value) : textValue;
     }

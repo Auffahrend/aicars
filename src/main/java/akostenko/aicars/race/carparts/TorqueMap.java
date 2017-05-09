@@ -4,7 +4,6 @@ import static akostenko.aicars.math.MathUtils.linear;
 import static java.util.Comparator.comparing;
 
 import akostenko.aicars.math.Decart;
-import akostenko.aicars.math.MathUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +14,7 @@ public class TorqueMap {
     final List<Double> rpsPoints = new ArrayList<>();
     final List<Function<Double, Double>> torqueApproximations = new ArrayList<>();
 
-    /** points' Xs are RPS and Ys are torque, N*m. */
+    /** points' Xs are RPS and Ys are torque. */
     public TorqueMap(Decart... points) {
         Arrays.sort(points, comparing(Decart::getX));
 

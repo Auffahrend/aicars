@@ -14,8 +14,8 @@ public abstract class Driver {
 
     public abstract boolean accelerates();
     public abstract boolean breaks();
-    public abstract boolean turnesLeft();
-    public abstract boolean turnesRight();
+    public abstract boolean turnsLeft();
+    public abstract boolean turnsRight();
 
     public abstract String getName();
 

@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class KeyboardHelper {
-    private static IsKeyDownListener lShift = new IsKeyDownListener(Keyboard.KEY_LSHIFT);
-    private static IsKeyDownListener rShift = new IsKeyDownListener(Keyboard.KEY_RSHIFT);
-    private static IsKeyDownListener lCtrl = new IsKeyDownListener(Keyboard.KEY_LCONTROL);
-    private static IsKeyDownListener rCtrl = new IsKeyDownListener(Keyboard.KEY_RCONTROL);
-    private static IsKeyDownListener lAlt = new IsKeyDownListener(Keyboard.KEY_LMENU);
-    private static IsKeyDownListener rAlt = new IsKeyDownListener(Keyboard.KEY_RMENU);
+    private static final IsKeyDownListener lShift = new IsKeyDownListener(Keyboard.KEY_LSHIFT);
+    private static final IsKeyDownListener rShift = new IsKeyDownListener(Keyboard.KEY_RSHIFT);
+    private static final IsKeyDownListener lCtrl = new IsKeyDownListener(Keyboard.KEY_LCONTROL);
+    private static final IsKeyDownListener rCtrl = new IsKeyDownListener(Keyboard.KEY_RCONTROL);
+    private static final IsKeyDownListener lAlt = new IsKeyDownListener(Keyboard.KEY_LMENU);
+    private static final IsKeyDownListener rAlt = new IsKeyDownListener(Keyboard.KEY_RMENU);
 
     public static Iterable<KeyListener> getKeyListeners() {
         Collection<KeyListener> result = new ArrayList<>();

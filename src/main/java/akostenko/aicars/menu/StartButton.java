@@ -6,7 +6,6 @@ import akostenko.aicars.race.RaceState;
 
 import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeInTransition;
-import org.newdawn.slick.state.transition.FadeOutTransition;
 
 import java.util.Collections;
 import java.util.List;
