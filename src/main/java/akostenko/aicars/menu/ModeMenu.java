@@ -1,0 +1,23 @@
+package akostenko.aicars.menu;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class ModeMenu extends AbstractSubMenu<Mode> {
+    private List<Mode> modes = Arrays.asList(new WithPlayer(), new PerformanceTest());
+
+    @Override
+    public String getTitle() {
+        return "Mode";
+    }
+
+    @Override
+    public void enter() {
+
+    }
+
+    @Override
+    protected List<Mode> items() {
+        return modes;
+    }
+}
