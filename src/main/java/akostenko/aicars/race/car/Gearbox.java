@@ -2,6 +2,8 @@ package akostenko.aicars.race.car;
 
 import static java.lang.Math.PI;
 
+import akostenko.aicars.model.CarModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,14 +14,14 @@ public class Gearbox {
 
     public Gearbox(Car car) {
         this.car = car;
-        gears.add(new Gear(60./3.6, 10000, car.tyreRadius));
-        gears.add(new Gear(125./3.6, 12000, car.tyreRadius));
-        gears.add(new Gear(155./3.6, 12000, car.tyreRadius));
-        gears.add(new Gear(190./3.6, 12000, car.tyreRadius));
-        gears.add(new Gear(225./3.6, 12000, car.tyreRadius));
-        gears.add(new Gear(260./3.6, 12000, car.tyreRadius));
-        gears.add(new Gear(295./3.6, 12000, car.tyreRadius));
-        gears.add(new Gear(330./3.6, 12000, car.tyreRadius));
+        gears.add(new Gear(60./3.6, 10000, CarModel.tyreRadius));
+        gears.add(new Gear(125./3.6, 12000, CarModel.tyreRadius));
+        gears.add(new Gear(155./3.6, 12000, CarModel.tyreRadius));
+        gears.add(new Gear(190./3.6, 12000, CarModel.tyreRadius));
+        gears.add(new Gear(225./3.6, 12000, CarModel.tyreRadius));
+        gears.add(new Gear(260./3.6, 12000, CarModel.tyreRadius));
+        gears.add(new Gear(295./3.6, 12000, CarModel.tyreRadius));
+        gears.add(new Gear(330./3.6, 12000, CarModel.tyreRadius));
     }
 
     void update() {
@@ -27,10 +29,10 @@ public class Gearbox {
     }
 
     private int chooseCurrentGear() {
-        double shaftRPS = car.speed().module() / (2*PI*car.tyreRadius);
+        double shaftRPS = car.speed().module() / (2*PI* CarModel.tyreRadius);
         for (int i=0; i < gears.size(); i++) {
             double gearRPS = gears.get(i).ratio * shaftRPS;
-            if (gearRPS < car.max_rpm/60) {
+            if (gearRPS < CarModel.max_rpm/60) {
                 return i;
             }
         }

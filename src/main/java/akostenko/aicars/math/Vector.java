@@ -5,12 +5,12 @@ public interface Vector {
 
     Polar toPolar();
     Decart toDecart();
-    <V extends Vector> V plus(V v);
-    <V extends Vector> V minus(V v);
-    <V extends Vector> V negative();
-    <V extends Vector> V multi(double k);
-    <V extends Vector> V div(double k);
-    <V extends Vector> V rotate(double radians);
+    Vector plus(Vector v);
+    Vector minus(Vector v);
+    Vector negative();
+    Vector multi(double k);
+    Vector div(double k);
+    Vector rotate(double radians);
     double module();
 
 }

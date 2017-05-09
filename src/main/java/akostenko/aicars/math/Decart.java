@@ -43,16 +43,8 @@ public class Decart implements Vector {
     }
 
     @Override
-    public <V extends Vector> V plus(V v) {
-        if (v instanceof Decart) {
-            //noinspection unchecked
-            return (V) addDecart((Decart) v);
-        }
-        if (v instanceof Polar) {
-            //noinspection unchecked
-            return (V) toPolar().addPolar((Polar) v);
-        }
-        throw new IllegalArgumentException("Unknown vector type");
+    public Decart plus(Vector v) {
+        return addDecart(v.toDecart());
     }
 
     Decart addDecart(Decart v) {
@@ -60,31 +52,28 @@ public class Decart implements Vector {
     }
 
     @Override
-    public <V extends Vector> V minus(V v) {
+    public Decart minus(Vector v) {
         return plus(v.negative());
     }
 
     @Override
-    public <V extends Vector> V negative() {
+    public Decart negative() {
         return multi(-1);
     }
 
     @Override
-    public <V extends Vector> V multi(double k) {
-        //noinspection unchecked
-        return (V) new Decart(x * k, y * k);
+    public Decart multi(double k) {
+        return new Decart(x * k, y * k);
     }
 
     @Override
-    public <V extends Vector> V div(double k) {
-        //noinspection unchecked
-        return (V) new Decart(x / k, y / k);
+    public Vector div(double k) {
+        return new Decart(x / k, y / k);
     }
 
     @Override
-    public <V extends Vector> V rotate(double radians) {
-        //noinspection unchecked
-        return (V) toPolar().rotate(radians).toDecart();
+    public Decart rotate(double radians) {
+        return toPolar().rotate(radians).toDecart();
     }
 
     @Override

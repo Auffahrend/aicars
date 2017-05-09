@@ -34,17 +34,8 @@ public class Polar implements Vector {
     }
 
     @Override
-    public <V extends Vector> V plus(V v) {
-        if (v instanceof Polar) {
-            //noinspection unchecked
-            return (V) addPolar((Polar) v);
-        }
-
-        if (v instanceof Decart) {
-            //noinspection unchecked
-            return (V) toDecart().addDecart((Decart) v);
-        }
-        throw new IllegalArgumentException("Unknown vector type");
+    public Polar plus(Vector v) {
+        return addPolar(v.toPolar());
     }
 
     Polar addPolar(Polar v) {
@@ -57,35 +48,32 @@ public class Polar implements Vector {
     }
 
     @Override
-    public <V extends Vector> V minus(V v) {
+    public Polar minus(Vector v) {
         return plus(v.negative());
     }
 
     @Override
-    public <V extends Vector> V negative() {
+    public Polar negative() {
         return multi(-1);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <V extends Vector> V multi(double k) {
+    public Polar multi(double k) {
         if (k == 0) {
-            return (V) ZERO.toPolar();
+            return ZERO;
         } else {
-            return (V) new Polar(r * abs(k), d * (k > 0 ? 1 : -1));
+            return new Polar(r * abs(k), d * (k > 0 ? 1 : -1));
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <V extends Vector> V div(double k) {
-        return (V) new Polar(r / abs(k), d * (k > 0 ? 1 : -1));
+    public Polar div(double k) {
+        return new Polar(r / abs(k), d * (k > 0 ? 1 : -1));
     }
 
     @Override
-    public <V extends Vector> V rotate(double radians) {
-        //noinspection unchecked
-        return (V) new Polar(r, d+radians);
+    public Polar rotate(double radians) {
+        return new Polar(r, d+radians);
     }
 
     @Override
