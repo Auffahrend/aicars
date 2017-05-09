@@ -8,6 +8,8 @@ import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
 
 public class Polar implements Vector {
+    public static final Polar ZERO = new Polar(0,0);
+
     /** length of vector */
     public final double r;
     /** direction, <i>radians</i>, measured from X axis towards Y axis */
@@ -32,7 +34,7 @@ public class Polar implements Vector {
     }
 
     @Override
-    public <V extends Vector> V add(V v) {
+    public <V extends Vector> V plus(V v) {
         if (v instanceof Polar) {
             //noinspection unchecked
             return (V) addPolar((Polar) v);
@@ -56,7 +58,7 @@ public class Polar implements Vector {
 
     @Override
     public <V extends Vector> V minus(V v) {
-        return add(v.negative());
+        return plus(v.negative());
     }
 
     @Override
@@ -72,6 +74,12 @@ public class Polar implements Vector {
         } else {
             return (V) new Polar(r * abs(k), d * (k > 0 ? 1 : -1));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <V extends Vector> V div(double k) {
+        return (V) new Polar(r / abs(k), d * (k > 0 ? 1 : -1));
     }
 
     @Override

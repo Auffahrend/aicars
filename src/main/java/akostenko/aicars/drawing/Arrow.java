@@ -25,11 +25,11 @@ public class Arrow {
         Polar arrowBase = to.minus(from).toPolar();
         double finLength = min(arrowBase.r/2, width * 5);
         if (finLength < width * 2) finLength = width * 2;
-        Decart finEnd1 = new Polar(finLength, arrowBase.d + 0.80*PI).add(to);
-        Decart finEnd2 = new Polar(finLength, arrowBase.d - 0.80*PI).add(to);
+        Decart finEnd1 = new Polar(finLength, arrowBase.d + 0.80*PI).plus(to);
+        Decart finEnd2 = new Polar(finLength, arrowBase.d - 0.80*PI).plus(to);
 
         // shortening main line to prevent it overlapping with fins
-        Decart shorterTo = new Polar(arrowBase.r - width, arrowBase.d).toDecart().add(from);
+        Decart shorterTo = new Polar(arrowBase.r - width, arrowBase.d).toDecart().plus(from);
 
         g.drawLine((float) shorterTo.x, (float) shorterTo.y, (float) from.x, (float) from.y);
         g.drawLine((float) to.x, (float) to.y, (float) finEnd1.x, (float) finEnd1.y);

@@ -1,16 +1,18 @@
-package akostenko.aicars.race;
+package akostenko.aicars.race.car;
 
-import static akostenko.aicars.race.CarTelemetryItem.accelerationColor;
-import static akostenko.aicars.race.CarTelemetryItem.breakingColor;
-import static akostenko.aicars.race.CarTelemetryItem.textColor;
-import static akostenko.aicars.race.CarTelemetryItem.velocityColor;
+import static akostenko.aicars.math.Polar.ZERO;
+import static akostenko.aicars.race.car.CarTelemetryItem.accelerationColor;
+import static akostenko.aicars.race.car.CarTelemetryItem.breakingColor;
+import static akostenko.aicars.race.car.CarTelemetryItem.textColor;
+import static akostenko.aicars.race.car.CarTelemetryItem.velocityColor;
 import static java.lang.Math.PI;
-import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.min;
 import static java.time.Instant.now;
 
 import akostenko.aicars.math.Decart;
-import akostenko.aicars.race.carparts.TorqueMap;
+import akostenko.aicars.math.Polar;
+import akostenko.aicars.math.Vector;
+import akostenko.aicars.race.Driver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ public class Car<DRIVER extends Driver> {
     /** <i>kg</i> */
     private final double mass = 700;
     /** <i>1/s</i> */
-    private final double max_rpm = 12000;
+    final double max_rpm = 12000;
     /** <i>1/s</i> */
     private final double min_rpm = 3500;
     // modeling http://s2.postimg.org/p2hqskx09/V6_engine_edited.png
@@ -49,28 +51,33 @@ public class Car<DRIVER extends Driver> {
     /** rolling friction coefficient between rubber and asphalt, <i>m</i> */
     private final double tyreRollingFriction = 0.015;
     /** <i>m</i> */
-    private final double tyreRadius = 0.3;
+    final double tyreRadius = 0.3;
 
     private final DRIVER driver;
-    private final Gearbox gearbox = new Gearbox();
+    private final Gearbox gearbox = new Gearbox(this);
     /** <i>m</i> */
     private double trackDistance = 0;
     /** <i>m/s</i> */
-    private double velocity = 0;
+    private Vector velocity = ZERO;
+    private Vector acceleration = ZERO;
+    private Vector breaking = ZERO;
+    private Vector turning = ZERO;
+    private Vector heading = new Polar(1, 0);
+    private Vector steering = new Polar(1, 0);
 
     //////////////// car telemetry
     private static final Random random = new Random();
-    Iterable<CarTelemetryItem> getTelemetry() {
+    public Iterable<CarTelemetryItem> getTelemetry() {
         List<CarTelemetryItem> items = new ArrayList<>();
         items.add(new CarTelemetryItem("Driver", driver.getName()));
         items.add(new CarTelemetryItem("Distance", trackDistance, "m", 1, textColor));
-        items.add(new CarTelemetryItem("Speed", velocity * 3.6, "kmph", 3, velocityColor));
-        items.add(new CarTelemetryItem("Accel", accelerateA() / g, "g", 3, accelerationColor));
+        items.add(new CarTelemetryItem("Speed", velocity.module() * 3.6, "kmph", 3, velocityColor));
+        items.add(new CarTelemetryItem("Accel", accelerateA().module() / g, "g", 3, accelerationColor));
         items.add(new CarTelemetryItem("Peak accel", peakAcceleration() / g, "g", 3, accelerationColor));
         items.add(new CarTelemetryItem("RPM", rps() * 60 + random.nextInt(120), ""));
         items.add(new CarTelemetryItem("Gear", gearbox.current()+1, ""));
         items.add(new CarTelemetryItem("Gear ratio", gearbox.ratio(), "", 2, textColor));
-        items.add(new CarTelemetryItem("Breaking", breakingA() / g, "g", 3, breakingColor));
+        items.add(new CarTelemetryItem("Breaking", breakingA().module() / g, "g", 3, breakingColor));
         items.add(new CarTelemetryItem("Peak break", peakBreaking() / g, "g", 3, breakingColor));
         items.add(new CarTelemetryItem("Downforce", downforceF() / g, "kg"));
         return items;
@@ -79,7 +86,7 @@ public class Car<DRIVER extends Driver> {
     private double peakAcceleration = 0;
     private long peakAccelerationInstant = now().toEpochMilli();
     private double peakAcceleration() {
-        double current = accelerateA();
+        double current = accelerateA().module();
         long now = now().toEpochMilli();
         if (peakAcceleration < current || now - peakAccelerationInstant > 3000) {
             peakAcceleration = current;
@@ -91,7 +98,7 @@ public class Car<DRIVER extends Driver> {
     private double peakBreaking = 0;
     private long peakBreakingInstant = now().toEpochMilli();
     private double peakBreaking() {
-        double current = breakingA();
+        double current = breakingA().module();
         long now = now().toEpochMilli();
         if (peakBreaking < current || now - peakBreakingInstant > 3000) {
             peakBreaking = current;
@@ -101,12 +108,13 @@ public class Car<DRIVER extends Driver> {
     }
 
     /** m/s^2 */
-    private double accelerateA() {
+    private Vector accelerateA() {
         if (driver.accelerates()) {
             double engineForce = torqueMap.get(rps()) * gearbox.ratio() / tyreRadius;
-            return min(engineForce, weightF() * tyreStiction) / mass;
+            double acceleration = min(engineForce, weightF() * tyreStiction) / mass;
+            return heading.multi(acceleration);
         } else {
-            return 0;
+            return ZERO;
         }
     }
 
@@ -114,7 +122,7 @@ public class Car<DRIVER extends Driver> {
      * @return current engine's revolutions per second
      */
     private double rps() {
-        double gearboxRPS = velocity / (2*PI*tyreRadius) * gearbox.ratio();
+        double gearboxRPS = velocity.module() / (2*PI*tyreRadius) * gearbox.ratio();
         if (gearboxRPS < min_rpm/60) {
             gearboxRPS = min_rpm/60;
         }
@@ -122,14 +130,16 @@ public class Car<DRIVER extends Driver> {
     }
 
     /** m/s^2 */
-    private double breakingA() {
-        return dragF()/mass
-                + rollingFrictionF()/mass
-                + breakingF()/mass;
+    private Vector breakingA() {
+        return (
+                dragF()
+                        .plus(rollingFrictionF())
+                        .plus(breakingF()))
+                .div(mass);
     }
 
     /** m/s */
-    public double speed() {
+    public Vector speed() {
         return velocity;
     }
 
@@ -138,21 +148,23 @@ public class Car<DRIVER extends Driver> {
     /**
      * @return kg * m / s^2
      */
-    private double dragF() {
-        return cx * airDensity * velocity * velocity * frontArea / 2;
+    private Vector dragF() {
+        return new Polar(cx * airDensity * velocity.module() * velocity.module() * frontArea / 2,
+                velocity.toPolar().d + PI);
     }
 
     /**
      * @return kg * m / s^2
      */
     private double downforceF() {
-        return cy * airDensity * velocity * velocity * wingArea / 2;
+        return cy * airDensity * velocity.module() * velocity.module() * wingArea / 2;
     }
 
     /** kg * m/s^2 */
-    private double rollingFrictionF() {
-        return weightF() * tyreRollingFriction / tyreRadius
-                * velocity > 0.01 ? 1 : 0;
+    private Vector rollingFrictionF() {
+        return velocity.module() > 0.01
+                ? new Polar(weightF() * tyreRollingFriction / tyreRadius, velocity.toPolar().d + PI)
+                : ZERO;
     }
 
     /** kg * m/s^2 */
@@ -160,6 +172,11 @@ public class Car<DRIVER extends Driver> {
         return mass*g + downforceF();
     }
 
+    private Vector breakingF() {
+        return driver.breaks()
+                ? new Polar(weightF() * tyreStiction, velocity.toPolar().d + PI)
+                : ZERO;
+    }
 
     ////////////////
 
@@ -168,89 +185,31 @@ public class Car<DRIVER extends Driver> {
         driver.setCar(this);
     }
 
-    void update(int msDelta) {
+    public void update(int msDelta) {
         double dt = 1. * msDelta / 1000;
         driver.update(dt);
         gearbox.update();
 
-        trackDistance += velocity * dt;
-        double dV_accelerate = accelerateA() * dt;
-        double dV_break = (velocity + dV_accelerate > 0 ? -1 : 1) * breakingA() * dt;
+        trackDistance += velocity.module() * dt;
+        Vector dV_accelerate = accelerateA().multi(dt);
+        velocity = velocity.plus(dV_accelerate);
+
+        Vector dV_break = breakingA().multi(dt);
 
         // if breaking forces are stronger then acceleration
-        if (abs(dV_break) > abs(dV_accelerate)) {
-            double newVelocity = velocity + dV_accelerate + dV_break;
-            // velocity can not change its sign due to breaking. Braking only stops vehicle
-            if (velocity != 0) {
-                velocity = velocity * newVelocity < 0 ? 0 : newVelocity;
-            }
+        if (dV_break.module() > velocity.module()) {
+            velocity = ZERO;
         } else {
-            velocity += dV_accelerate + dV_break;
+            velocity = velocity.plus(dV_break);
         }
     }
 
-    Double trackDistance() {
+    public Double trackDistance() {
         return trackDistance;
     }
 
-    DRIVER getDriver() {
+    public DRIVER getDriver() {
         return driver;
     }
 
-    private double breakingF() {
-        return driver.breaks() ? weightF() * tyreStiction : 0.;
-    }
-
-    private class Gearbox {
-        private final List<Gear> gears = new ArrayList<>(8);
-        private int current;
-
-        public Gearbox() {
-            gears.add(new Gear(60./3.6, 10000, tyreRadius));
-            gears.add(new Gear(125./3.6, 12000, tyreRadius));
-            gears.add(new Gear(155./3.6, 12000, tyreRadius));
-            gears.add(new Gear(190./3.6, 12000, tyreRadius));
-            gears.add(new Gear(225./3.6, 12000, tyreRadius));
-            gears.add(new Gear(260./3.6, 12000, tyreRadius));
-            gears.add(new Gear(295./3.6, 12000, tyreRadius));
-            gears.add(new Gear(330./3.6, 12000, tyreRadius));
-        }
-
-        void update() {
-            current = chooseCurrentGear();
-        }
-
-        private int chooseCurrentGear() {
-            double shaftRPS = velocity / (2*PI*tyreRadius);
-            for (int i=0; i < gears.size(); i++) {
-                double gearRPS = gears.get(i).ratio * shaftRPS;
-                if (gearRPS < max_rpm/60) {
-                    return i;
-                }
-            }
-
-            return gears.size() - 1; // over RPS on highest gear
-        }
-
-        /** index of gear, starting from 0 */
-        int current() {
-            return current;
-        }
-
-        double ratio() {
-            return gears.get(current).ratio;
-        }
-    }
-
-    private static class Gear {
-        private final double ratio;
-
-        Gear(double maxSpeed, double rpm, double tyreRadius) {
-            if (rpm <= 0 || maxSpeed <= 0 || tyreRadius <= 0) {
-                throw new IllegalArgumentException("Must be > 0");
-            }
-
-            this.ratio = (rpm / 60) / (maxSpeed / (2*PI*tyreRadius));
-        }
-    }
 }

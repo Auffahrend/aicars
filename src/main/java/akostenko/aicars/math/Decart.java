@@ -5,6 +5,9 @@ import static java.lang.StrictMath.atan;
 import static java.lang.StrictMath.sqrt;
 
 public class Decart implements Vector {
+    public static final Decart ZERO = new Decart(0,0);
+
+
     public final double x;
     public final double y;
 
@@ -40,7 +43,7 @@ public class Decart implements Vector {
     }
 
     @Override
-    public <V extends Vector> V add(V v) {
+    public <V extends Vector> V plus(V v) {
         if (v instanceof Decart) {
             //noinspection unchecked
             return (V) addDecart((Decart) v);
@@ -58,7 +61,7 @@ public class Decart implements Vector {
 
     @Override
     public <V extends Vector> V minus(V v) {
-        return add(v.negative());
+        return plus(v.negative());
     }
 
     @Override
@@ -70,6 +73,12 @@ public class Decart implements Vector {
     public <V extends Vector> V multi(double k) {
         //noinspection unchecked
         return (V) new Decart(x * k, y * k);
+    }
+
+    @Override
+    public <V extends Vector> V div(double k) {
+        //noinspection unchecked
+        return (V) new Decart(x / k, y / k);
     }
 
     @Override

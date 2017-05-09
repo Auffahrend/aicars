@@ -1,4 +1,4 @@
-package akostenko.aicars.race.carparts;
+package akostenko.aicars.race.car;
 
 import static akostenko.aicars.math.MathUtils.linear;
 import static java.util.Comparator.comparing;

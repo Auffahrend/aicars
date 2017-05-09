@@ -1,5 +1,7 @@
 package akostenko.aicars.race;
 
+import akostenko.aicars.race.car.Car;
+
 public abstract class Driver {
     private Car car;
 

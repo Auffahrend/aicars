@@ -1,8 +1,8 @@
 package akostenko.aicars.race;
 
-import static akostenko.aicars.race.CarTelemetryItem.accelerationColor;
-import static akostenko.aicars.race.CarTelemetryItem.breakingColor;
-import static akostenko.aicars.race.CarTelemetryItem.textColor;
+import static akostenko.aicars.race.car.CarTelemetryItem.accelerationColor;
+import static akostenko.aicars.race.car.CarTelemetryItem.breakingColor;
+import static akostenko.aicars.race.car.CarTelemetryItem.textColor;
 import static java.util.Comparator.comparing;
 import static org.lwjgl.input.Keyboard.KEY_LEFT;
 import static org.lwjgl.input.Keyboard.KEY_RIGHT;
@@ -17,6 +17,8 @@ import akostenko.aicars.keyboard.IsKeyDownListener;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.menu.PerformanceTest;
 import akostenko.aicars.menu.WithPlayer;
+import akostenko.aicars.race.car.Car;
+import akostenko.aicars.race.car.CarTelemetryItem;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -125,17 +127,17 @@ public class RaceState extends BasicGameState {
     private final Color grey = new Color(40, 40, 40);
     private final Decart arrowsBlock = new Decart(Game.WIDTH - arrowSize * 4, Game.HEIGHT - arrowSize * 3);
     private final Arrow up = new Arrow(
-            arrowsBlock.add(new Decart(arrowSize*3/2, arrowSize-arrowSpace)),
-            arrowsBlock.add(new Decart(arrowSize*3/2, arrowSpace)));
+            arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSize-arrowSpace)),
+            arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSpace)));
     private final Arrow down = new Arrow(
-            arrowsBlock.add(new Decart(arrowSize*3/2, arrowSize + arrowSpace)),
-            arrowsBlock.add(new Decart(arrowSize*3/2, 2*arrowSize-arrowSpace)));
+            arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSize + arrowSpace)),
+            arrowsBlock.plus(new Decart(arrowSize*3/2, 2*arrowSize-arrowSpace)));
     private final Arrow left = new Arrow(
-            arrowsBlock.add(new Decart(arrowSize-arrowSpace, arrowSize*3/2)),
-            arrowsBlock.add(new Decart(arrowSpace, arrowSize*3/2)));
+            arrowsBlock.plus(new Decart(arrowSize-arrowSpace, arrowSize*3/2)),
+            arrowsBlock.plus(new Decart(arrowSpace, arrowSize*3/2)));
     private final Arrow right = new Arrow(
-            arrowsBlock.add(new Decart(2*arrowSize+arrowSpace, arrowSize*3/2)),
-            arrowsBlock.add(new Decart(3*arrowSize-arrowSpace, arrowSize*3/2)));
+            arrowsBlock.plus(new Decart(2*arrowSize+arrowSpace, arrowSize*3/2)),
+            arrowsBlock.plus(new Decart(3*arrowSize-arrowSpace, arrowSize*3/2)));
     private void drawDriverInput(Graphics g, Driver driver) {
         up.draw(g,
                 driver.accelerates() ? accelerationColor : grey,

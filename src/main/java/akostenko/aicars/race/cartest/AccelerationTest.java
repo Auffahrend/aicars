@@ -36,7 +36,7 @@ public class AccelerationTest extends Driver {
     @Override
     public void update(double dTime) {
         if (!targetReached) {
-            targetReached = getCar().speed() * 3.6 >= targetSpeed;
+            targetReached = getCar().speed().module() * 3.6 >= targetSpeed;
             time += dTime;
         }
     }

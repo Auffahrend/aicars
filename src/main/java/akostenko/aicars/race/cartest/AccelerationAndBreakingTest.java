@@ -37,8 +37,8 @@ public class AccelerationAndBreakingTest extends Driver {
     @Override
     public void update(double dTime) {
         if (!targetReached) {
-            speedReached = speedReached || getCar().speed() >= targetSpeed;
-            targetReached = speedReached && getCar().speed() <= 0.1;
+            speedReached = speedReached || getCar().speed().module() >= targetSpeed;
+            targetReached = speedReached && getCar().speed().module() <= 0.1;
             time += dTime;
         }
     }
