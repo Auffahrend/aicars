@@ -81,6 +81,11 @@ public class Polar implements Vector {
     }
 
     @Override
+    public double module() {
+        return r;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
 

@@ -4,13 +4,13 @@ import akostenko.aicars.race.Driver;
 
 public class AccelerationTest extends Driver {
 
-    private final double targetSpeed = 100 / 3.6; // m/s
+    private final double targetSpeed = 150; // km/h
     private double time = 0;
     private boolean targetReached;
 
     @Override
     public String getName() {
-        return "0-100 kph" + (targetReached ? String.format(" %.3fs", time) : "");
+        return String.format("0-%d kph", (int) targetSpeed) + (targetReached ? String.format(" %.3fs", time) : "");
     }
 
     @Override
@@ -36,7 +36,7 @@ public class AccelerationTest extends Driver {
     @Override
     public void update(double dTime) {
         if (!targetReached) {
-            targetReached = getCar().speed() >= targetSpeed;
+            targetReached = getCar().speed() * 3.6 >= targetSpeed;
             time += dTime;
         }
     }

@@ -11,4 +11,6 @@ public interface Vector {
     <V extends Vector> V negative();
     <V extends Vector> V multi(double k);
     <V extends Vector> V rotate(double radians);
+    double module();
+
 }
