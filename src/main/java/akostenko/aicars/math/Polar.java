@@ -62,13 +62,13 @@ public class Polar implements Vector {
         if (k == 0) {
             return ZERO;
         } else {
-            return new Polar(r * abs(k), d * (k > 0 ? 1 : -1));
+            return new Polar(r * abs(k), d + (k > 0 ? 0 : PI));
         }
     }
 
     @Override
     public Polar div(double k) {
-        return new Polar(r / abs(k), d * (k > 0 ? 1 : -1));
+        return new Polar(r / abs(k), d + (k > 0 ? 0 : PI));
     }
 
     @Override
@@ -86,11 +86,8 @@ public class Polar implements Vector {
         if (this == o) return true;
 
         Polar polar;
-        if (o instanceof Polar) {
-            polar = (Polar) o;
-
-        } else if (o instanceof Decart) {
-            polar = ((Decart) o).toPolar();
+        if (o instanceof Vector) {
+            polar = ((Vector) o).toPolar();
         } else return false;
 
         return (polar.r - r < PRECISION) && (polar.d - d < PRECISION);

@@ -95,10 +95,8 @@ public class Decart implements Vector {
         if (this == o) return true;
 
         Decart decart;
-        if (o instanceof Decart) {
-            decart = (Decart) o;
-        } else if (o instanceof Polar) {
-            decart = ((Polar) o).toDecart();
+        if (o instanceof Vector) {
+            decart = ((Vector) o).toDecart();
         } else return false;
 
         return (decart.x - x < PRECISION) && (decart.y - y < PRECISION);

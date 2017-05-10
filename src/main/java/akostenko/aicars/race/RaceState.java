@@ -3,6 +3,7 @@ package akostenko.aicars.race;
 import static akostenko.aicars.race.car.CarTelemetryItem.accelerationColor;
 import static akostenko.aicars.race.car.CarTelemetryItem.breakingColor;
 import static akostenko.aicars.race.car.CarTelemetryItem.textColor;
+import static java.lang.Math.PI;
 import static java.util.Comparator.comparing;
 import static org.lwjgl.input.Keyboard.KEY_DOWN;
 import static org.lwjgl.input.Keyboard.KEY_LEFT;
@@ -137,26 +138,21 @@ public class RaceState extends BasicGameState {
     private final float arrowSpace = 3; //px
     private final Color grey = new Color(40, 40, 40);
     private final Decart arrowsBlock = new Decart(Game.WIDTH - arrowSize * 4, Game.HEIGHT - arrowSize * 3);
-    private final Arrow up = new Arrow(
-            arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSize-arrowSpace)),
-            arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSpace)));
-    private final Arrow down = new Arrow(
-            arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSize + arrowSpace)),
-            arrowsBlock.plus(new Decart(arrowSize*3/2, 2*arrowSize-arrowSpace)));
-    private final Arrow left = new Arrow(
-            arrowsBlock.plus(new Decart(arrowSize-arrowSpace, arrowSize*3/2)),
-            arrowsBlock.plus(new Decart(arrowSpace, arrowSize*3/2)));
-    private final Arrow right = new Arrow(
-            arrowsBlock.plus(new Decart(2*arrowSize+arrowSpace, arrowSize*3/2)),
-            arrowsBlock.plus(new Decart(3*arrowSize-arrowSpace, arrowSize*3/2)));
+    private final Decart upArrowCenter = arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSize/2));
+    private final Decart downArrowCenter = arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSize*3/2));
+    private final Decart leftArrowCenter = arrowsBlock.plus(new Decart(arrowSize*1/2, arrowSize*3/2));
+    private final Decart rightArrowCenter = arrowsBlock.plus(new Decart(arrowSize*5/2, arrowSize*3/2));
+
     private void renderDriverInput(Graphics g, Driver driver) {
-        up.render(driver.accelerates() ? accelerationColor : grey, driver.accelerates() ? fatLineWidth : lineWidth)
+        Arrow.get(upArrowCenter, arrowSize-arrowSpace*2, PI/2,
+                driver.accelerates() ? accelerationColor : grey, driver.accelerates() ? fatLineWidth : lineWidth)
                 .forEach(line -> drawLine(g, line));
-        down.render(driver.breaks() ? breakingColor : grey, driver.breaks() ? fatLineWidth : lineWidth)
+        Arrow.get(downArrowCenter, arrowSize-arrowSpace*2, -PI/2,
+                driver.breaks() ? breakingColor : grey, driver.breaks() ? fatLineWidth : lineWidth)
                 .forEach(line -> drawLine(g, line));
-        left.render(driver.turnsLeft() ? textColor : grey, driver.turnsLeft() ? fatLineWidth : lineWidth)
+        Arrow.get(leftArrowCenter, arrowSize, PI, driver.turnsLeft() ? textColor : grey, driver.turnsLeft() ? fatLineWidth : lineWidth)
                 .forEach(line -> drawLine(g, line));
-        right.render(driver.turnsRight() ? textColor : grey, driver.turnsRight() ? fatLineWidth : lineWidth)
+        Arrow.get(rightArrowCenter, arrowSize, 0, driver.turnsRight() ? textColor : grey, driver.turnsRight() ? fatLineWidth : lineWidth)
                 .forEach(line -> drawLine(g, line));
     }
 
