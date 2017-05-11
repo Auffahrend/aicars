@@ -144,15 +144,15 @@ public class RaceState extends BasicGameState {
     private final Decart rightArrowCenter = arrowsBlock.plus(new Decart(arrowSize*5/2, arrowSize*3/2));
 
     private void renderDriverInput(Graphics g, Driver driver) {
-        Arrow.get(upArrowCenter, arrowSize-arrowSpace*2, 0,
+        Arrow.get(upArrowCenter, arrowSize-arrowSpace*2, -PI/2,
                 driver.accelerates() ? accelerationColor : grey, driver.accelerates() ? fatLineWidth : lineWidth)
-                .forEach(line -> drawLine(g, line));
-        Arrow.get(leftArrowCenter, arrowSize, PI/4, driver.turnsLeft() ? textColor : grey, driver.turnsLeft() ? fatLineWidth : lineWidth)
                 .forEach(line -> drawLine(g, line));
         Arrow.get(downArrowCenter, arrowSize-arrowSpace*2, PI/2,
                 driver.breaks() ? breakingColor : grey, driver.breaks() ? fatLineWidth : lineWidth)
                 .forEach(line -> drawLine(g, line));
-        Arrow.get(rightArrowCenter, arrowSize, 3*PI/4, driver.turnsRight() ? textColor : grey, driver.turnsRight() ? fatLineWidth : lineWidth)
+        Arrow.get(leftArrowCenter, arrowSize, PI, driver.turnsLeft() ? textColor : grey, driver.turnsLeft() ? fatLineWidth : lineWidth)
+                .forEach(line -> drawLine(g, line));
+        Arrow.get(rightArrowCenter, arrowSize, 0, driver.turnsRight() ? textColor : grey, driver.turnsRight() ? fatLineWidth : lineWidth)
                 .forEach(line -> drawLine(g, line));
     }
 

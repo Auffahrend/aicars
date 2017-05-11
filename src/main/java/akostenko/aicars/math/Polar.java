@@ -42,7 +42,11 @@ public class Polar implements Vector {
         double newR = sqrt(r * r + v.r * v.r - 2 * r * v.r * cos(d - v.d + PI));
         double newD = 0;
         if (newR != 0.) {
-             newD = asin( sin(d - v.d + PI) * v.r / newR) - d;
+            if (abs(d-v.d) % PI <= PRECISION) {
+                newD = r >= v.r ? d : v.d;
+            } else {
+                newD = asin( sin(d - v.d + PI) * v.r / newR) + d;
+            }
         }
         return new Polar(newR, newD);
     }

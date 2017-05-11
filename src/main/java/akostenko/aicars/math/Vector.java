@@ -1,7 +1,7 @@
 package akostenko.aicars.math;
 
 public interface Vector {
-    double PRECISION = 0.000_000_001;
+    double PRECISION = 0.000_000_000_000_001;
 
     Polar toPolar();
     Decart toDecart();

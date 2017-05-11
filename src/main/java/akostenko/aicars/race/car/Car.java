@@ -195,6 +195,7 @@ public class Car<DRIVER extends Driver> {
         double dt = 1. * msDelta / 1000;
         driver.update(dt);
         gearbox.update();
+        heading = heading.rotate(driver.turnsLeft() ? -0.01 : driver.turnsRight() ? +0.01 : 0);
 
         trackDistance += velocity.module() * dt;
         position = position.plus(velocity.multi(dt)).toDecart();
