@@ -32,7 +32,7 @@ class LinesBuilder {
             this.from = from;
         }
 
-        LinesBuilder to(double size, double direction) {
+        LinesBuilder towards(double direction, double size) {
             LinesBuilder.this.lines.add(new LocalLine(from, from.plus(new Polar(size, direction))));
             return LinesBuilder.this;
         }
@@ -50,8 +50,8 @@ class LinesBuilder {
             this.to = to;
         }
 
-        LocalLine rotate(Vector heading) {
-            return new LocalLine(from.rotate(heading.toPolar().d), to.rotate(heading.toPolar().d));
+        LocalLine rotate(double radians) {
+            return new LocalLine(from.rotate(radians), to.rotate(radians));
         }
 
         LocalLine scale(Scale scale) {

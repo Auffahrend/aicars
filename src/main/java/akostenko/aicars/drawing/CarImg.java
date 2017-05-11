@@ -35,11 +35,11 @@ public class CarImg {
 
 
         return new LinesBuilder()
-                .from(FL_wheel).to(tyreRadius, car.getSteering().toPolar().d)
-                .from(FL_wheel).to(tyreRadius, car.getSteering().toPolar().d+PI)
+                .from(FL_wheel).towards(car.getSteering().toPolar().d, tyreRadius)
+                .from(FL_wheel).towards(car.getSteering().toPolar().d+PI, tyreRadius)
                 .between(FL_wheel, FR_wheel)
-                .from(FR_wheel).to(tyreRadius, car.getSteering().toPolar().d)
-                .from(FR_wheel).to(tyreRadius, car.getSteering().toPolar().d+PI)
+                .from(FR_wheel).towards(car.getSteering().toPolar().d, tyreRadius)
+                .from(FR_wheel).towards(car.getSteering().toPolar().d+PI, tyreRadius)
 
                 .between(RL_wheel_p1, RL_wheel_p2)
                 .between(RR_wheel_p1, RR_wheel_p2)
@@ -47,7 +47,7 @@ public class CarImg {
 
                 .between(carAxis_p1, carAxis_p2)
                 .build().stream()
-                .map(line -> line.rotate(car.getHeading()))
+                .map(line -> line.rotate(car.getHeading().toPolar().d))
                 .map(line -> line.scale(scale))
                 .map(line -> line.position(screenPosition, color))
                 .collect(toList());

@@ -19,18 +19,18 @@ public class Arrow {
     public static Collection<Line> get(Decart center, float lengthPx, double rotation, Color color, int widthPx) {
         float baseLength = (float) start.minus(end).module();
         Scale scale = new Scale(baseLength, lengthPx);
-        Vector heading = new Polar(1, rotation);
-        double finLength = min(lengthPx/2, widthPx * 5);
-        if (finLength < widthPx * 2) finLength = widthPx * 2;
+        double finLengthPx = min(lengthPx/2, widthPx * 5);
+        if (finLengthPx < widthPx * 2) finLengthPx = widthPx * 2;
+        double finLength = finLengthPx / scale.getPixels() * scale.getMeters();
 
         return new LinesBuilder()
                 // shortening main line to prevent it overlapping with fins
-                .from(start).to(baseLength - widthPx/scale.getPixels()*scale.getMeters(), end.toPolar().d)
-                .from(end).to(finLength, finRotation)
-                .from(end).to(finLength, -finRotation)
+                .from(start).towards(end.minus(start).toPolar().d, baseLength - widthPx/scale.getPixels()*scale.getMeters())
+                .from(end).towards(end.toPolar().d + finRotation, finLength)
+                .from(end).towards(end.toPolar().d - finRotation, finLength)
                 .build().stream()
                 .map(line -> line.scale(scale))
-                .map(line -> line.rotate(heading))
+                .map(line -> line.rotate(rotation))
                 .map(line -> line.position(center, color))
                 .collect(toList());
     }
