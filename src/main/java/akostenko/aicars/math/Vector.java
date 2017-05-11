@@ -12,5 +12,6 @@ public interface Vector {
     Vector div(double k);
     Vector rotate(double radians);
     double module();
+    double moduleSqr();
 
 }

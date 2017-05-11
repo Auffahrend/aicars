@@ -228,4 +228,13 @@ public class Car<DRIVER extends Driver> {
         return driver;
     }
 
+    public Car<DRIVER> turn(double heading) {
+        this.heading = new Polar(1, heading);
+        return this;
+    }
+
+    public Car<DRIVER> move(Vector position) {
+        this.position = position.toDecart();
+        return this;
+    }
 }

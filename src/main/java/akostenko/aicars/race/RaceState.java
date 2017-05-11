@@ -17,12 +17,15 @@ import akostenko.aicars.drawing.Arrow;
 import akostenko.aicars.drawing.CarImg;
 import akostenko.aicars.drawing.Line;
 import akostenko.aicars.drawing.Scale;
+import akostenko.aicars.drawing.TrackSectionImg;
 import akostenko.aicars.keyboard.IsKeyDownListener;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.menu.PerformanceTest;
 import akostenko.aicars.menu.WithPlayer;
 import akostenko.aicars.race.car.Car;
 import akostenko.aicars.race.car.CarTelemetryItem;
+import akostenko.aicars.track.Track;
+import akostenko.aicars.track.TrackSection;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -42,6 +45,7 @@ public class RaceState extends BasicGameState {
 
     private Collection<Car<?>> cars;
     private Car<Player> playerCar;
+    private Track track;
 
     private final IsKeyDownListener accelerateListener = new IsKeyDownListener(KEY_UP);
     private final IsKeyDownListener brakeListener = new IsKeyDownListener(KEY_DOWN);
@@ -52,7 +56,8 @@ public class RaceState extends BasicGameState {
     private final int fatLineWidth = 5;
     private final TrueTypeFont telemetryFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true);
     private final Scale scale = new Scale(1, 10);
-    private final Decart cameraCenter = new Decart(Game.WIDTH/2, Game.HEIGHT/2);
+    private final Decart cameraOffset = new Decart(Game.WIDTH/2, Game.HEIGHT/2);
+    private final Color trackBorder = new Color(100, 100, 100);
 
     @Override
     public int getID() {
@@ -75,6 +80,10 @@ public class RaceState extends BasicGameState {
         } else if (settings.getMode() instanceof PerformanceTest) {
             cars.add(new Car<>(((PerformanceTest) settings.getMode()).newDriver()));
         }
+
+        track = settings.getTrack();
+        TrackSection trackStart = track.sections().get(0);
+        cars.forEach(car -> car.turn(trackStart.heading()).move(trackStart.start()));
     }
 
     @Override
@@ -92,13 +101,25 @@ public class RaceState extends BasicGameState {
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         Car focused = getFocusedCar();
-        drawCarTelemetry(g, focused);
 
+        drawTrack(g, focused, track);
         drawCar(g, focused);
+        drawCarTelemetry(g, focused);
     }
 
     private void drawCar(Graphics g, Car focused) {
-        CarImg.get(focused, cameraCenter, textColor, scale)
+        CarImg.get(focused, focused.getPosition(), textColor, scale)
+                .forEach(line -> drawLine(g, line));
+    }
+
+    private void drawTrack(Graphics g, Car focused, Track track) {
+        track.sections()
+                .forEach(section -> drawTrackSection(g, focused, section, track.getWidth()));
+    }
+
+
+    private void drawTrackSection(Graphics g, Car focused, TrackSection section, double width) {
+        TrackSectionImg.get(section, width, scale, trackBorder, focused.getPosition())
                 .forEach(line -> drawLine(g, line));
     }
 
@@ -146,22 +167,30 @@ public class RaceState extends BasicGameState {
     private void renderDriverInput(Graphics g, Driver driver) {
         Arrow.get(upArrowCenter, arrowSize-arrowSpace*2, -PI/2,
                 driver.accelerates() ? accelerationColor : grey, driver.accelerates() ? fatLineWidth : lineWidth)
-                .forEach(line -> drawLine(g, line));
+                .forEach(line -> drawUILine(g, line));
         Arrow.get(downArrowCenter, arrowSize-arrowSpace*2, PI/2,
                 driver.breaks() ? breakingColor : grey, driver.breaks() ? fatLineWidth : lineWidth)
-                .forEach(line -> drawLine(g, line));
+                .forEach(line -> drawUILine(g, line));
         Arrow.get(leftArrowCenter, arrowSize, PI, driver.turnsLeft() ? textColor : grey, driver.turnsLeft() ? fatLineWidth : lineWidth)
-                .forEach(line -> drawLine(g, line));
+                .forEach(line -> drawUILine(g, line));
         Arrow.get(rightArrowCenter, arrowSize, 0, driver.turnsRight() ? textColor : grey, driver.turnsRight() ? fatLineWidth : lineWidth)
-                .forEach(line -> drawLine(g, line));
+                .forEach(line -> drawUILine(g, line));
+    }
+
+    private void drawUILine(Graphics g, Line line) {
+        g.setLineWidth(line.getWidth());
+        g.setColor(line.getColor());
+        g.drawLine(
+                (float) line.getFrom().x, (float) line.getFrom().y,
+                (float) line.getTo().x, (float) line.getTo().y);
     }
 
     private void drawLine(Graphics g, Line line) {
         g.setLineWidth(line.getWidth());
         g.setColor(line.getColor());
         g.drawLine(
-                (float) line.getFrom().x, (float) line.getFrom().y,
-                (float) line.getTo().x, (float) line.getTo().y);
+                (float) (line.getFrom().x + cameraOffset.x), (float) (line.getFrom().y + cameraOffset.y),
+                (float) (line.getTo().x + cameraOffset.x), (float) (line.getTo().y + cameraOffset.y));
     }
 
     private Car getFocusedCar() {

@@ -26,13 +26,12 @@ public class CarImg {
     private static final Vector rearAxle_p1 = new Decart(-wheelbase/2, axleTrack/2);
     private static final Vector rearAxle_p2 = new Decart(-wheelbase/2, -axleTrack/2);
 
-    private static final Vector carAxis_p1 = new Decart(wheelbase/2, 0);
+    private static final Vector carAxis_p1 = new Decart(wheelbase/2*1.5, 0);
     private static final Vector carAxis_p2 = new Decart(-wheelbase/2, 0);
 
     public static Collection<Line> get(Car<?> car, Decart cameraPosition, Color color, Scale scale) {
-        Decart screenPosition = car.getPosition().multi(scale.getPixels() / scale.getMeters())
-                .plus(cameraPosition);
-
+        Decart positionPx = car.getPosition().minus(cameraPosition)
+                .multi(scale.getPixels()/scale.getMeters());
 
         return new LinesBuilder()
                 .from(FL_wheel).towards(car.getSteering().toPolar().d, tyreRadius)
@@ -49,7 +48,7 @@ public class CarImg {
                 .build().stream()
                 .map(line -> line.rotate(car.getHeading().toPolar().d))
                 .map(line -> line.scale(scale))
-                .map(line -> line.position(screenPosition, color))
+                .map(line -> line.position(positionPx, color))
                 .collect(toList());
     }
 

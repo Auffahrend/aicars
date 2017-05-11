@@ -68,7 +68,7 @@ public class Decart implements Vector {
 
     @Override
     public Vector div(double k) {
-        return new Decart(x / k, y / k);
+        return multi(1./k);
     }
 
     @Override
@@ -78,9 +78,13 @@ public class Decart implements Vector {
 
     @Override
     public double module() {
-        return sqrt(x*x + y*y);
+        return sqrt(moduleSqr());
     }
 
+    @Override
+    public double moduleSqr() {
+        return x*x + y*y;
+    }
 
     public double getX() {
         return x;

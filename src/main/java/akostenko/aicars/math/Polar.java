@@ -35,20 +35,7 @@ public class Polar implements Vector {
 
     @Override
     public Polar plus(Vector v) {
-        return addPolar(v.toPolar());
-    }
-
-    Polar addPolar(Polar v) {
-        double newR = sqrt(r * r + v.r * v.r - 2 * r * v.r * cos(d - v.d + PI));
-        double newD = 0;
-        if (newR != 0.) {
-            if (abs(d-v.d) % PI <= PRECISION) {
-                newD = r >= v.r ? d : v.d;
-            } else {
-                newD = asin( sin(d - v.d + PI) * v.r / newR) + d;
-            }
-        }
-        return new Polar(newR, newD);
+        return toDecart().plus(v.toDecart()).toPolar();
     }
 
     @Override
@@ -72,7 +59,7 @@ public class Polar implements Vector {
 
     @Override
     public Polar div(double k) {
-        return new Polar(r / abs(k), d + (k > 0 ? 0 : PI));
+        return multi(1./k);
     }
 
     @Override
@@ -83,6 +70,11 @@ public class Polar implements Vector {
     @Override
     public double module() {
         return r;
+    }
+
+    @Override
+    public double moduleSqr() {
+        return r*r;
     }
 
     @Override

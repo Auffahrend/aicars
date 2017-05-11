@@ -1,8 +1,13 @@
 package akostenko.aicars.model;
 
+import static java.lang.StrictMath.PI;
+
 public interface CarModel {
     /** <i>m</i> */
     double tyreRadius = 0.3;
+    double frontTyreWidth = 0.25;
+    double readTyreWidth = 0.35;
+
     /** <i>kg</i> */
     double mass = 700;
     /** <i>1/s</i> */
@@ -24,4 +29,5 @@ public interface CarModel {
     double axleTrack = 2; // m
     double wheelbase = 3.5; // m
     double length = 5; // m
+    double maxSteering = 0.2*PI;
 }

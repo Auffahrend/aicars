@@ -2,6 +2,7 @@ package akostenko.aicars.track;
 
 import akostenko.aicars.menu.MenuItem;
 
+import java.util.List;
 import java.util.Objects;
 
 public abstract class Track implements MenuItem {
@@ -16,6 +17,10 @@ public abstract class Track implements MenuItem {
     private static Track defaultTrack() {
         return new StraightTrack();
     }
+
+    public abstract double getWidth();
+
+    public abstract List<TrackSection> sections();
 
     @Override
     public int hashCode() {
