@@ -8,12 +8,14 @@ public class TrackSection {
     private final double length;
     private final double heading; // for turns it's a tangent line to the beginning point
     private final double radius;
+    private final double width;
 
-    TrackSection(Vector start, double length, double radius, double heading) {
+    TrackSection(Vector start, double length, double radius, double heading, double width) {
         this.start = start;
         this.length = length;
         this.radius = radius;
         this.heading = heading;
+        this.width = width;
     }
 
     public boolean isStraight() {
@@ -32,7 +34,11 @@ public class TrackSection {
         return heading;
     }
 
-    public double getRadius() {
+    public double radius() {
         return radius;
+    }
+
+    public double width() {
+        return width;
     }
 }

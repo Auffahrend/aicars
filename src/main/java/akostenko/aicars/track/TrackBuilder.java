@@ -15,24 +15,26 @@ class TrackBuilder {
 
     private double heading;
     private Vector currentPosition;
+    private double width;
     private List<TrackSection> track = new ArrayList<>();
 
-    static TrackBuilder start(double x, double y, double heading) {
+    static TrackBuilder start(double x, double y, double heading, double width) {
         TrackBuilder trackBuilder = new TrackBuilder();
         trackBuilder.heading = heading;
         trackBuilder.currentPosition = new Decart(x, y);
+        trackBuilder.width = width;
         return trackBuilder;
     }
 
     TrackBuilder straight(double length) {
-        track.add(new TrackSection(currentPosition, length, 0, heading));
+        track.add(new TrackSection(currentPosition, length, 0, heading, width));
         currentPosition = currentPosition.plus(new Polar(length, heading));
         return this;
     }
 
     TrackBuilder right(double radius, double degrees) {
         double angle = toRadians(degrees);
-        track.add(new TrackSection(currentPosition, angle*radius, radius, heading));
+        track.add(new TrackSection(currentPosition, angle*radius, radius, heading, width));
         Vector turnCenter = currentPosition.plus(new Polar(radius, heading+PI/2));
         currentPosition = turnCenter.plus(new Polar(radius, PI+PI/2+heading+angle));
         heading += angle;
@@ -41,7 +43,7 @@ class TrackBuilder {
 
     TrackBuilder left(double radius, double degrees) {
         double angle = toRadians(degrees);
-        track.add(new TrackSection(currentPosition, angle*radius, -radius, heading));
+        track.add(new TrackSection(currentPosition, angle*radius, -radius, heading, width));
         Vector turnCenter = currentPosition.plus(new Polar(radius, heading-PI/2));
         currentPosition = turnCenter.plus(new Polar(radius, PI + heading - PI / 2 - angle));
         heading -= angle;
