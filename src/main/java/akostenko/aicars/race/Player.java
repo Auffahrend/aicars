@@ -29,23 +29,19 @@ public class Player extends Driver {
     }
 
     @Override
-    public boolean accelerates() {
-        return isAccelerating;
+    public double accelerating() {
+        return isAccelerating ? 1 : 0;
     }
 
     @Override
-    public boolean breaks() {
-        return isBreaking;
+    public double breaking() {
+        return isBreaking ? 1 : 0;
     }
 
     @Override
-    public boolean turnsLeft() {
-        return isTurningLeft;
-    }
-
-    @Override
-    public boolean turnsRight() {
-        return isTurningRight;
+    public double turning() {
+        return (isTurningLeft ? -1 : 0)
+                + (isTurningRight ? 1 : 0);
     }
 
     @Override

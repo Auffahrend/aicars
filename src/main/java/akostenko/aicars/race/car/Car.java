@@ -6,10 +6,13 @@ import static akostenko.aicars.model.CarModel.cx;
 import static akostenko.aicars.model.CarModel.cy;
 import static akostenko.aicars.model.CarModel.frontArea;
 import static akostenko.aicars.model.CarModel.mass;
+import static akostenko.aicars.model.CarModel.massCenterHeight;
+import static akostenko.aicars.model.CarModel.massCenterOffset;
 import static akostenko.aicars.model.CarModel.min_rpm;
 import static akostenko.aicars.model.CarModel.tyreRadius;
 import static akostenko.aicars.model.CarModel.tyreRollingFriction;
 import static akostenko.aicars.model.CarModel.tyreStiction;
+import static akostenko.aicars.model.CarModel.wheelbase;
 import static akostenko.aicars.model.CarModel.wingArea;
 import static akostenko.aicars.model.EnvironmentModel.airDensity;
 import static akostenko.aicars.model.EnvironmentModel.g;
@@ -122,10 +125,10 @@ public class Car<DRIVER extends Driver> {
 
     /** m/s^2 */
     private Vector accelerateA() {
-        if (driver.accelerates()) {
+        if (driver.accelerating() > 0) {
             double engineForce = torqueMap.get(rps()) * gearbox.ratio() / tyreRadius;
-            double acceleration = min(engineForce, weightF() * tyreStiction) / mass;
-            return heading.multi(acceleration);
+            double acceleration = min(engineForce, (driveAxleWeightF()) * tyreStiction) / mass;
+            return heading.multi(acceleration * min(driver.accelerating(), 1));
         } else {
             return ZERO;
         }
@@ -155,15 +158,14 @@ public class Car<DRIVER extends Driver> {
      * @return kg * m / s^2
      */
     private Vector dragF() {
-        return new Polar(cx * airDensity * velocity.module() * velocity.module() * frontArea / 2,
-                velocity.toPolar().d + PI);
+        return velocity.multi(-cx * airDensity * velocity.module() * frontArea / 2);
     }
 
     /**
      * @return kg * m / s^2
      */
     private double downforceF() {
-        return cy * airDensity * velocity.module() * velocity.module() * wingArea / 2;
+        return cy * airDensity * velocity.moduleSqr() * wingArea / 2;
     }
 
     /** kg * m/s^2 */
@@ -175,13 +177,26 @@ public class Car<DRIVER extends Driver> {
 
     /** kg * m/s^2 */
     private double weightF() {
-        return mass* g + downforceF();
+        return mass*g + downforceF();
+    }
+
+    /** kg * m/s^2 */
+    private double driveAxleWeightF() {
+        Vector horizontalForce = accelerationA.plus(breakingA).multi(mass);
+        double longitudeForce = horizontalForce.dot(heading);
+        return weightF()*(1-massCenterOffset) + longitudeForce * massCenterHeight/wheelbase;
+    }
+
+    /** kg * m/s^2 */
+    private double steeringAxleWeightF() {
+        Vector horizontalForce = accelerationA.plus(breakingA).multi(mass);
+        double longitudeForce = horizontalForce.dot(heading);
+        return weightF()*massCenterOffset - longitudeForce * massCenterHeight/wheelbase;
     }
 
     private Vector breakingF() {
-        return driver.breaks()
-                ? new Polar(weightF() * tyreStiction, velocity.toPolar().d + PI)
-                : ZERO;
+        return new Polar(weightF() * tyreStiction, velocity.toPolar().d + PI)
+                .multi(min(1, driver.breaking()));
     }
 
     ////////////////
@@ -195,7 +210,7 @@ public class Car<DRIVER extends Driver> {
         double dt = 1. * msDelta / 1000;
         driver.update(dt);
         gearbox.update();
-        heading = heading.rotate(driver.turnsLeft() ? -0.01 : driver.turnsRight() ? +0.01 : 0);
+        heading = heading.rotate(driver.turning() * 0.01);
 
         trackDistance += velocity.module() * dt;
         position = position.plus(velocity.multi(dt)).toDecart();

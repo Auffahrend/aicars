@@ -166,14 +166,20 @@ public class RaceState extends BasicGameState {
 
     private void renderDriverInput(Graphics g, Driver driver) {
         Arrow.get(upArrowCenter, arrowSize-arrowSpace*2, -PI/2,
-                driver.accelerates() ? accelerationColor : grey, driver.accelerates() ? fatLineWidth : lineWidth)
+                driver.accelerating() > 0 ? accelerationColor : grey,
+                driver.accelerating() > 0 ? fatLineWidth : lineWidth)
                 .forEach(line -> drawUILine(g, line));
         Arrow.get(downArrowCenter, arrowSize-arrowSpace*2, PI/2,
-                driver.breaks() ? breakingColor : grey, driver.breaks() ? fatLineWidth : lineWidth)
+                driver.breaking() > 0 ? breakingColor : grey,
+                driver.breaking() > 0 ? fatLineWidth : lineWidth)
                 .forEach(line -> drawUILine(g, line));
-        Arrow.get(leftArrowCenter, arrowSize, PI, driver.turnsLeft() ? textColor : grey, driver.turnsLeft() ? fatLineWidth : lineWidth)
+        Arrow.get(leftArrowCenter, arrowSize, PI,
+                turnLeftListener.isDown() || driver.turning() < 0 ? textColor : grey,
+                turnLeftListener.isDown() || driver.turning() < 0 ? fatLineWidth : lineWidth)
                 .forEach(line -> drawUILine(g, line));
-        Arrow.get(rightArrowCenter, arrowSize, 0, driver.turnsRight() ? textColor : grey, driver.turnsRight() ? fatLineWidth : lineWidth)
+        Arrow.get(rightArrowCenter, arrowSize, 0,
+                turnRightListener.isDown() || driver.turning() > 0 ? textColor : grey,
+                turnRightListener.isDown() || driver.turning() > 0 ? fatLineWidth : lineWidth)
                 .forEach(line -> drawUILine(g, line));
     }
 

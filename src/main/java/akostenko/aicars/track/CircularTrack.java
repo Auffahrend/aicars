@@ -5,8 +5,9 @@ import java.util.List;
 public class CircularTrack extends Track {
 
     static final String NAME = "Circular";
+    private final int width = 12;
 
-    private List<TrackSection> sections = TrackBuilder.start(0, 0, 0)
+    private List<TrackSection> sections = TrackBuilder.start(0, 0, 0, width)
             .right(300, 180)
             .right(300, 180)
             .done();
@@ -18,7 +19,7 @@ public class CircularTrack extends Track {
 
     @Override
     public double getWidth() {
-        return 12;
+        return width;
     }
 
     @Override

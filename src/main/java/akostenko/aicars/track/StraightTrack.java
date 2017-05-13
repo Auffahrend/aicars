@@ -7,8 +7,9 @@ import java.util.List;
 public class StraightTrack extends Track {
 
     static final String NAME = "Straight";
+    private final int width = 12; // m
 
-    private List<TrackSection> sections = TrackBuilder.start(0,0, - PI / 4)
+    private List<TrackSection> sections = TrackBuilder.start(0,0, - PI / 4, width)
             .straight(1000)
             .done();
 
@@ -19,7 +20,7 @@ public class StraightTrack extends Track {
 
     @Override
     public double getWidth() {
-        return 12;
+        return width;
     }
 
     @Override

@@ -10,16 +10,16 @@ import static java.lang.StrictMath.sqrt;
 public class Polar implements Vector {
     public static final Polar ZERO = new Polar(0,0);
 
-    /** length of vector */
+    /** length of vector, always >= 0 */
     public final double r;
-    /** direction, <i>radians</i>, measured from X axis towards Y axis */
+    /** direction, <i>radians</i>, measured from X axis towards Y axis, always within [0, 2*PI) */
     public final double d;
 
     public Polar(double r, double d) {
         if (r < 0) throw new IllegalArgumentException("r must be >= 0! r is " + r);
         this.r = r;
         while (d < 0) d += 2*PI;
-        while (d > 2*PI) d -= 2*PI;
+        while (d >= 2*PI) d -= 2*PI;
         this.d = d;
     }
 
@@ -75,6 +75,18 @@ public class Polar implements Vector {
     @Override
     public double moduleSqr() {
         return r*r;
+    }
+
+    @Override
+    public double dot(Vector v) {
+        Polar b = v.toPolar();
+        return r*b.r*cos(d - b.d);
+    }
+
+    @Override
+    public double cross(Vector v) {
+        Polar b = v.toPolar();
+        return r * b.r * sin(b.d - d);
     }
 
     @Override

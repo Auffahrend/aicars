@@ -2,6 +2,7 @@ package akostenko.aicars.menu;
 
 import akostenko.aicars.race.Driver;
 import akostenko.aicars.race.cartest.AccelerationAndBreakingTest;
+import akostenko.aicars.race.cartest.AccelerationTest;
 
 public class PerformanceTest extends Mode {
     static final String NAME = "Car test";
@@ -12,6 +13,6 @@ public class PerformanceTest extends Mode {
     }
 
     public Driver newDriver() {
-        return new AccelerationAndBreakingTest();
+        return new AccelerationTest();
     }
 }

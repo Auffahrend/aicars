@@ -86,6 +86,16 @@ public class Decart implements Vector {
         return x*x + y*y;
     }
 
+    @Override
+    public double dot(Vector v) {
+        return toPolar().dot(v.toPolar());
+    }
+
+    @Override
+    public double cross(Vector v) {
+        return toPolar().cross(v.toPolar());
+    }
+
     public double getX() {
         return x;
     }

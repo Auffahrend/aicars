@@ -14,10 +14,13 @@ public abstract class Driver {
     }
 
 
-    public abstract boolean accelerates();
-    public abstract boolean breaks();
-    public abstract boolean turnsLeft();
-    public abstract boolean turnsRight();
+    public abstract double accelerating();
+    public abstract double breaking();
+
+    /**
+     * @return driver's desire to turn. Values are [-1,1] where -1 is full lock to left, +1 is full lock to right
+     */
+    public abstract double turning();
 
     public abstract String getName();
 

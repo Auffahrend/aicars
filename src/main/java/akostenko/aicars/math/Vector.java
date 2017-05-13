@@ -14,4 +14,12 @@ public interface Vector {
     double module();
     double moduleSqr();
 
+    /** scalar product, a * b */
+    double dot(Vector v);
+
+    /** vector product a x b
+     * @return Since we are using 2D vectors, the abs(result) == a*b*sin(a^b),
+     * and result > 0 if direction of turning a towards b is the same as direction of x-axis toward y-axis, and vise versa
+     */
+    double cross(Vector v);
 }

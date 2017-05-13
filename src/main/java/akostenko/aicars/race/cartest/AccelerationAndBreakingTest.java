@@ -15,23 +15,18 @@ public class AccelerationAndBreakingTest extends Driver {
     }
 
     @Override
-    public boolean accelerates() {
-        return !speedReached;
+    public double accelerating() {
+        return !speedReached ? 1 : 0;
     }
 
     @Override
-    public boolean breaks() {
-        return speedReached;
+    public double breaking() {
+        return speedReached ? 1 : 0;
     }
 
     @Override
-    public boolean turnsLeft() {
-        return false;
-    }
-
-    @Override
-    public boolean turnsRight() {
-        return false;
+    public double turning() {
+        return 0;
     }
 
     @Override

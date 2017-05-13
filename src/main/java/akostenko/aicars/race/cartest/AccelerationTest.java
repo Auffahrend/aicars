@@ -4,7 +4,7 @@ import akostenko.aicars.race.Driver;
 
 public class AccelerationTest extends Driver {
 
-    private final double targetSpeed = 150; // km/h
+    private final double targetSpeed = 100; // km/h
     private double time = 0;
     private boolean targetReached;
 
@@ -14,23 +14,18 @@ public class AccelerationTest extends Driver {
     }
 
     @Override
-    public boolean accelerates() {
-        return !targetReached;
+    public double accelerating() {
+        return !targetReached ? 1 : 0;
     }
 
     @Override
-    public boolean breaks() {
-        return targetReached;
+    public double breaking() {
+        return targetReached ? 1 : 0;
     }
 
     @Override
-    public boolean turnsLeft() {
-        return false;
-    }
-
-    @Override
-    public boolean turnsRight() {
-        return false;
+    public double turning() {
+        return 0;
     }
 
     @Override
