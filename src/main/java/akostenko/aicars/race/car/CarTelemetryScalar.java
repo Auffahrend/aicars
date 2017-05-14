@@ -4,11 +4,6 @@ import org.newdawn.slick.Color;
 
 public class CarTelemetryScalar {
 
-    public static final Color breakingColor = new Color(250, 70, 70);
-    public static final Color velocityColor = new Color(250, 250, 50);
-    public static final Color accelerationColor = new Color(50, 250, 50);
-    public static final Color textColor = new Color(240, 240, 240);
-
     private final Color color;
     private final String name;
     private final int precision;
@@ -31,11 +26,11 @@ public class CarTelemetryScalar {
     }
 
     public CarTelemetryScalar(String name, double value, String units) {
-        this(name, value, units, 0, textColor);
+        this(name, value, units, 0, CarTelemetry.textColor);
     }
 
     public CarTelemetryScalar(String name, String textValue) {
-        this(name, 0, null, 0, textColor, textValue);
+        this(name, 0, null, 0, CarTelemetry.textColor, textValue);
     }
 
     public Color color() {

@@ -21,17 +21,17 @@ public class Arrow {
         Scale scale = new Scale(baseLength, lengthPx);
         double finLengthPx = min(lengthPx/2, widthPx * 5);
         if (finLengthPx < widthPx * 2) finLengthPx = widthPx * 2;
-        double finLength = finLengthPx / scale.getPixels() * scale.getMeters();
+        double finLength = finLengthPx / scale.getPixels() * scale.getSize();
 
         return new LinesBuilder()
                 // shortening main line to prevent it overlapping with fins
-                .from(start).towards(end.minus(start).toPolar().d, baseLength - widthPx/scale.getPixels()*scale.getMeters())
+                .from(start).towards(end.minus(start).toPolar().d, baseLength - widthPx/scale.getPixels()*scale.getSize())
                 .from(end).towards(end.toPolar().d + finRotation, finLength)
                 .from(end).towards(end.toPolar().d - finRotation, finLength)
                 .build().stream()
                 .map(line -> line.scale(scale))
                 .map(line -> line.rotate(rotation))
-                .map(line -> line.position(center, color))
+                .map(line -> line.position(center, color, widthPx))
                 .collect(toList());
     }
 }

@@ -34,4 +34,12 @@ public class CarTelemetryVector {
     public Vector vector() {
         return vector;
     }
+
+    public Scale scale() {
+        return scale;
+    }
+
+    public Color color() {
+        return color;
+    }
 }

@@ -19,10 +19,11 @@ import static akostenko.aicars.model.CarModel.wingArea;
 import static akostenko.aicars.model.CarModel.yawInertia;
 import static akostenko.aicars.model.EnvironmentModel.airDensity;
 import static akostenko.aicars.model.EnvironmentModel.g;
-import static akostenko.aicars.race.car.CarTelemetryScalar.accelerationColor;
-import static akostenko.aicars.race.car.CarTelemetryScalar.breakingColor;
-import static akostenko.aicars.race.car.CarTelemetryScalar.textColor;
-import static akostenko.aicars.race.car.CarTelemetryScalar.velocityColor;
+import static akostenko.aicars.race.car.CarTelemetry.accelerationColor;
+import static akostenko.aicars.race.car.CarTelemetry.breakingColor;
+import static akostenko.aicars.race.car.CarTelemetry.textColor;
+import static akostenko.aicars.race.car.CarTelemetry.turningColor;
+import static akostenko.aicars.race.car.CarTelemetry.velocityColor;
 import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 import static java.lang.StrictMath.abs;
@@ -31,13 +32,12 @@ import static java.lang.StrictMath.min;
 import static java.lang.StrictMath.signum;
 import static java.time.Instant.now;
 
+import akostenko.aicars.drawing.Scale;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.math.Polar;
 import akostenko.aicars.math.Vector;
 import akostenko.aicars.race.Driver;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Car<DRIVER extends Driver> {
@@ -61,26 +61,34 @@ public class Car<DRIVER extends Driver> {
     private Vector velocity = ZERO;
     private Vector accelerationA = ZERO;
     private Vector breakingA = ZERO;
-    private Vector heading = new Polar(1, 0);
+    private Polar heading = new Polar(1, 0);
     /** <i>rad/s</i> */
     private double carRotationSpeed = 0;
     private Polar steering = new Polar(1, 0);
 
     //////////////// car telemetry
     private static final Random random = new Random();
+    private final Scale velocityScale = new Scale(100, 200);
+    private final Scale gScale = new Scale(5, 200);
 
-    public Iterable<CarTelemetryScalar> getTelemetry() {
-        List<CarTelemetryScalar> items = new ArrayList<>();
-        items.add(new CarTelemetryScalar("Driver", driver.getName()));
-        items.add(new CarTelemetryScalar("Distance", trackDistance, "m", 1, textColor));
-        items.add(new CarTelemetryScalar("Speed", velocity.module() * 3.6, "kmph", 3, velocityColor));
-        items.add(new CarTelemetryScalar("Accel", accelerationA.module() / g, "g", 3, accelerationColor));
-        items.add(new CarTelemetryScalar("RPM", rps() * 60 + random.nextInt(120), ""));
-        items.add(new CarTelemetryScalar("Gear", gearbox.current()+1, ""));
-        items.add(new CarTelemetryScalar("Breaking", breakingA.module() / g, "g", 3, breakingColor));
-        items.add(new CarTelemetryScalar("Peak G", peakG() / g, "g", 3, accelerationColor));
-//        items.add(new CarTelemetryScalar("Downforce", downforceF() / g, "kg"));
-        return items;
+    public CarTelemetry getTelemetry() {
+        CarTelemetry carTelemetry = new CarTelemetry(this);
+
+        carTelemetry.getScalars().add(new CarTelemetryScalar("Driver", driver.getName()));
+        carTelemetry.getScalars().add(new CarTelemetryScalar("Distance", trackDistance, "m", 1, textColor));
+        carTelemetry.getScalars().add(new CarTelemetryScalar("Speed", velocity.module() * 3.6, "kmph", 3, velocityColor));
+        carTelemetry.getVectors().add(new CarTelemetryVector(velocity, velocityScale, velocityColor));
+        carTelemetry.getScalars().add(new CarTelemetryScalar("Accel", accelerationA.module() / g, "g", 3, accelerationColor));
+        carTelemetry.getVectors().add(new CarTelemetryVector(accelerationA.div(g), gScale, accelerationColor));
+        carTelemetry.getScalars().add(new CarTelemetryScalar("RPM", rps() * 60 + random.nextInt(120), ""));
+        carTelemetry.getScalars().add(new CarTelemetryScalar("Gear", gearbox.current()+1, ""));
+        carTelemetry.getScalars().add(new CarTelemetryScalar("Breaking", breakingA.module() / g, "g", 3, breakingColor));
+        carTelemetry.getVectors().add(new CarTelemetryVector(breakingA.div(g), gScale, breakingColor));
+        carTelemetry.getScalars().add(new CarTelemetryScalar("Peak G", peakG() / g, "g", 3, accelerationColor));
+//        carTelemetry.getScalars().add(new CarTelemetryScalar("Downforce", downforceF() / g, "kg"));
+        carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*(1-massCenterOffset), heading.d), frontSlipF().div(mass * g), gScale, turningColor));
+        carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*massCenterOffset, heading.d+PI), rearsSlipF().div(mass * g), gScale, turningColor));
+        return carTelemetry;
     }
 
 
@@ -201,7 +209,7 @@ public class Car<DRIVER extends Driver> {
     }
 
     private Vector breakingF() {
-        return new Polar(weightF() * tyreStiction, velocity.toPolar().d + PI)
+        return new Polar(weightF() * tyreStiction, velocity.module() > 0 ? velocity.toPolar().d + PI : heading.d + PI)
                 .multi(min(1, driver.breaking()));
     }
 
@@ -210,30 +218,30 @@ public class Car<DRIVER extends Driver> {
                 .div(mass);
     }
 
-    private double lateralF(double slipAngle, double axleWeight) {
+    private double tyreSlipForce(double slipAngle, double axleWeight) {
         // see http://www.asawicki.info/Mirror/Car%20Physics%20for%20Games/Car%20Physics%20for%20Games.html
         // at about 3 degrees lateral force should peak with values about wight on steering wheels
 
-        double lateralForceFunction;
+        double tyreSlipForceFunction;
         if (abs(slipAngle) <= peakLateralForceAngle) {
-            lateralForceFunction = slipAngle / peakLateralForceAngle * tyreStiction;
+            tyreSlipForceFunction = slipAngle / peakLateralForceAngle * tyreStiction;
         } else {
-            lateralForceFunction = signum(slipAngle) * peakLateralForceAngle * tyreStiction
+            tyreSlipForceFunction = signum(slipAngle) * peakLateralForceAngle * tyreStiction
                     * (1 - 0.05*((abs(slipAngle)-peakLateralForceAngle)/toRadians(10)));
         }
 
-        return axleWeight * lateralForceFunction;
+        return axleWeight * tyreSlipForceFunction;
     }
 
     private Vector frontSlipF() {
         return headingNormal().rotate(steering.d)
-                .multi(-lateralF(frontSlipAngle(), frontAxleWeightF()));
+                .multi(-tyreSlipForce(frontSlipAngle(), frontAxleWeightF()));
 
     }
 
     private Vector rearsSlipF() {
         return headingNormal()
-                .multi(-lateralF(rearSlipAngle(), rearAxleWeightF()));
+                .multi(-tyreSlipForce(rearSlipAngle(), rearAxleWeightF()));
     }
 
     private double frontSlipAngle() {
@@ -301,7 +309,7 @@ public class Car<DRIVER extends Driver> {
 
         // if breaking forces are stronger then acceleration
         if (breaking.module() > velocity.module()) {
-            velocity = ZERO;
+            velocity = new Polar(0, heading.d);
         } else {
             velocity = velocity.plus(breaking);
         }

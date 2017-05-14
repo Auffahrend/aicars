@@ -14,7 +14,7 @@ import java.util.Collection;
 public class TrackSectionImg {
 
     public static Collection<Line> get(TrackSection section, double trackWidth, Scale scale, Color color, Decart camera) {
-        Decart cameraPx = camera.negative().multi(scale.getPixels()/scale.getMeters());
+        Decart cameraPx = camera.negative().multi(scale.getPixels()/scale.getSize());
         if (section.isStraight()) {
             Polar sectionStart = section.start().toPolar();
             Polar sectionEnd = section.start().toPolar().plus(new Polar(section.length(), section.heading()));
@@ -26,7 +26,7 @@ public class TrackSectionImg {
                     .between(sectionStart.plus(leftBorder), sectionEnd.plus(leftBorder))
                     .build().stream()
                     .map(line -> line.scale(scale))
-                    .map(line -> line.position(cameraPx, color))
+                    .map(line -> line.position(cameraPx, color, 3))
                     .collect(toList());
         } else {
             throw new IllegalArgumentException("Not implemented");

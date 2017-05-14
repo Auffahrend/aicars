@@ -1,8 +1,8 @@
 package akostenko.aicars.race;
 
-import static akostenko.aicars.race.car.CarTelemetryScalar.accelerationColor;
-import static akostenko.aicars.race.car.CarTelemetryScalar.breakingColor;
-import static akostenko.aicars.race.car.CarTelemetryScalar.textColor;
+import static akostenko.aicars.race.car.CarTelemetry.accelerationColor;
+import static akostenko.aicars.race.car.CarTelemetry.breakingColor;
+import static akostenko.aicars.race.car.CarTelemetry.textColor;
 import static java.lang.Math.PI;
 import static java.util.Comparator.comparing;
 import static org.lwjgl.input.Keyboard.KEY_DOWN;
@@ -20,10 +20,13 @@ import akostenko.aicars.drawing.Scale;
 import akostenko.aicars.drawing.TrackSectionImg;
 import akostenko.aicars.keyboard.IsKeyDownListener;
 import akostenko.aicars.math.Decart;
+import akostenko.aicars.math.Vector;
 import akostenko.aicars.menu.PerformanceTest;
 import akostenko.aicars.menu.WithPlayer;
 import akostenko.aicars.race.car.Car;
+import akostenko.aicars.race.car.CarTelemetry;
 import akostenko.aicars.race.car.CarTelemetryScalar;
+import akostenko.aicars.race.car.CarTelemetryVector;
 import akostenko.aicars.track.Track;
 import akostenko.aicars.track.TrackSection;
 
@@ -147,19 +150,29 @@ public class RaceState extends BasicGameState {
 
         AtomicReference<Float> currentY = new AtomicReference<>(telemetryTopMargin + telemetrySpacing);
 
-        car.getTelemetry()
-                .forEach(item -> drawTelemetryItem(g, item, currentY));
+        CarTelemetry telemetry = car.getTelemetry();
+        telemetry.getScalars().forEach(item -> drawTelemetryScalar(g, item, currentY));
+        telemetry.getVectors().forEach(vector -> drawTelemetryVector(g, car, car.getPosition(), vector));
 
         g.setColor(textColor);
         g.drawRect(telemetryLeftMargin, telemetryTopMargin,
                 telemetryValueX+telemetryNameWidth, currentY.get()-telemetrySpacing-telemetryTextSize);
     }
 
-    private void drawTelemetryItem(Graphics g, CarTelemetryScalar item, AtomicReference<Float> currentY) {
-        g.setColor(item.color());
-        g.drawString(item.name(), telemetryNameX, currentY.get());
-        g.drawString(item.value(), telemetryValueX, currentY.get());
+    private void drawTelemetryScalar(Graphics g, CarTelemetryScalar value, AtomicReference<Float> currentY) {
+        g.setColor(value.color());
+        g.drawString(value.name(), telemetryNameX, currentY.get());
+        g.drawString(value.value(), telemetryValueX, currentY.get());
         currentY.accumulateAndGet(telemetryTextSize + telemetrySpacing, Float::sum);
+    }
+
+    private void drawTelemetryVector(Graphics g, Car<?> car, Decart camera, CarTelemetryVector item) {
+        Decart from = car.getPosition().plus(item.appliedTo()).minus(camera).multi(scale.getPixels() / scale.getSize());
+        Vector centerOffset = item.vector().multi(0.5).multi(item.scale().getPixels() / item.scale().getSize());
+        Arrow.get(from.plus(centerOffset),
+                (float) item.vector().module() * item.scale().getPixels() / item.scale().getSize(),
+                item.vector().toPolar().d, item.color(), lineWidth)
+                .forEach(line -> drawLine(g, line));
     }
 
     private final float arrowSize = 30; //px

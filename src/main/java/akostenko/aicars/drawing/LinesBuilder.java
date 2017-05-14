@@ -55,15 +55,15 @@ class LinesBuilder {
         }
 
         LocalLine scale(Scale scale) {
-            float k = scale.getPixels() / scale.getMeters();
+            float k = scale.getPixels() / scale.getSize();
             return new LocalLine(from.multi(k), to.multi(k));
         }
 
-        Line position(Decart position, Color color) {
+        Line position(Decart position, Color color, int width) {
             return new Line(from.toDecart().plus(position),
                     to.toDecart().plus(position),
                     color,
-                    4);
+                    width);
         }
     }
 }
