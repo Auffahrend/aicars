@@ -15,13 +15,16 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.KeyListener;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class MenuState extends BasicGameState{
@@ -57,6 +60,7 @@ public class MenuState extends BasicGameState{
     private final float subMenuWidth = Game.WIDTH * 0.2f;
     private final TrueTypeFont submenuFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, subMenuHeight), true);
     private final TrueTypeFont itemFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, subMenuItemHeight), true);
+    private final Collection<KeyListener> listeners = new ArrayList<>();
 
     @Override
     public int getID() {
@@ -68,13 +72,11 @@ public class MenuState extends BasicGameState{
         Input input = container.getInput();
         GameSettings.get().getGlobalListeners().forEach(input::addKeyListener);
         KeyboardHelper.getKeyListeners().forEach(input::addKeyListener);
-        input.addKeyListener(new SingleKeyAction(v -> menuChange(-1), KEY_UP));
-        input.addKeyListener(new SingleKeyAction(v -> menuChange(+1), KEY_DOWN));
-
-        input.addKeyListener(new SingleKeyAction(v -> selectionChange(-1), KEY_LEFT));
-        input.addKeyListener(new SingleKeyAction(v -> selectionChange(+1), KEY_RIGHT));
-
-        input.addKeyListener(new SingleKeyAction(v -> enterMenu(), KEY_RETURN));
+        listeners.add(new SingleKeyAction(v -> menuChange(-1), KEY_UP));
+        listeners.add(new SingleKeyAction(v -> menuChange(+1), KEY_DOWN));
+        listeners.add(new SingleKeyAction(v -> selectionChange(-1), KEY_LEFT));
+        listeners.add(new SingleKeyAction(v -> selectionChange(+1), KEY_RIGHT));
+        listeners.add(new SingleKeyAction(v -> enterMenu(), KEY_RETURN));
 
         container.setTargetFrameRate(60);
     }
@@ -135,6 +137,7 @@ public class MenuState extends BasicGameState{
     @Override
     public void leave(GameContainer container, StateBasedGame game) throws SlickException {
         super.leave(container, game);
+        listeners.forEach(listener -> container.getInput().removeKeyListener(listener));
         GameSettings.get()
                 .setTrack(trackMenu.getCurrent())
                 .setMode(modeMenu.getCurrent())
@@ -146,6 +149,8 @@ public class MenuState extends BasicGameState{
         super.enter(container, game);
         trackMenu.setCurrent(GameSettings.get().getTrack());
         modeMenu.setCurrent(GameSettings.get().getMode());
+        listeners.forEach(listener -> container.getInput().addKeyListener(listener));
+
     }
 
 

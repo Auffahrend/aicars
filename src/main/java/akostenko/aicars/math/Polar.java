@@ -16,7 +16,9 @@ public class Polar implements Vector {
     public final double d;
 
     public Polar(double r, double d) {
-        if (r < 0) throw new IllegalArgumentException("r must be >= 0! r is " + r);
+        if (r < 0) {
+            d += PI;
+        }
         this.r = r;
         while (d < 0) d += 2*PI;
         while (d >= 2*PI) d -= 2*PI;

@@ -20,7 +20,7 @@ public abstract class Driver {
     /**
      * @return driver's desire to turn. Values are [-1,1] where -1 is full lock to left, +1 is full lock to right
      */
-    public abstract double turning();
+    public abstract double steering();
 
     public abstract String getName();
 

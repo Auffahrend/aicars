@@ -24,7 +24,7 @@ public class AccelerationTest extends Driver {
     }
 
     @Override
-    public double turning() {
+    public double steering() {
         return 0;
     }
 

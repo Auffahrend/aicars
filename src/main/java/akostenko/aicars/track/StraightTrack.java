@@ -7,7 +7,7 @@ import java.util.List;
 public class StraightTrack extends Track {
 
     static final String NAME = "Straight";
-    private final int width = 12; // m
+    private final int width = 16; // m
 
     private List<TrackSection> sections = TrackBuilder.start(0,0, - PI / 4, width)
             .straight(1000)

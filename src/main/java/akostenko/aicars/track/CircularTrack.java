@@ -5,7 +5,7 @@ import java.util.List;
 public class CircularTrack extends Track {
 
     static final String NAME = "Circular";
-    private final int width = 12;
+    private final int width = 16;
 
     private List<TrackSection> sections = TrackBuilder.start(0, 0, 0, width)
             .right(300, 180)

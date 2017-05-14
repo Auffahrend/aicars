@@ -1,8 +1,8 @@
 package akostenko.aicars.race;
 
-import static akostenko.aicars.race.car.CarTelemetryItem.accelerationColor;
-import static akostenko.aicars.race.car.CarTelemetryItem.breakingColor;
-import static akostenko.aicars.race.car.CarTelemetryItem.textColor;
+import static akostenko.aicars.race.car.CarTelemetryScalar.accelerationColor;
+import static akostenko.aicars.race.car.CarTelemetryScalar.breakingColor;
+import static akostenko.aicars.race.car.CarTelemetryScalar.textColor;
 import static java.lang.Math.PI;
 import static java.util.Comparator.comparing;
 import static org.lwjgl.input.Keyboard.KEY_DOWN;
@@ -23,14 +23,14 @@ import akostenko.aicars.math.Decart;
 import akostenko.aicars.menu.PerformanceTest;
 import akostenko.aicars.menu.WithPlayer;
 import akostenko.aicars.race.car.Car;
-import akostenko.aicars.race.car.CarTelemetryItem;
+import akostenko.aicars.race.car.CarTelemetryScalar;
 import akostenko.aicars.track.Track;
 import akostenko.aicars.track.TrackSection;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
+import org.newdawn.slick.KeyListener;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.BasicGameState;
@@ -47,6 +47,7 @@ public class RaceState extends BasicGameState {
     private Car<Player> playerCar;
     private Track track;
 
+    private final Collection<KeyListener> listeners = new ArrayList<>();
     private final IsKeyDownListener accelerateListener = new IsKeyDownListener(KEY_UP);
     private final IsKeyDownListener brakeListener = new IsKeyDownListener(KEY_DOWN);
     private final IsKeyDownListener turnLeftListener = new IsKeyDownListener(KEY_LEFT);
@@ -55,7 +56,7 @@ public class RaceState extends BasicGameState {
     private final int lineWidth = 3;
     private final int fatLineWidth = 5;
     private final TrueTypeFont telemetryFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true);
-    private final Scale scale = new Scale(1, 10);
+    private final Scale scale = new Scale(1, 30);
     private final Decart cameraOffset = new Decart(Game.WIDTH/2, Game.HEIGHT/2);
     private final Color trackBorder = new Color(100, 100, 100);
 
@@ -67,6 +68,7 @@ public class RaceState extends BasicGameState {
     @Override
     public void enter(GameContainer container, StateBasedGame game) throws SlickException {
         super.enter(container, game);
+        listeners.forEach(listener -> container.getInput().addKeyListener(listener));
         reset();
     }
 
@@ -88,14 +90,19 @@ public class RaceState extends BasicGameState {
 
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
-        Input input = container.getInput();
-        GameSettings.get().getGlobalListeners().forEach(input::addKeyListener);
-        input.addKeyListener(accelerateListener);
-        input.addKeyListener(brakeListener);
-        input.addKeyListener(turnLeftListener);
-        input.addKeyListener(turnRightListener);
+        listeners.add(accelerateListener);
+        listeners.add(brakeListener);
+        listeners.add(turnLeftListener);
+        listeners.add(turnRightListener);
 
         container.setTargetFrameRate(100);
+    }
+
+    @Override
+    public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+        super.leave(container, game);
+        listeners.forEach(listener -> container.getInput().removeKeyListener(listener));
+
     }
 
     @Override
@@ -131,7 +138,7 @@ public class RaceState extends BasicGameState {
     private final float telemetryValueX = telemetryNameX + telemetryNameWidth + telemetrySpacing;
     private void drawCarTelemetry(Graphics g, Car<?> car) {
         drawTelemetry(g, car);
-        renderDriverInput(g, car.getDriver());
+        drawDriverInput(g, car.getDriver());
     }
 
     private void drawTelemetry(Graphics g, Car<?> car) {
@@ -148,7 +155,7 @@ public class RaceState extends BasicGameState {
                 telemetryValueX+telemetryNameWidth, currentY.get()-telemetrySpacing-telemetryTextSize);
     }
 
-    private void drawTelemetryItem(Graphics g, CarTelemetryItem item, AtomicReference<Float> currentY) {
+    private void drawTelemetryItem(Graphics g, CarTelemetryScalar item, AtomicReference<Float> currentY) {
         g.setColor(item.color());
         g.drawString(item.name(), telemetryNameX, currentY.get());
         g.drawString(item.value(), telemetryValueX, currentY.get());
@@ -164,7 +171,7 @@ public class RaceState extends BasicGameState {
     private final Decart leftArrowCenter = arrowsBlock.plus(new Decart(arrowSize*1/2, arrowSize*3/2));
     private final Decart rightArrowCenter = arrowsBlock.plus(new Decart(arrowSize*5/2, arrowSize*3/2));
 
-    private void renderDriverInput(Graphics g, Driver driver) {
+    private void drawDriverInput(Graphics g, Driver driver) {
         Arrow.get(upArrowCenter, arrowSize-arrowSpace*2, -PI/2,
                 driver.accelerating() > 0 ? accelerationColor : grey,
                 driver.accelerating() > 0 ? fatLineWidth : lineWidth)
@@ -174,12 +181,12 @@ public class RaceState extends BasicGameState {
                 driver.breaking() > 0 ? fatLineWidth : lineWidth)
                 .forEach(line -> drawUILine(g, line));
         Arrow.get(leftArrowCenter, arrowSize, PI,
-                turnLeftListener.isDown() || driver.turning() < 0 ? textColor : grey,
-                turnLeftListener.isDown() || driver.turning() < 0 ? fatLineWidth : lineWidth)
+                turnLeftListener.isDown() || driver.steering() < 0 ? textColor : grey,
+                turnLeftListener.isDown() || driver.steering() < 0 ? fatLineWidth : lineWidth)
                 .forEach(line -> drawUILine(g, line));
         Arrow.get(rightArrowCenter, arrowSize, 0,
-                turnRightListener.isDown() || driver.turning() > 0 ? textColor : grey,
-                turnRightListener.isDown() || driver.turning() > 0 ? fatLineWidth : lineWidth)
+                turnRightListener.isDown() || driver.steering() > 0 ? textColor : grey,
+                turnRightListener.isDown() || driver.steering() > 0 ? fatLineWidth : lineWidth)
                 .forEach(line -> drawUILine(g, line));
     }
 
@@ -212,16 +219,15 @@ public class RaceState extends BasicGameState {
     @Override
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         if (playerCar != null) {
-            processInput(playerCar.getDriver());
+            processInput(playerCar.getDriver(), delta);
         }
         cars.forEach(car -> car.update(delta));
     }
 
-    private void processInput(Player player) {
-        player.accelerate(accelerateListener.isDown());
-        player.breaks(brakeListener.isDown());
-        player.turnLeft(turnLeftListener.isDown());
-        player.turnRight(turnRightListener.isDown());
+    private void processInput(Player player, int delta) {
+        player.accelerate(accelerateListener.isDown(), delta);
+        player.breaks(brakeListener.isDown(), delta);
+        player.turn(turnLeftListener.isDown(), turnRightListener.isDown(), delta);
     }
 
 }

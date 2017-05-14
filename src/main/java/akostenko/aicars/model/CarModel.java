@@ -1,6 +1,7 @@
 package akostenko.aicars.model;
 
 import static java.lang.StrictMath.PI;
+import static java.lang.StrictMath.toRadians;
 
 public interface CarModel {
     /** <i>m</i> */
@@ -12,6 +13,8 @@ public interface CarModel {
 
     /** <i>kg</i> */
     double mass = 700;
+    /** <i>kg*m</i> */
+    double yawInertia = 500;
     /** <i>1/s</i> */
     double max_rpm = 12000;
     /** <i>1/s</i> */
@@ -30,7 +33,8 @@ public interface CarModel {
     double tyreRollingFriction = 0.010;
     double axleTrack = 2; // m
     double wheelbase = 4.5; // m
-    double massCenterOffset = .45; // from read axle, measured as offset/wheelbase
+    double massCenterOffset = .45; // from rear axle, measured as offset/wheelbase
     double length = 5.5; // m
     double maxSteering = 0.2*PI;
+    double peakLateralForceAngle = toRadians(3);
 }

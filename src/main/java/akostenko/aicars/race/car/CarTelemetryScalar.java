@@ -2,7 +2,7 @@ package akostenko.aicars.race.car;
 
 import org.newdawn.slick.Color;
 
-public class CarTelemetryItem {
+public class CarTelemetryScalar {
 
     public static final Color breakingColor = new Color(250, 70, 70);
     public static final Color velocityColor = new Color(250, 250, 50);
@@ -17,7 +17,7 @@ public class CarTelemetryItem {
     private final String textValue;
 
 
-    private CarTelemetryItem(String name, double value, String units, int precision, Color color, String textValue) {
+    private CarTelemetryScalar(String name, double value, String units, int precision, Color color, String textValue) {
         this.color = color;
         this.name = name;
         this.precision = precision;
@@ -26,15 +26,15 @@ public class CarTelemetryItem {
         this.textValue = textValue;
     }
 
-    public CarTelemetryItem(String name, double value, String units, int precision, Color color) {
+    public CarTelemetryScalar(String name, double value, String units, int precision, Color color) {
         this(name, value, units, precision, color, null);
     }
 
-    public CarTelemetryItem(String name, double value, String units) {
+    public CarTelemetryScalar(String name, double value, String units) {
         this(name, value, units, 0, textColor);
     }
 
-    public CarTelemetryItem(String name, String textValue) {
+    public CarTelemetryScalar(String name, String textValue) {
         this(name, 0, null, 0, textColor, textValue);
     }
 

@@ -25,7 +25,7 @@ public class AccelerationAndBreakingTest extends Driver {
     }
 
     @Override
-    public double turning() {
+    public double steering() {
         return 0;
     }
 
