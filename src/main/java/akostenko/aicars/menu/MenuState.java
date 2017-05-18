@@ -76,7 +76,7 @@ public class MenuState extends BasicGameState{
         listeners.add(new SingleKeyAction(v -> menuChange(+1), KEY_DOWN));
         listeners.add(new SingleKeyAction(v -> selectionChange(-1), KEY_LEFT));
         listeners.add(new SingleKeyAction(v -> selectionChange(+1), KEY_RIGHT));
-        listeners.add(new SingleKeyAction(v -> enterMenu(), KEY_RETURN));
+        listeners.add(new SingleKeyAction(v -> enter(), KEY_RETURN));
 
         container.setTargetFrameRate(60);
     }
@@ -90,8 +90,8 @@ public class MenuState extends BasicGameState{
         menu.get(currentMenu).change(delta);
     }
 
-    private void enterMenu() {
-        menu.get(currentMenu).enter();
+    private void enter() {
+        startButton.enter();
     }
 
     @Override

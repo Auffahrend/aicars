@@ -39,7 +39,7 @@ public class Game extends StateBasedGame {
                     restartGame();
                     break;
                 case QUIT:
-                    quitGame();
+                    quitState();
                     break;
             }
         } catch (SlickException e) {
@@ -48,13 +48,17 @@ public class Game extends StateBasedGame {
     }
 
     private void restartGame() throws SlickException {
-        getState(GameStateIds.getId(RaceState.class)).leave(getContainer(), this);
         enterState(GameStateIds.getId(MenuState.class));
     }
 
-    private void quitGame() throws SlickException {
-        getState(GameStateIds.getId(MenuState.class)).leave(getContainer(), this);
-        getContainer().exit();
+    private void quitState() throws SlickException {
+        int id = getCurrentState().getID();
+        if (GameStateIds.getId(MenuState.class) == id) {
+            // quit the game
+            getContainer().exit();
+        } else if (GameStateIds.getId(RaceState.class) == id) {
+            enterState(GameStateIds.getId(MenuState.class));
+        }
     }
 
     public static void main(String[] args) throws SlickException {

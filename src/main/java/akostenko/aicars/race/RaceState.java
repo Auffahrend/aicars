@@ -5,6 +5,7 @@ import static akostenko.aicars.race.car.CarTelemetry.breakingColor;
 import static akostenko.aicars.race.car.CarTelemetry.textColor;
 import static java.lang.Math.PI;
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
 import static org.lwjgl.input.Keyboard.KEY_DOWN;
 import static org.lwjgl.input.Keyboard.KEY_LEFT;
 import static org.lwjgl.input.Keyboard.KEY_RIGHT;
@@ -21,7 +22,7 @@ import akostenko.aicars.drawing.TrackSectionImg;
 import akostenko.aicars.keyboard.IsKeyDownListener;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.math.Vector;
-import akostenko.aicars.menu.PerformanceTest;
+import akostenko.aicars.menu.PerformanceTests;
 import akostenko.aicars.menu.WithPlayer;
 import akostenko.aicars.race.car.Car;
 import akostenko.aicars.race.car.CarTelemetry;
@@ -42,7 +43,9 @@ import org.newdawn.slick.state.StateBasedGame;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.IntStream;
 
 public class RaceState extends BasicGameState {
 
@@ -82,8 +85,9 @@ public class RaceState extends BasicGameState {
         if (settings.getMode() instanceof WithPlayer) {
             playerCar = new Car<>(new Player());
             cars.add(playerCar);
-        } else if (settings.getMode() instanceof PerformanceTest) {
-            cars.add(new Car<>(((PerformanceTest) settings.getMode()).newDriver()));
+        } else if (settings.getMode() instanceof PerformanceTests) {
+            ((PerformanceTests) settings.getMode()).getDrivers()
+                    .forEach(driver -> cars.add(new Car<>(driver)));
         }
 
         track = settings.getTrack();
@@ -110,33 +114,55 @@ public class RaceState extends BasicGameState {
 
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        Car focused = getFocusedCar();
+        Car<?> focused = getFocusedCar();
 
         drawTrack(g, focused, track);
-        drawCar(g, focused);
+        cars.forEach(car -> drawCar(g, car, focused));
         drawCarTelemetry(g, focused);
+
+        if (cars.size() > 1) {
+            drawDriverPositions(g);
+        }
     }
 
-    private void drawCar(Graphics g, Car focused) {
-        CarImg.get(focused, focused.getPosition(), textColor, scale)
+    private void drawCar(Graphics g, Car<?> car, Car<?> focused) {
+        CarImg.get(car, focused.getPosition(), textColor, scale)
                 .forEach(line -> drawLine(g, line));
     }
 
-    private void drawTrack(Graphics g, Car focused, Track track) {
+    private void drawTrack(Graphics g, Car<?> focused, Track track) {
         track.sections()
                 .forEach(section -> drawTrackSection(g, focused, section, track.getWidth()));
     }
 
-
-    private void drawTrackSection(Graphics g, Car focused, TrackSection section, double width) {
+    private void drawTrackSection(Graphics g, Car<?> focused, TrackSection section, double width) {
         TrackSectionImg.get(section, width, scale, trackBorder, focused.getPosition())
                 .forEach(line -> drawLine(g, line));
+    }
+
+
+    private void drawDriverPositions(Graphics g) {
+        g.setColor(textColor);
+        g.setLineWidth(lineWidth);
+        g.setFont(telemetryFont);
+
+        List<Car<?>> carPositions = new ArrayList<>(cars);
+        carPositions.sort(comparing(car -> getPositionOnTrack(car, track),  reverseOrder()));
+        IntStream.range(0, cars.size())
+                .forEach(i -> g.drawString(
+                        String.format("%d. %s%n", i+1, carPositions.get(i).getDriver().getName()),
+                        Game.WIDTH-telemetryLeftMargin-telemetryNameWidth*1.5f,
+                        telemetryTopMargin + i*(telemetryTextSize + telemetrySpacing)));
+    }
+
+    private double getPositionOnTrack(Car<?> car, Track track) {
+        return car.getPosition().module();
     }
 
     private final float telemetryLeftMargin = 50;
     private final float telemetryTopMargin = 50;
     private final float telemetryNameWidth = 100;
-    private final float telemetrySpacing = 10;
+    private final float telemetrySpacing = 5;
     private final float telemetryNameX = telemetryLeftMargin + telemetrySpacing;
     private final float telemetryValueX = telemetryNameX + telemetryNameWidth + telemetrySpacing;
     private void drawCarTelemetry(Graphics g, Car<?> car) {
@@ -219,7 +245,7 @@ public class RaceState extends BasicGameState {
                 (float) (line.getTo().x + cameraOffset.x), (float) (line.getTo().y + cameraOffset.y));
     }
 
-    private Car getFocusedCar() {
+    private Car<?> getFocusedCar() {
         if (playerCar != null) {
             return playerCar;
         } else {

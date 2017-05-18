@@ -4,9 +4,13 @@ import akostenko.aicars.race.Driver;
 
 public class AccelerationTest extends Driver {
 
-    private final double targetSpeed = 100; // km/h
+    private final double targetSpeed; // km/h
     private double time = 0;
     private boolean targetReached;
+
+    public AccelerationTest(double targetSpeedKMH) {
+        this.targetSpeed = targetSpeedKMH;
+    }
 
     @Override
     public String getName() {
