@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ModeMenu extends AbstractSubMenu<Mode> {
-    private final List<Mode> modes = Arrays.asList(new WithPlayer(), new PerformanceTests());
+    private final List<Mode> modes = Arrays.asList(
+            new WithPlayer(),
+            new CarPerformanceTests(),
+            new CarPhysicsTests());
 
     @Override
     public String getTitle() {

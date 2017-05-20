@@ -51,13 +51,13 @@ public class MenuState extends BasicGameState{
 
     private final int lineWidth = 3;
     private final Color fontColor = new Color(220, 200, 50);
-    private final float leftMargin = Game.WIDTH * 0.2f;
-    private final float rightMargin = Game.WIDTH * 0.2f;
-    private final float topMargin = Game.HEIGHT * 0.2f;
-    private float bottomMargin = Game.HEIGHT * 0.2f;
+    private final float leftMargin = Game.screenWidth * 0.2f;
+    private final float rightMargin = Game.screenWidth * 0.2f;
+    private final float topMargin = Game.screenHeight * 0.2f;
+    private float bottomMargin = Game.screenHeight * 0.2f;
     private final int subMenuHeight = 36;
     private final int subMenuItemHeight = 24;
-    private final float subMenuWidth = Game.WIDTH * 0.2f;
+    private final float subMenuWidth = Game.screenWidth * 0.2f;
     private final TrueTypeFont submenuFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, subMenuHeight), true);
     private final TrueTypeFont itemFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, subMenuItemHeight), true);
     private final Collection<KeyListener> listeners = new ArrayList<>();
@@ -84,13 +84,16 @@ public class MenuState extends BasicGameState{
     private void menuChange(int delta) {
         currentMenu +=delta + menu.size();
         currentMenu %= menu.size();
+        updateGameSettings();
     }
 
     private void selectionChange(int delta) {
         menu.get(currentMenu).change(delta);
+        updateGameSettings();
     }
 
     private void enter() {
+        updateGameSettings();
         startButton.enter();
     }
 
@@ -119,7 +122,7 @@ public class MenuState extends BasicGameState{
         g.setFont(itemFont);
         float itemY = currentY + subMenuHeight - subMenuItemHeight;
         List<? extends MenuItem> items = submenu.getItems();
-        float itemWidth = (Game.WIDTH - leftMargin - rightMargin - subMenuWidth) / items.size();
+        float itemWidth = (Game.screenWidth - leftMargin - rightMargin - subMenuWidth) / items.size();
         items.forEach(item -> {
             float currentX = leftMargin + subMenuWidth + submenu.getItems().indexOf(item) * itemWidth;
             g.drawString(item.getTitle(), currentX, itemY);
@@ -139,9 +142,13 @@ public class MenuState extends BasicGameState{
         super.leave(container, game);
         listeners.forEach(listener -> container.getInput().removeKeyListener(listener));
         GameSettings.get()
-                .setTrack(trackMenu.getCurrent())
-                .setMode(modeMenu.getCurrent())
                 .save();
+    }
+
+    private void updateGameSettings() {
+        GameSettings.get()
+                .setTrack(trackMenu.getCurrent())
+                .setMode(modeMenu.getCurrent());
     }
 
     @Override

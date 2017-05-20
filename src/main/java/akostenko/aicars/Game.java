@@ -2,6 +2,7 @@ package akostenko.aicars;
 
 import akostenko.aicars.menu.MenuState;
 import akostenko.aicars.keyboard.GameAction;
+import akostenko.aicars.plots.CarPlotsState;
 import akostenko.aicars.race.RaceState;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
@@ -10,10 +11,8 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class Game extends StateBasedGame {
 
-    /** Screen width */
-    public static final int WIDTH = 800;
-    /** Screen height */
-    public static final int HEIGHT = 600;
+    public static int screenWidth;
+    public static int screenHeight;
     private static final String GAME_NAME = "AI Cars game";
 
     private static Game instance;
@@ -30,6 +29,7 @@ public class Game extends StateBasedGame {
     public void initStatesList(GameContainer container) throws SlickException {
         addState(new MenuState());
         addState(new RaceState());
+        addState(new CarPlotsState());
     }
 
     public void noticeAction(GameAction gameAction) {
@@ -56,7 +56,8 @@ public class Game extends StateBasedGame {
         if (GameStateIds.getId(MenuState.class) == id) {
             // quit the game
             getContainer().exit();
-        } else if (GameStateIds.getId(RaceState.class) == id) {
+        } else if (GameStateIds.getId(RaceState.class) == id
+                || GameStateIds.getId(CarPlotsState.class) == id) {
             enterState(GameStateIds.getId(MenuState.class));
         }
     }
@@ -64,8 +65,11 @@ public class Game extends StateBasedGame {
     public static void main(String[] args) throws SlickException {
         instance = new Game();
         AppGameContainer app = new AppGameContainer(instance);
-        app.setDisplayMode(WIDTH, HEIGHT, false);
-        app.setForceExit(false);
+        screenHeight = app.getScreenHeight();
+        screenWidth = app.getScreenWidth();
+        app.setDisplayMode(screenWidth, screenHeight, true);
+        app.setMinimumLogicUpdateInterval(1);
+        app.setMaximumLogicUpdateInterval(50);
         app.start();
         instance.enterState(GameStateIds.getId(MenuState.class));
     }

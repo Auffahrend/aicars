@@ -14,6 +14,7 @@ import static org.lwjgl.input.Keyboard.KEY_UP;
 import akostenko.aicars.Game;
 import akostenko.aicars.GameSettings;
 import akostenko.aicars.GameStateIds;
+import akostenko.aicars.GraphicsGameState;
 import akostenko.aicars.drawing.Arrow;
 import akostenko.aicars.drawing.CarImg;
 import akostenko.aicars.drawing.Line;
@@ -22,7 +23,7 @@ import akostenko.aicars.drawing.TrackSectionImg;
 import akostenko.aicars.keyboard.IsKeyDownListener;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.math.Vector;
-import akostenko.aicars.menu.PerformanceTests;
+import akostenko.aicars.menu.CarPerformanceTests;
 import akostenko.aicars.menu.WithPlayer;
 import akostenko.aicars.race.car.Car;
 import akostenko.aicars.race.car.CarTelemetry;
@@ -37,7 +38,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.KeyListener;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import java.awt.Font;
@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
-public class RaceState extends BasicGameState {
+public class RaceState extends GraphicsGameState {
 
     private Collection<Car<?>> cars;
     private Car<Player> playerCar;
@@ -62,8 +62,7 @@ public class RaceState extends BasicGameState {
     private final int lineWidth = 3;
     private final int fatLineWidth = 5;
     private final TrueTypeFont telemetryFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true);
-    private final Scale scale = new Scale(1, 30);
-    private final Decart cameraOffset = new Decart(Game.WIDTH/2, Game.HEIGHT/2);
+    private final Scale scale = new Scale(1, 20);
     private final Color trackBorder = new Color(100, 100, 100);
 
     @Override
@@ -85,8 +84,8 @@ public class RaceState extends BasicGameState {
         if (settings.getMode() instanceof WithPlayer) {
             playerCar = new Car<>(new Player());
             cars.add(playerCar);
-        } else if (settings.getMode() instanceof PerformanceTests) {
-            ((PerformanceTests) settings.getMode()).getDrivers()
+        } else if (settings.getMode() instanceof CarPerformanceTests) {
+            ((CarPerformanceTests) settings.getMode()).getDrivers()
                     .forEach(driver -> cars.add(new Car<>(driver)));
         }
 
@@ -103,6 +102,7 @@ public class RaceState extends BasicGameState {
         listeners.add(turnRightListener);
 
         container.setTargetFrameRate(100);
+        cameraOffset = new Decart(Game.screenWidth /2, Game.screenHeight /2);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class RaceState extends BasicGameState {
         IntStream.range(0, cars.size())
                 .forEach(i -> g.drawString(
                         String.format("%d. %s%n", i+1, carPositions.get(i).getDriver().getName()),
-                        Game.WIDTH-telemetryLeftMargin-telemetryNameWidth*1.5f,
+                        Game.screenWidth -telemetryLeftMargin-telemetryNameWidth*1.5f,
                         telemetryTopMargin + i*(telemetryTextSize + telemetrySpacing)));
     }
 
@@ -204,7 +204,7 @@ public class RaceState extends BasicGameState {
     private final float arrowSize = 30; //px
     private final float arrowSpace = 3; //px
     private final Color grey = new Color(40, 40, 40);
-    private final Decart arrowsBlock = new Decart(Game.WIDTH - arrowSize * 4, Game.HEIGHT - arrowSize * 3);
+    private final Decart arrowsBlock = new Decart(Game.screenWidth - arrowSize * 4, Game.screenHeight - arrowSize * 3);
     private final Decart upArrowCenter = arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSize/2));
     private final Decart downArrowCenter = arrowsBlock.plus(new Decart(arrowSize*3/2, arrowSize*3/2));
     private final Decart leftArrowCenter = arrowsBlock.plus(new Decart(arrowSize*1/2, arrowSize*3/2));
@@ -235,14 +235,6 @@ public class RaceState extends BasicGameState {
         g.drawLine(
                 (float) line.getFrom().x, (float) line.getFrom().y,
                 (float) line.getTo().x, (float) line.getTo().y);
-    }
-
-    private void drawLine(Graphics g, Line line) {
-        g.setLineWidth(line.getWidth());
-        g.setColor(line.getColor());
-        g.drawLine(
-                (float) (line.getFrom().x + cameraOffset.x), (float) (line.getFrom().y + cameraOffset.y),
-                (float) (line.getTo().x + cameraOffset.x), (float) (line.getTo().y + cameraOffset.y));
     }
 
     private Car<?> getFocusedCar() {

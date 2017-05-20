@@ -7,7 +7,7 @@ import akostenko.aicars.race.cartest.AccelerationTest;
 import java.util.Arrays;
 import java.util.List;
 
-public class PerformanceTests extends Mode {
+public class CarPerformanceTests extends Mode {
     static final String NAME = "Car tests";
 
     @Override

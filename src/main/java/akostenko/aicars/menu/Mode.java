@@ -6,7 +6,8 @@ public abstract class Mode implements MenuItem {
     public static Mode forName(String name) {
         switch (name) {
             case WithPlayer.NAME: return new WithPlayer();
-            case PerformanceTests.NAME: return new PerformanceTests();
+            case CarPerformanceTests.NAME: return new CarPerformanceTests();
+            case CarPhysicsTests.NAME: return new CarPhysicsTests();
             default: return defaultMode();
         }
     }

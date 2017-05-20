@@ -43,7 +43,7 @@ import java.util.Random;
 public class Car<DRIVER extends Driver> {
 
     // modeling http://s2.postimg.org/p2hqskx09/V6_engine_edited.png
-    private final TorqueMap torqueMap = new TorqueMap(
+    protected final TorqueMap torqueMap = new TorqueMap(
             new Decart(4000, 360),
             new Decart(6000, 410),
             new Decart(8000, 440),
@@ -56,12 +56,12 @@ public class Car<DRIVER extends Driver> {
     /** <i>m</i> */
     private double trackDistance = 0;
     /** <i>m</i> */
-    private Decart position = Decart.ZERO;
+    protected Decart position = Decart.ZERO;
     /** <i>m/s</i> */
-    private Vector velocity = ZERO;
+    protected Vector velocity = ZERO;
     private Vector accelerationA = ZERO;
     private Vector breakingA = ZERO;
-    private Polar heading = new Polar(1, 0);
+    protected Polar heading = new Polar(1, 0);
     /** <i>rad/s</i> */
     private double carRotationSpeed = 0;
     private Polar steering = new Polar(1, 0);
