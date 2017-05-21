@@ -20,11 +20,11 @@ public interface CarModel {
     /** <i>1/s</i> */
     double min_rpm = 3500;
     /** non-dimensional */
-    double cx = 0.60; // Cx
+    double cx = 0.8; // Cx
     /** non-dimensional */
     double cy = 1.0033; // Cy
     /** <i>m^2</i> */
-    double frontArea = 1;
+    double frontArea = 1.1;
     /** <i>m^2</i> */
     double wingArea = 5;
     /** stiction coefficient between hot slick tyre and dry asphalt, non-dimensional */

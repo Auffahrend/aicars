@@ -44,12 +44,12 @@ public class Car<DRIVER extends Driver> {
 
     // modeling http://s2.postimg.org/p2hqskx09/V6_engine_edited.png
     protected final TorqueMap torqueMap = new TorqueMap(
-            new Decart(4000, 360),
-            new Decart(6000, 410),
-            new Decart(8000, 440),
-            new Decart(10400, 460),
-            new Decart(12000, 450),
-            new Decart(14000, 400));
+            new Decart(4000/60, 360),
+            new Decart(6000/60, 410),
+            new Decart(8000/60, 440),
+            new Decart(10400/60, 460),
+            new Decart(12000/60, 450),
+            new Decart(14000/60, 400));
 
     private final DRIVER driver;
     private final Gearbox gearbox = new Gearbox(this);

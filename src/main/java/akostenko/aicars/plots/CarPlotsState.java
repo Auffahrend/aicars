@@ -23,6 +23,7 @@ import akostenko.aicars.drawing.Arrow;
 import akostenko.aicars.drawing.Line;
 import akostenko.aicars.keyboard.SingleKeyAction;
 import akostenko.aicars.math.Decart;
+import akostenko.aicars.math.MathUtils;
 import akostenko.aicars.model.CarModel;
 
 import org.newdawn.slick.Color;
@@ -43,8 +44,10 @@ public class CarPlotsState extends GraphicsGameState {
 
     private final float marginPx = screenWidth * 0.02f;
     private final int textSize = 14;
+    private final int headerTextSize = 18;
     private final int gridStepPx = 100;
     private final TrueTypeFont font = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.PLAIN, textSize), true);
+    private final TrueTypeFont headerFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, headerTextSize), true);
     private final Color gray = new Color(150, 150, 150);
     private final Color darkGray = new Color(50, 50, 50);
     private final Color white = Color.white;
@@ -73,7 +76,7 @@ public class CarPlotsState extends GraphicsGameState {
 
         plots = Arrays.asList(
                 new Plot("Torque vs RPM", "RPM", "Torque, N*m", CarModel.min_rpm-500, CarModel.max_rpm+1000,
-                        rpm -> car.getTorque(rpm), plotWidthPx, 0, 0)
+                        rpm -> car.getTorque(rpm/60), plotWidthPx, 0, 0)
         );
         currentPlot = 0;
         resetPlot();
@@ -130,7 +133,7 @@ public class CarPlotsState extends GraphicsGameState {
     }
 
     private void drawPlot(Graphics g, Plot plot) {
-        drawGrid(g,
+        drawGrid(g, plot.name(),
                 plot.xAxis(), plot.from(), plot.to(),
                 plot.yAxis(), showZeroY ? min(0, plot.minY()) : plot.minY(), showZeroY ? max(0, plot.maxY()) : plot.maxY(),
                 plot.xPrecision(), plot.yPrecision());
@@ -138,14 +141,22 @@ public class CarPlotsState extends GraphicsGameState {
                 showZeroY ? min(0, plot.minY()) : plot.minY(), showZeroY ? max(0, plot.maxY()) : plot.maxY());
     }
 
-    private void drawGrid(Graphics g, String xName, double from, double to, String yName, double minY, double maxY, int xPrecision, int yPrecision) {
+    private void drawGrid(Graphics g, String name, String xName, double from, double to, String yName, double minY, double maxY, int xPrecision, int yPrecision) {
         g.setFont(font);
 
-        // x axis
         float xAxisLength = screenWidth - 2 * marginPx;
+        float yAxisLength = screenHeight - 2 * marginPx;
+
+        Function<Double, Double> xValueToXPx = MathUtils.linear(from, marginPx, to, screenWidth - marginPx);
+        Function<Double, Double> xPxToXValue = MathUtils.linear(marginPx, from, screenWidth - marginPx, to);
+        Function<Double, Double> yValueToYPx = MathUtils.linear(minY, screenHeight-marginPx, maxY, marginPx);
+        Function<Double, Double> yPxToYValue = MathUtils.linear(screenHeight-marginPx, minY, marginPx, maxY);
+
+        // x grid
         String xValueFormat = "%." + xPrecision + "f";
-        // vertical grid
-        double xStep = (to - from) / ((xAxisLength - marginPx) / gridStepPx);
+        double xStep = xPxToXValue.apply((double) gridStepPx+marginPx)-from;
+        boolean dataIncludesZeroY = minY <= 0 && maxY >= 0;
+        float xAxisYCoord = dataIncludesZeroY ? yValueToYPx.apply(0.).floatValue() : (screenHeight/2);
         for (int i = 0; i <= (xAxisLength-marginPx)/gridStepPx; i++) {
             float xPx = marginPx + i * gridStepPx;
             drawLine(g, new Line(
@@ -153,21 +164,22 @@ public class CarPlotsState extends GraphicsGameState {
                     new Decart(xPx, screenHeight-marginPx),
                     darkGray, 1));
             g.setColor(white);
-            g.drawString(String.format(xValueFormat, from + i*xStep), xPx, screenHeight/2+textSize/2);
+            g.drawString(String.format(xValueFormat, from + i*xStep), xPx, xAxisYCoord + textSize/2);
         }
-        // axis
+        // x axis
         g.setLineWidth(2);
-        Arrow.get(new Decart(0.5f * screenWidth, 0.5f*screenHeight), xAxisLength, 0, gray, 2)
+        Arrow.get(new Decart(0.5f * screenWidth, xAxisYCoord), xAxisLength, 0, gray, 2)
                 .forEach(line -> drawLine(g, line));
         g.setColor(white);
-        g.drawString(xName, screenWidth-2*marginPx, screenHeight/2+textSize/2);
+        g.drawString(xName, screenWidth-2*marginPx, xAxisYCoord+textSize/2);
 
-        // y axis
 
-        float yAxisLength = screenHeight - 2 * marginPx;
+
+        // y grid
         String yValueFormat = "%." + yPrecision + "f";
-        // horizontal grid
-        double yStep = (maxY - minY) / ((yAxisLength - marginPx) / gridStepPx);
+        double yStep = yPxToYValue.apply((double) screenHeight-gridStepPx-marginPx)-minY;
+        boolean dataIncludesZeroX = from <= 0 && to >= 0;
+        float yAxisXCoord = dataIncludesZeroX ? xValueToXPx.apply(0.).floatValue() : (marginPx);
         for (int i = 0; i <= (yAxisLength-marginPx)/gridStepPx; i++) {
             float yPx = marginPx + i * gridStepPx;
             drawLine(g, new Line(
@@ -175,13 +187,16 @@ public class CarPlotsState extends GraphicsGameState {
                     new Decart(screenWidth-marginPx, yPx),
                     darkGray, 1));
             g.setColor(white);
-            g.drawString(String.format(yValueFormat, maxY - i*yStep), marginPx+textSize, yPx-textSize/2);
+            g.drawString(String.format(yValueFormat, maxY - i*yStep), yAxisXCoord+textSize, yPx-textSize/2);
         }
-        // axis
-        Arrow.get(new Decart(marginPx, 0.5f * screenHeight), screenHeight - 2*marginPx, -PI/2, gray, 2)
+        // y axis
+        Arrow.get(new Decart(yAxisXCoord, 0.5f * screenHeight), screenHeight - 2*marginPx, -PI/2, gray, 2)
                 .forEach(line -> drawLine(g, line));
         g.setColor(white);
-        g.drawString(yName, 3*marginPx, marginPx-textSize/2);
+        g.drawString(yName, yAxisXCoord+marginPx, marginPx-textSize/2);
+
+        g.setFont(headerFont);
+        g.drawString(name, screenWidth/2-name.length()/2*headerTextSize/1.5f, marginPx/2);
     }
 
     private void drawPlotData(Graphics g, List<Decart> plotData, double from, double to, double minY, double maxY) {
