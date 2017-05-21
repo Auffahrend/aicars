@@ -24,7 +24,7 @@ public class Gearbox {
         gears.add(new Gear(330./3.6, 12000, CarModel.tyreRadius));
     }
 
-    void update() {
+    public void update() {
         current = chooseCurrentGear();
     }
 

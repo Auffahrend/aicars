@@ -2,7 +2,11 @@ package akostenko.aicars.plots;
 
 import static akostenko.aicars.Game.screenHeight;
 import static akostenko.aicars.Game.screenWidth;
+import static akostenko.aicars.model.CarModel.maxSteering;
+import static akostenko.aicars.model.EnvironmentModel.g;
+import static java.lang.Math.abs;
 import static java.lang.StrictMath.PI;
+import static java.lang.StrictMath.log10;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.min;
 import static org.lwjgl.input.Keyboard.KEY_0;
@@ -24,6 +28,7 @@ import akostenko.aicars.drawing.Line;
 import akostenko.aicars.keyboard.SingleKeyAction;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.math.MathUtils;
+import akostenko.aicars.math.Polar;
 import akostenko.aicars.model.CarModel;
 
 import org.newdawn.slick.Color;
@@ -76,7 +81,19 @@ public class CarPlotsState extends GraphicsGameState {
 
         plots = Arrays.asList(
                 new Plot("Torque vs RPM", "RPM", "Torque, N*m", CarModel.min_rpm-500, CarModel.max_rpm+1000,
-                        rpm -> car.getTorque(rpm/60), plotWidthPx, 0, 0)
+                        rpm -> car.getTorque(rpm/60), plotWidthPx, 0, 0),
+                new Plot("RPM for speed", "Speed, kmh", "RPM", 0, 340,
+                        kmh -> car.setVelocity(new Polar(kmh/3.6, 0)).getRps()*60, plotWidthPx, 0, 1),
+                new Plot("Downforce for speed", "Speed, kmh", "Downforce, g", 0, 340,
+                        kmh -> car.setVelocity(new Polar(kmh/3.6, 0)).getDownforceA()/g, plotWidthPx, 0, 1),
+                new Plot("Front turning forces @ 50 km/h", "Steering, rad", "Force, g", -maxSteering, maxSteering,
+                        steering -> car.setVelocity(new Polar(50/3.6, 0))
+                                .setSteering(steering)
+                                .getFrontTurningForceA() / g, plotWidthPx, 2, 2),
+                new Plot("Rear turning forces @ 50 km/h", "Steering, rad", "Force, g", -maxSteering, maxSteering,
+                        steering -> car.setVelocity(new Polar(50/3.6, 0))
+                                .setSteering(steering)
+                                .getRearTurningForceA() / g, plotWidthPx, 2, 2)
         );
         currentPlot = 0;
         resetPlot();
@@ -107,6 +124,7 @@ public class CarPlotsState extends GraphicsGameState {
 
     private void changePlot(int change) {
         currentPlot = (currentPlot + change + plots.size()) % plots.size();
+        plots.get(currentPlot).reset();
     }
 
     private void moveInterval(int change) {
@@ -171,7 +189,7 @@ public class CarPlotsState extends GraphicsGameState {
         Arrow.get(new Decart(0.5f * screenWidth, xAxisYCoord), xAxisLength, 0, gray, 2)
                 .forEach(line -> drawLine(g, line));
         g.setColor(white);
-        g.drawString(xName, screenWidth-2*marginPx, xAxisYCoord+textSize/2);
+        g.drawString(xName, screenWidth-marginPx-xName.length()*textSize/2, xAxisYCoord-textSize*3/2);
 
 
 
@@ -193,7 +211,7 @@ public class CarPlotsState extends GraphicsGameState {
         Arrow.get(new Decart(yAxisXCoord, 0.5f * screenHeight), screenHeight - 2*marginPx, -PI/2, gray, 2)
                 .forEach(line -> drawLine(g, line));
         g.setColor(white);
-        g.drawString(yName, yAxisXCoord+marginPx, marginPx-textSize/2);
+        g.drawString(yName, yAxisXCoord+(float)(abs(log10(maxY))+1+yPrecision)*textSize, marginPx-textSize/2);
 
         g.setFont(headerFont);
         g.drawString(name, screenWidth/2-name.length()/2*headerTextSize/1.5f, marginPx/2);

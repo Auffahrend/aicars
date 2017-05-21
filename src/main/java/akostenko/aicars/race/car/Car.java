@@ -52,7 +52,7 @@ public class Car<DRIVER extends Driver> {
             new Decart(14000/60, 400));
 
     private final DRIVER driver;
-    private final Gearbox gearbox = new Gearbox(this);
+    protected final Gearbox gearbox = new Gearbox(this);
     /** <i>m</i> */
     private double trackDistance = 0;
     /** <i>m</i> */
@@ -64,7 +64,7 @@ public class Car<DRIVER extends Driver> {
     protected Polar heading = new Polar(1, 0);
     /** <i>rad/s</i> */
     private double carRotationSpeed = 0;
-    private Polar steering = new Polar(1, 0);
+    protected Polar steering = new Polar(1, 0);
 
     //////////////// car telemetry
     private static final Random random = new Random();
@@ -87,7 +87,7 @@ public class Car<DRIVER extends Driver> {
         carTelemetry.getScalars().add(new CarTelemetryScalar("Peak G", peakG() / g, "g", 3, accelerationColor));
 //        carTelemetry.getScalars().add(new CarTelemetryScalar("Downforce", downforceF() / g, "kg"));
         carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*(1-massCenterOffset), heading.d), frontSlipF().div(mass * g), gScale, turningColor));
-        carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*massCenterOffset, heading.d+PI), rearsSlipF().div(mass * g), gScale, turningColor));
+        carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*massCenterOffset, heading.d+PI), rearSlipF().div(mass * g), gScale, turningColor));
         return carTelemetry;
     }
 
@@ -151,7 +151,7 @@ public class Car<DRIVER extends Driver> {
     /**
      * @return current engine's revolutions per second
      */
-    private double rps() {
+    protected double rps() {
         double gearboxRPS = velocity.module() / (2*PI* tyreRadius) * gearbox.ratio();
         if (gearboxRPS < min_rpm/60) {
             gearboxRPS = min_rpm/60;
@@ -160,7 +160,7 @@ public class Car<DRIVER extends Driver> {
     }
 
     /** m/s^2 */
-    private Vector breakingA() {
+    protected Vector breakingA() {
         return (
                 dragF()
                         .plus(rollingFrictionF())
@@ -171,26 +171,26 @@ public class Car<DRIVER extends Driver> {
     /**
      * @return kg * m / s^2
      */
-    private Vector dragF() {
+    protected Vector dragF() {
         return velocity.multi(-cx * airDensity * velocity.module() * frontArea / 2);
     }
 
     /**
      * @return kg * m / s^2
      */
-    private double downforceF() {
+    protected double downforceF() {
         return cy * airDensity * velocity.moduleSqr() * wingArea / 2;
     }
 
     /** kg * m/s^2 */
-    private Vector rollingFrictionF() {
+    protected Vector rollingFrictionF() {
         return velocity.module() > PRECISION
                 ? new Polar(weightF() * tyreRollingFriction / tyreRadius, velocity.toPolar().d + PI)
                 : ZERO;
     }
 
     /** kg * m/s^2 */
-    private double weightF() {
+    protected double weightF() {
         return mass*g + downforceF();
     }
 
@@ -214,7 +214,7 @@ public class Car<DRIVER extends Driver> {
     }
 
     private Vector tyresSlipA() {
-        return rearsSlipF().plus(frontSlipF())
+        return rearSlipF().plus(frontSlipF())
                 .div(mass);
     }
 
@@ -233,13 +233,13 @@ public class Car<DRIVER extends Driver> {
         return axleWeight * tyreSlipForceFunction;
     }
 
-    private Vector frontSlipF() {
+    protected Vector frontSlipF() {
         return headingNormal().rotate(steering.d)
                 .multi(-tyreSlipForce(frontSlipAngle(), frontAxleWeightF()));
 
     }
 
-    private Vector rearsSlipF() {
+    protected Vector rearSlipF() {
         return headingNormal()
                 .multi(-tyreSlipForce(rearSlipAngle(), rearAxleWeightF()));
     }
@@ -272,7 +272,7 @@ public class Car<DRIVER extends Driver> {
     private double rotationTorque() {
         return wheelbase *
                 (frontSlipF().dot(headingNormal()) * (1 - massCenterOffset)
-                - rearsSlipF().dot(headingNormal()) * massCenterOffset);
+                - rearSlipF().dot(headingNormal()) * massCenterOffset);
     }
 
     ////////////////
