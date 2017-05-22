@@ -38,4 +38,6 @@ public interface CarModel {
     double length = 5.5; // m
     double maxSteering = 0.2*PI;
     double peakLateralForceAngle = toRadians(3);
+    /** starting from this speed (m/s) pure geometry turning physics is replaced with dynamic forces turning physics. */
+    double highSpeedCorneringThreshold = 10;
 }

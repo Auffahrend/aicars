@@ -108,8 +108,7 @@ public class CarPlotsState extends GraphicsGameState {
 
     private Plot getRearSteeringForcePlotForSpeed(int speed, float plotWidthPx) {
         return new Plot("Rear turning forces @ " + speed + " km/h", "Steering, rad", "Force, g", -maxSteering, maxSteering,
-                steering -> car.setVelocity(new Polar(speed/3.6, 0))
-                        .setSteering(steering)
+                steering -> car.setVelocity(new Polar(speed/3.6, steering))
                         .getRearTurningForceA() / g, plotWidthPx, 2, 2);
     }
 

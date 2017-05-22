@@ -2,10 +2,12 @@ package akostenko.aicars.race.car;
 
 import static akostenko.aicars.math.Polar.ZERO;
 import static akostenko.aicars.math.Vector.PRECISION;
+import static akostenko.aicars.model.CarModel.axleTrack;
 import static akostenko.aicars.model.CarModel.cx;
 import static akostenko.aicars.model.CarModel.cy;
 import static akostenko.aicars.model.CarModel.frontArea;
 import static akostenko.aicars.model.CarModel.frontWeightPercent;
+import static akostenko.aicars.model.CarModel.highSpeedCorneringThreshold;
 import static akostenko.aicars.model.CarModel.mass;
 import static akostenko.aicars.model.CarModel.massCenterHeight;
 import static akostenko.aicars.model.CarModel.rearWeightPercent;
@@ -30,13 +32,17 @@ import static java.lang.Math.toRadians;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.atan;
 import static java.lang.StrictMath.min;
+import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.signum;
+import static java.lang.StrictMath.sin;
+import static java.lang.StrictMath.sqrt;
 import static java.time.Instant.now;
 
 import akostenko.aicars.drawing.Scale;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.math.Polar;
 import akostenko.aicars.math.Vector;
+import akostenko.aicars.model.CarModel;
 import akostenko.aicars.race.Driver;
 
 import java.util.Random;
@@ -288,23 +294,20 @@ public class Car<DRIVER extends Driver> {
         driver.update(seconds);
         gearbox.update();
         steering = new Polar(1, driver.steering() * maxSteering);
-        double rotationSpeedChange = rotationTorque() * (seconds / yawInertia);
-        if (abs(driver.steering()) < PRECISION
-                && abs(rotationSpeedChange) > abs(carRotationSpeed)
-                && (carRotationSpeed + rotationSpeedChange) * carRotationSpeed < 0) {
-            //
-            rotationSpeedChange = -carRotationSpeed;
-        }
-        carRotationSpeed += rotationSpeedChange;
-        heading = heading.rotate(carRotationSpeed * seconds);
-
         trackDistance += velocity.module() * seconds;
         position = position.plus(velocity.multi(seconds)).toDecart();
+
+        applyAccelerationForces(seconds);
+        applyTurningForces(seconds);
+        applyBreakingForces(seconds);
+    }
+
+    private void applyAccelerationForces(double seconds) {
         accelerationA = accelerateA();
         velocity = velocity.plus(accelerationA.multi(seconds));
+    }
 
-        velocity = velocity.plus(tyresSlipA().multi(seconds));
-
+    private void applyBreakingForces(double seconds) {
         breakingA = breakingA();
         Vector breaking = breakingA.multi(seconds);
 
@@ -313,6 +316,33 @@ public class Car<DRIVER extends Driver> {
             velocity = new Polar(0, heading.d);
         } else {
             velocity = velocity.plus(breaking);
+        }
+    }
+
+    private void applyTurningForces(double seconds) {
+        if (velocity.module() >= highSpeedCorneringThreshold) {
+            double rotationSpeedChange = rotationTorque() * (seconds / yawInertia);
+            if (abs(driver.steering()) < PRECISION
+                    && abs(rotationSpeedChange) > abs(carRotationSpeed)
+                    && (carRotationSpeed + rotationSpeedChange) * carRotationSpeed < 0) {
+                //
+                rotationSpeedChange = -carRotationSpeed;
+            }
+            carRotationSpeed += rotationSpeedChange;
+            heading = heading.rotate(carRotationSpeed * seconds);
+            velocity = velocity.plus(tyresSlipA().multi(seconds));
+        } else if (velocity.module() > 0 && abs(steering.d) > sqrt(PRECISION)) {
+            // pure geometry solution
+            double frontInnerWheelTurnRadius = wheelbase / sin(abs(steering.d));
+            double rearInnerWheelTurnRadius = sqrt(pow(frontInnerWheelTurnRadius,2) + pow(wheelbase, 2));
+            double rearAxleCenterTurnRadius = rearInnerWheelTurnRadius + axleTrack / 2;
+            double massCenterTurningRadius = sqrt(pow(rearAxleCenterTurnRadius, 2) + pow(wheelbase*rearWeightPercent, 2));
+
+            carRotationSpeed += signum(steering.d) * velocity.module() / massCenterTurningRadius;
+            heading = heading.rotate(carRotationSpeed * seconds);
+            velocity = velocity.rotate(carRotationSpeed * seconds);
+        } else {
+            carRotationSpeed = 0;
         }
     }
 
