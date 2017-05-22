@@ -80,23 +80,37 @@ public class CarPlotsState extends GraphicsGameState {
         float plotHeightPx = screenHeight - 2*marginPx;
 
         plots = Arrays.asList(
+                getFrontSteeringForcePlotForSpeed(50, plotWidthPx),
+                getFrontSteeringForcePlotForSpeed(100, plotWidthPx),
+                getFrontSteeringForcePlotForSpeed(150, plotWidthPx),
+                getFrontSteeringForcePlotForSpeed(200, plotWidthPx),
+                getRearSteeringForcePlotForSpeed(50, plotWidthPx),
+                getRearSteeringForcePlotForSpeed(100, plotWidthPx),
+                getRearSteeringForcePlotForSpeed(150, plotWidthPx),
+                getRearSteeringForcePlotForSpeed(200, plotWidthPx),
                 new Plot("Torque vs RPM", "RPM", "Torque, N*m", CarModel.min_rpm-500, CarModel.max_rpm+1000,
                         rpm -> car.getTorque(rpm/60), plotWidthPx, 0, 0),
                 new Plot("RPM for speed", "Speed, kmh", "RPM", 0, 340,
                         kmh -> car.setVelocity(new Polar(kmh/3.6, 0)).getRps()*60, plotWidthPx, 0, 1),
                 new Plot("Downforce for speed", "Speed, kmh", "Downforce, g", 0, 340,
-                        kmh -> car.setVelocity(new Polar(kmh/3.6, 0)).getDownforceA()/g, plotWidthPx, 0, 1),
-                new Plot("Front turning forces @ 50 km/h", "Steering, rad", "Force, g", -maxSteering, maxSteering,
-                        steering -> car.setVelocity(new Polar(50/3.6, 0))
-                                .setSteering(steering)
-                                .getFrontTurningForceA() / g, plotWidthPx, 2, 2),
-                new Plot("Rear turning forces @ 50 km/h", "Steering, rad", "Force, g", -maxSteering, maxSteering,
-                        steering -> car.setVelocity(new Polar(50/3.6, 0))
-                                .setSteering(steering)
-                                .getRearTurningForceA() / g, plotWidthPx, 2, 2)
+                        kmh -> car.setVelocity(new Polar(kmh/3.6, 0)).getDownforceA()/g, plotWidthPx, 0, 1)
         );
         currentPlot = 0;
         resetPlot();
+    }
+
+    private Plot getFrontSteeringForcePlotForSpeed(int speed, float plotWidthPx) {
+        return new Plot("Front turning forces @ "+ speed + " km/h", "Steering, rad", "Force, g", -maxSteering, maxSteering,
+                steering -> car.setVelocity(new Polar(speed/3.6, 0))
+                        .setSteering(steering)
+                        .getFrontTurningForceA() / g, plotWidthPx, 2, 2);
+    }
+
+    private Plot getRearSteeringForcePlotForSpeed(int speed, float plotWidthPx) {
+        return new Plot("Rear turning forces @ " + speed + " km/h", "Steering, rad", "Force, g", -maxSteering, maxSteering,
+                steering -> car.setVelocity(new Polar(speed/3.6, 0))
+                        .setSteering(steering)
+                        .getRearTurningForceA() / g, plotWidthPx, 2, 2);
     }
 
     @Override

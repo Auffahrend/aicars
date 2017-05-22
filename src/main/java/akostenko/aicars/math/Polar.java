@@ -2,10 +2,8 @@ package akostenko.aicars.math;
 
 import static java.lang.StrictMath.PI;
 import static java.lang.StrictMath.abs;
-import static java.lang.StrictMath.asin;
 import static java.lang.StrictMath.cos;
 import static java.lang.StrictMath.sin;
-import static java.lang.StrictMath.sqrt;
 
 public class Polar implements Vector {
     public static final Polar ZERO = new Polar(0,0);
@@ -20,8 +18,8 @@ public class Polar implements Vector {
             d += PI;
         }
         this.r = r;
-        while (d < 0) d += 2*PI;
-        while (d >= 2*PI) d -= 2*PI;
+        while (d < -PI) d += 2*PI;
+        while (d > PI) d -= 2*PI;
         this.d = d;
     }
 

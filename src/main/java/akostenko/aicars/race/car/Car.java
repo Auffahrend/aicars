@@ -5,9 +5,10 @@ import static akostenko.aicars.math.Vector.PRECISION;
 import static akostenko.aicars.model.CarModel.cx;
 import static akostenko.aicars.model.CarModel.cy;
 import static akostenko.aicars.model.CarModel.frontArea;
+import static akostenko.aicars.model.CarModel.frontWeightPercent;
 import static akostenko.aicars.model.CarModel.mass;
 import static akostenko.aicars.model.CarModel.massCenterHeight;
-import static akostenko.aicars.model.CarModel.massCenterOffset;
+import static akostenko.aicars.model.CarModel.rearWeightPercent;
 import static akostenko.aicars.model.CarModel.maxSteering;
 import static akostenko.aicars.model.CarModel.min_rpm;
 import static akostenko.aicars.model.CarModel.peakLateralForceAngle;
@@ -86,8 +87,8 @@ public class Car<DRIVER extends Driver> {
         carTelemetry.getVectors().add(new CarTelemetryVector(breakingA.div(g), gScale, breakingColor));
         carTelemetry.getScalars().add(new CarTelemetryScalar("Peak G", peakG() / g, "g", 3, accelerationColor));
 //        carTelemetry.getScalars().add(new CarTelemetryScalar("Downforce", downforceF() / g, "kg"));
-        carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*(1-massCenterOffset), heading.d), frontSlipF().div(mass * g), gScale, turningColor));
-        carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*massCenterOffset, heading.d+PI), rearSlipF().div(mass * g), gScale, turningColor));
+        carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*frontWeightPercent, heading.d), frontSlipF().div(mass * g), gScale, turningColor));
+        carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*rearWeightPercent, heading.d+PI), rearSlipF().div(mass * g), gScale, turningColor));
         return carTelemetry;
     }
 
@@ -198,14 +199,14 @@ public class Car<DRIVER extends Driver> {
     private double rearAxleWeightF() {
         Vector horizontalForce = accelerationA.plus(breakingA).multi(mass);
         double longitudeForce = horizontalForce.dot(heading);
-        return weightF()*(1-massCenterOffset) + longitudeForce * massCenterHeight/wheelbase;
+        return weightF()*frontWeightPercent + longitudeForce * massCenterHeight/wheelbase;
     }
 
     /** kg * m/s^2 */
     private double frontAxleWeightF() {
         Vector horizontalForce = accelerationA.plus(breakingA).multi(mass);
         double longitudeForce = horizontalForce.dot(heading);
-        return weightF()*massCenterOffset - longitudeForce * massCenterHeight/wheelbase;
+        return weightF()*rearWeightPercent - longitudeForce * massCenterHeight/wheelbase;
     }
 
     private Vector breakingF() {
@@ -218,7 +219,7 @@ public class Car<DRIVER extends Driver> {
                 .div(mass);
     }
 
-    private double tyreSlipForce(double slipAngle, double axleWeight) {
+    double tyreSlipForce(double slipAngle, double axleWeight) {
         // see http://www.asawicki.info/Mirror/Car%20Physics%20for%20Games/Car%20Physics%20for%20Games.html
         // at about 3 degrees lateral force should peak with values about wight on steering wheels
 
@@ -226,7 +227,7 @@ public class Car<DRIVER extends Driver> {
         if (abs(slipAngle) <= peakLateralForceAngle) {
             tyreSlipForceFunction = slipAngle / peakLateralForceAngle * tyreStiction;
         } else {
-            tyreSlipForceFunction = signum(slipAngle) * peakLateralForceAngle * tyreStiction
+            tyreSlipForceFunction = signum(slipAngle) * tyreStiction
                     * (1 - 0.05*((abs(slipAngle)-peakLateralForceAngle)/toRadians(10)));
         }
 
@@ -246,14 +247,14 @@ public class Car<DRIVER extends Driver> {
 
     private double frontSlipAngle() {
         return velocity.module() > 0
-                ? atan((lateralVelocity() + carRotationSpeed * wheelbase * (1-massCenterOffset)) / velocity.module())
+                ? atan((lateralVelocity() + carRotationSpeed * wheelbase * frontWeightPercent) / velocity.module())
                  - steering.d * signum(longitudeVelocity())
                 : signum(carRotationSpeed) * PI /2;
     }
 
     private double rearSlipAngle() {
         return velocity.module() > 0
-                ? atan((lateralVelocity() - carRotationSpeed * wheelbase * massCenterOffset) / velocity.module())
+                ? atan((lateralVelocity() - carRotationSpeed * wheelbase * rearWeightPercent) / velocity.module())
                 : -signum(carRotationSpeed) * PI /2;
     }
 
@@ -271,8 +272,8 @@ public class Car<DRIVER extends Driver> {
 
     private double rotationTorque() {
         return wheelbase *
-                (frontSlipF().dot(headingNormal()) * (1 - massCenterOffset)
-                - rearSlipF().dot(headingNormal()) * massCenterOffset);
+                (frontSlipF().dot(headingNormal()) * frontWeightPercent
+                - rearSlipF().dot(headingNormal()) * rearWeightPercent);
     }
 
     ////////////////

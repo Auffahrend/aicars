@@ -1,7 +1,6 @@
 package akostenko.aicars.plots;
 
 import static akostenko.aicars.model.CarModel.mass;
-import static akostenko.aicars.model.CarModel.massCenterOffset;
 import static java.lang.Math.PI;
 
 import akostenko.aicars.math.Polar;

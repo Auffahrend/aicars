@@ -1,8 +1,8 @@
 package akostenko.aicars.drawing;
 
 import static akostenko.aicars.model.CarModel.axleTrack;
-import static akostenko.aicars.model.CarModel.massCenterHeight;
-import static akostenko.aicars.model.CarModel.massCenterOffset;
+import static akostenko.aicars.model.CarModel.frontWeightPercent;
+import static akostenko.aicars.model.CarModel.rearWeightPercent;
 import static akostenko.aicars.model.CarModel.tyreRadius;
 import static akostenko.aicars.model.CarModel.wheelbase;
 import static java.lang.StrictMath.PI;
@@ -18,18 +18,18 @@ import java.util.Collection;
 
 public class CarImg {
 
-    private static final Vector FL_wheel = new Decart(wheelbase*(1-massCenterOffset), axleTrack/2);
-    private static final Vector FR_wheel = new Decart(wheelbase*(1-massCenterOffset), -axleTrack/2);
+    private static final Vector FL_wheel = new Decart(wheelbase*frontWeightPercent, axleTrack/2);
+    private static final Vector FR_wheel = new Decart(wheelbase*frontWeightPercent, -axleTrack/2);
 
-    private static final Vector RL_wheel_p1 = new Decart(-wheelbase*massCenterOffset - tyreRadius, axleTrack/2);
-    private static final Vector RL_wheel_p2 = new Decart(-wheelbase*massCenterOffset + tyreRadius, axleTrack/2);
-    private static final Vector RR_wheel_p1 = new Decart(-wheelbase*massCenterOffset - tyreRadius, -axleTrack/2);
-    private static final Vector RR_wheel_p2 = new Decart(-wheelbase*massCenterOffset + tyreRadius, -axleTrack/2);
-    private static final Vector rearAxle_p1 = new Decart(-wheelbase*massCenterOffset, axleTrack/2);
-    private static final Vector rearAxle_p2 = new Decart(-wheelbase*massCenterOffset, -axleTrack/2);
+    private static final Vector RL_wheel_p1 = new Decart(-wheelbase*rearWeightPercent - tyreRadius, axleTrack/2);
+    private static final Vector RL_wheel_p2 = new Decart(-wheelbase*rearWeightPercent + tyreRadius, axleTrack/2);
+    private static final Vector RR_wheel_p1 = new Decart(-wheelbase*rearWeightPercent - tyreRadius, -axleTrack/2);
+    private static final Vector RR_wheel_p2 = new Decart(-wheelbase*rearWeightPercent + tyreRadius, -axleTrack/2);
+    private static final Vector rearAxle_p1 = new Decart(-wheelbase*rearWeightPercent, axleTrack/2);
+    private static final Vector rearAxle_p2 = new Decart(-wheelbase*rearWeightPercent, -axleTrack/2);
 
-    private static final Vector carAxis_p1 = new Decart(wheelbase*(1-massCenterOffset)*1.5, 0);
-    private static final Vector carAxis_p2 = new Decart(-wheelbase*massCenterOffset, 0);
+    private static final Vector carAxis_p1 = new Decart(wheelbase*frontWeightPercent*1.5, 0);
+    private static final Vector carAxis_p2 = new Decart(-wheelbase*rearWeightPercent, 0);
 
     public static Collection<Line> get(Car<?> car, Decart cameraPosition, Color color, Scale scale) {
         Decart positionPx = car.getPosition().minus(cameraPosition)
