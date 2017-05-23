@@ -44,6 +44,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
@@ -52,7 +53,11 @@ public class RaceState extends GraphicsGameState {
     private Collection<Car<?>> cars;
     private Car<Player> playerCar;
     private Track track;
+    private int msSinceLastCollisionDetection = 0;
+    private int msSinceLastCarUpdates = 0;
 
+    private final int msBetweenCollisionDetections = 1;
+    private final int msBetweenCarUpdates = 10;
     private final Collection<KeyListener> listeners = new ArrayList<>();
     private final IsKeyDownListener accelerateListener = new IsKeyDownListener(KEY_UP);
     private final IsKeyDownListener brakeListener = new IsKeyDownListener(KEY_DOWN);
@@ -64,6 +69,8 @@ public class RaceState extends GraphicsGameState {
     private final TrueTypeFont telemetryFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true);
     private final Scale scale = new Scale(1, 20);
     private final Color trackBorder = new Color(100, 100, 100);
+
+    private final ForkJoinPool executor = ForkJoinPool.commonPool();
 
     @Override
     public int getID() {
@@ -81,15 +88,15 @@ public class RaceState extends GraphicsGameState {
         cars = new ArrayList<>();
         playerCar = null;
         GameSettings settings = GameSettings.get();
+        track = settings.getTrack();
         if (settings.getMode() instanceof WithPlayer) {
-            playerCar = new Car<>(new Player());
+            playerCar = new Car<>(new Player(), track);
             cars.add(playerCar);
         } else if (settings.getMode() instanceof CarPerformanceTests) {
             ((CarPerformanceTests) settings.getMode()).getDrivers()
-                    .forEach(driver -> cars.add(new Car<>(driver)));
+                    .forEach(driver -> cars.add(new Car<>(driver, track)));
         }
 
-        track = settings.getTrack();
         TrackSection trackStart = track.sections().get(0);
         cars.forEach(car -> car.turn(trackStart.heading()).move(trackStart.start()));
     }
@@ -109,7 +116,6 @@ public class RaceState extends GraphicsGameState {
     public void leave(GameContainer container, StateBasedGame game) throws SlickException {
         super.leave(container, game);
         listeners.forEach(listener -> container.getInput().removeKeyListener(listener));
-
     }
 
     @Override
@@ -252,7 +258,23 @@ public class RaceState extends GraphicsGameState {
         if (playerCar != null) {
             processInput(playerCar.getDriver(), delta);
         }
-        cars.forEach(car -> car.update(delta));
+
+        msSinceLastCarUpdates += delta;
+        msSinceLastCollisionDetection += delta;
+
+        if (msSinceLastCarUpdates >= msBetweenCarUpdates) {
+            executor.submit(() -> cars.forEach(car -> car.update(msSinceLastCarUpdates)));
+            msSinceLastCarUpdates = 0;
+        }
+
+        if (msSinceLastCollisionDetection >= msBetweenCollisionDetections) {
+            executor.submit(() -> cars.forEach(car -> detectCollision(car, msSinceLastCollisionDetection)));
+            msSinceLastCollisionDetection = 0;
+        }
+    }
+
+    private void detectCollision(Car<?> car, int msDelta) {
+
     }
 
     private void processInput(Player player, int delta) {

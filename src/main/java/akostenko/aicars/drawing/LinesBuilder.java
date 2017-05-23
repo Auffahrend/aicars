@@ -65,5 +65,13 @@ class LinesBuilder {
                     color,
                     width);
         }
+
+        public Vector from() {
+            return from;
+        }
+
+        public Vector to() {
+            return to;
+        }
     }
 }

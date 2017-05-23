@@ -37,14 +37,20 @@ import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
 import static java.lang.StrictMath.toRadians;
 import static java.time.Instant.now;
+import static java.util.Comparator.comparing;
 
 import akostenko.aicars.drawing.Scale;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.math.Polar;
 import akostenko.aicars.math.Vector;
 import akostenko.aicars.race.Driver;
+import akostenko.aicars.track.Track;
+import akostenko.aicars.track.TrackWayPoint;
 
+import java.util.Collection;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class Car<DRIVER extends Driver> {
 
@@ -58,11 +64,14 @@ public class Car<DRIVER extends Driver> {
             new Decart(14000/60, 400));
 
     private final DRIVER driver;
+    private final Track track;
     protected final Gearbox gearbox = new Gearbox(this);
+    private int laps = 0;
     /** <i>m</i> */
-    private double trackDistance = 0;
+    private TrackWayPoint closestWP;
     /** <i>m</i> */
     protected Decart position = Decart.ZERO;
+    private double odometer = 0;
     /** <i>m/s</i> */
     protected Vector velocity = ZERO;
     private Vector accelerationA = ZERO;
@@ -77,12 +86,17 @@ public class Car<DRIVER extends Driver> {
     private static final Random random = new Random();
     private final Scale velocityScale = new Scale(100, 200);
     private final Scale gScale = new Scale(5, 200);
+    private Function<Stream<TrackWayPoint>, TrackWayPoint> closestWayPointSelector =
+            waypoints -> waypoints
+                    .sorted(comparing(wp -> wp.position().minus(position).module()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No way points!"));
 
     public CarTelemetry getTelemetry() {
         CarTelemetry carTelemetry = new CarTelemetry(this);
 
         carTelemetry.getScalars().add(new CarTelemetryScalar("Driver", driver.getName()));
-        carTelemetry.getScalars().add(new CarTelemetryScalar("Distance", trackDistance, "m", 1, textColor));
+        carTelemetry.getScalars().add(new CarTelemetryScalar("Distance", closestWP.distanceFromTrackStart(), "m", 1, textColor));
         carTelemetry.getScalars().add(new CarTelemetryScalar("Speed", velocity.module() * 3.6, "kmph", 3, velocityColor));
         carTelemetry.getVectors().add(new CarTelemetryVector(velocity, velocityScale, velocityColor));
         carTelemetry.getScalars().add(new CarTelemetryScalar("Accel", accelerationA.module() / g, "g", 3, accelerationColor));
@@ -285,9 +299,12 @@ public class Car<DRIVER extends Driver> {
 
     ////////////////
 
-    public Car(DRIVER driver) {
+    public Car(DRIVER driver, Track track) {
         this.driver = driver;
         driver.setCar(this);
+        this.track = track;
+        closestWP = closestWayPointSelector.apply(
+                track.sections().stream().flatMap(section -> section.wayPoints().stream()));
     }
 
     public void update(int msDelta) {
@@ -295,12 +312,18 @@ public class Car<DRIVER extends Driver> {
         driver.update(seconds);
         gearbox.update();
         steering = new Polar(1, driver.steering() * maxSteering);
-        trackDistance += velocity.module() * seconds;
+        odometer += velocity.module() * seconds;
         position = position.plus(velocity.multi(seconds)).toDecart();
+        closestWP = findClosestWayPoint();
 
         applyAccelerationForces(seconds);
         applyTurningForces(seconds);
         applyBreakingForces(seconds);
+    }
+
+    private TrackWayPoint findClosestWayPoint() {
+        return closestWayPointSelector.apply(
+                Stream.of(closestWP, track.getNextWayPoint(closestWP), track.getPreviousWayPoint(closestWP)));
     }
 
     private void applyAccelerationForces(double seconds) {
@@ -350,8 +373,8 @@ public class Car<DRIVER extends Driver> {
         }
     }
 
-    public Double trackDistance() {
-        return trackDistance;
+    public int trackDistance() {
+        return closestWP.distanceFromTrackStart();
     }
 
     public DRIVER getDriver() {

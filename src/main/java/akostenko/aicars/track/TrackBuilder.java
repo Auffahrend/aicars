@@ -17,25 +17,29 @@ class TrackBuilder {
     private Vector currentPosition;
     private double width;
     private List<TrackSection> track = new ArrayList<>();
+    private int totalLength;
 
     static TrackBuilder start(double x, double y, double heading, double width) {
         TrackBuilder trackBuilder = new TrackBuilder();
         trackBuilder.heading = heading;
         trackBuilder.currentPosition = new Decart(x, y);
         trackBuilder.width = width;
+        trackBuilder.totalLength = 0;
         return trackBuilder;
     }
 
     TrackBuilder straight(double length) {
-        track.add(new TrackSection(currentPosition, length, 0, heading, width));
+        track.add(new TrackSection(totalLength, track.size(), currentPosition, length, 0, heading, width));
+        totalLength += length;
         currentPosition = currentPosition.plus(new Polar(length, heading));
         return this;
     }
 
     TrackBuilder right(double radius, double degrees) {
         double angle = toRadians(degrees);
-        track.add(new TrackSection(currentPosition, angle*radius, radius, heading, width));
+        track.add(new TrackSection(totalLength, track.size(), currentPosition, angle*radius, radius, heading, width));
         Vector turnCenter = currentPosition.plus(new Polar(radius, heading+PI/2));
+        totalLength += radius * toRadians(degrees);
         currentPosition = turnCenter.plus(new Polar(radius, PI+PI/2+heading+angle));
         heading += angle;
         return this;
@@ -43,8 +47,9 @@ class TrackBuilder {
 
     TrackBuilder left(double radius, double degrees) {
         double angle = toRadians(degrees);
-        track.add(new TrackSection(currentPosition, angle*radius, -radius, heading, width));
+        track.add(new TrackSection(totalLength, track.size(), currentPosition, angle*radius, -radius, heading, width));
         Vector turnCenter = currentPosition.plus(new Polar(radius, heading-PI/2));
+        totalLength += radius * toRadians(degrees);
         currentPosition = turnCenter.plus(new Polar(radius, PI + heading - PI / 2 - angle));
         heading -= angle;
         return this;

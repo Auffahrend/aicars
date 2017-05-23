@@ -32,4 +32,33 @@ public abstract class Track implements MenuItem {
         return obj instanceof Track && Objects.equals(getTitle(), ((Track) obj).getTitle());
     }
 
+    public TrackWayPoint getNextWayPoint(TrackWayPoint current) {
+        if (current.section().wayPoints().size() > current.indexInSection() + 1) {
+            return current.section().wayPoints().get(current.indexInSection() + 1);
+        } else {
+            int currentSectionIndex = current.section().indexOnTrack();
+            if (sections().size() > currentSectionIndex + 1) {
+                return sections().get(currentSectionIndex + 1).wayPoints().get(0);
+            } else {
+                // next lap
+                return sections().get(0).wayPoints().get(0);
+            }
+        }
+    }
+
+    public TrackWayPoint getPreviousWayPoint(TrackWayPoint current) {
+        if (current.indexInSection() > 0) {
+            return current.section().wayPoints().get(current.indexInSection() - 1);
+        } else {
+            int currentSectionIndex = current.section().indexOnTrack();
+            if (currentSectionIndex > 0) {
+                TrackSection previousSection = sections().get(currentSectionIndex - 1);
+                return previousSection.wayPoints().get(previousSection.wayPoints().size()-1);
+            } else {
+                // previous lap
+                TrackSection lastSection = sections().get(sections().size() - 1);
+                return lastSection.wayPoints().get(lastSection.wayPoints().size()-1);
+            }
+        }
+    }
 }

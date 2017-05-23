@@ -69,7 +69,7 @@ public class Game extends StateBasedGame {
         screenWidth = app.getScreenWidth();
         app.setDisplayMode(screenWidth, screenHeight, true);
         app.setMinimumLogicUpdateInterval(1);
-        app.setMaximumLogicUpdateInterval(50);
+        app.setMaximumLogicUpdateInterval(10);
         app.start();
         instance.enterState(GameStateIds.getId(MenuState.class));
     }

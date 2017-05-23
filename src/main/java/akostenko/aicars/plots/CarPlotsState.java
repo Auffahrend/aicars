@@ -22,6 +22,7 @@ import static org.lwjgl.input.Keyboard.KEY_SPACE;
 import static org.lwjgl.input.Keyboard.KEY_SUBTRACT;
 import static org.lwjgl.input.Keyboard.KEY_UP;
 
+import akostenko.aicars.GameSettings;
 import akostenko.aicars.GameStateIds;
 import akostenko.aicars.GraphicsGameState;
 import akostenko.aicars.drawing.Arrow;
@@ -30,6 +31,7 @@ import akostenko.aicars.keyboard.SingleKeyAction;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.math.MathUtils;
 import akostenko.aicars.math.Polar;
+import akostenko.aicars.menu.TrackMenu;
 import akostenko.aicars.model.CarModel;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -63,7 +65,7 @@ public class CarPlotsState extends GraphicsGameState {
     private List<Plot> plots;
     private int currentPlot = 0;
     private boolean showZeroY = false;
-    private SettableCar<?> car = new SettableCar<>(new EmptyDriver());
+    private SettableCar<?> car;
 
     @Override
     public int getID() {
@@ -97,6 +99,7 @@ public class CarPlotsState extends GraphicsGameState {
                         kmh -> car.setVelocity(new Polar(kmh/ MPS_TO_KMPH, 0)).getDownforceA()/g, plotWidthPx, 0, 1)
         );
         currentPlot = 0;
+        car = new SettableCar<>(new EmptyDriver(), GameSettings.get().getTrack());
         resetPlot();
     }
 

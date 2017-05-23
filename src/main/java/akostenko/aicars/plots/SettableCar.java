@@ -7,11 +7,12 @@ import akostenko.aicars.math.Polar;
 import akostenko.aicars.math.Vector;
 import akostenko.aicars.race.Driver;
 import akostenko.aicars.race.car.Car;
+import akostenko.aicars.track.Track;
 
 class SettableCar<DRIVER extends Driver> extends Car<DRIVER> {
 
-    SettableCar(DRIVER driver) {
-        super(driver);
+    SettableCar(DRIVER driver, Track track) {
+        super(driver, track);
     }
 
     SettableCar<DRIVER> setVelocity(Vector velocity) {
