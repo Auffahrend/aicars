@@ -3,6 +3,7 @@ package akostenko.aicars.plots;
 import static akostenko.aicars.Game.screenHeight;
 import static akostenko.aicars.Game.screenWidth;
 import static akostenko.aicars.model.CarModel.maxSteering;
+import static akostenko.aicars.model.EnvironmentModel.SECONDS_PER_MINUTE;
 import static akostenko.aicars.model.EnvironmentModel.g;
 import static java.lang.Math.abs;
 import static java.lang.StrictMath.PI;
@@ -30,7 +31,6 @@ import akostenko.aicars.math.Decart;
 import akostenko.aicars.math.MathUtils;
 import akostenko.aicars.math.Polar;
 import akostenko.aicars.model.CarModel;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -39,25 +39,27 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.StateBasedGame;
 
-import java.awt.Font;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
 public class CarPlotsState extends GraphicsGameState {
 
-    private final float marginPx = screenWidth * 0.02f;
-    private final int textSize = 14;
-    private final int headerTextSize = 18;
-    private final int gridStepPx = 100;
+    private static final double MPS_TO_KMPH = 3.6;
+    private static final float marginPx = screenWidth * 0.02f;
+    private static final int textSize = 14;
+    private static final int headerTextSize = 18;
+    private static final int gridStepPx = 100;
     private final TrueTypeFont font = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.PLAIN, textSize), true);
     private final TrueTypeFont headerFont = new TrueTypeFont(new Font(Font.SANS_SERIF, Font.BOLD, headerTextSize), true);
     private final Color gray = new Color(150, 150, 150);
     private final Color darkGray = new Color(50, 50, 50);
     private final Color white = Color.white;
 
-    private List<KeyListener> listeners = new ArrayList<>();
+    private Collection<KeyListener> listeners = new ArrayList<>();
     private List<Plot> plots;
     private int currentPlot = 0;
     private boolean showZeroY = false;
@@ -77,7 +79,6 @@ public class CarPlotsState extends GraphicsGameState {
 
     private void reset() {
         float plotWidthPx = screenWidth - 2*marginPx;
-        float plotHeightPx = screenHeight - 2*marginPx;
 
         plots = Arrays.asList(
                 getFrontSteeringForcePlotForSpeed(50, plotWidthPx),
@@ -88,12 +89,12 @@ public class CarPlotsState extends GraphicsGameState {
                 getRearSteeringForcePlotForSpeed(100, plotWidthPx),
                 getRearSteeringForcePlotForSpeed(150, plotWidthPx),
                 getRearSteeringForcePlotForSpeed(200, plotWidthPx),
-                new Plot("Torque vs RPM", "RPM", "Torque, N*m", CarModel.min_rpm-500, CarModel.max_rpm+1000,
-                        rpm -> car.getTorque(rpm/60), plotWidthPx, 0, 0),
+                new Plot("Torque vs RPM", "RPM", "Torque, N*m", CarModel.min_rpm-100, CarModel.max_rpm+1000,
+                        rpm -> car.getTorque(rpm/ SECONDS_PER_MINUTE), plotWidthPx, 0, 0),
                 new Plot("RPM for speed", "Speed, kmh", "RPM", 0, 340,
-                        kmh -> car.setVelocity(new Polar(kmh/3.6, 0)).getRps()*60, plotWidthPx, 0, 1),
+                        kmh -> car.setVelocity(new Polar(kmh/ MPS_TO_KMPH, 0)).getRps()* SECONDS_PER_MINUTE, plotWidthPx, 0, 1),
                 new Plot("Downforce for speed", "Speed, kmh", "Downforce, g", 0, 340,
-                        kmh -> car.setVelocity(new Polar(kmh/3.6, 0)).getDownforceA()/g, plotWidthPx, 0, 1)
+                        kmh -> car.setVelocity(new Polar(kmh/ MPS_TO_KMPH, 0)).getDownforceA()/g, plotWidthPx, 0, 1)
         );
         currentPlot = 0;
         resetPlot();
@@ -101,14 +102,14 @@ public class CarPlotsState extends GraphicsGameState {
 
     private Plot getFrontSteeringForcePlotForSpeed(int speed, float plotWidthPx) {
         return new Plot("Front turning forces @ "+ speed + " km/h", "Steering, rad", "Force, g", -maxSteering, maxSteering,
-                steering -> car.setVelocity(new Polar(speed/3.6, 0))
+                steering -> car.setVelocity(new Polar(speed/ MPS_TO_KMPH, 0))
                         .setSteering(steering)
                         .getFrontTurningForceA() / g, plotWidthPx, 2, 2);
     }
 
     private Plot getRearSteeringForcePlotForSpeed(int speed, float plotWidthPx) {
         return new Plot("Rear turning forces @ " + speed + " km/h", "Steering, rad", "Force, g", -maxSteering, maxSteering,
-                steering -> car.setVelocity(new Polar(speed/3.6, steering))
+                steering -> car.setVelocity(new Polar(speed/ MPS_TO_KMPH, steering))
                         .getRearTurningForceA() / g, plotWidthPx, 2, 2);
     }
 
@@ -173,18 +174,19 @@ public class CarPlotsState extends GraphicsGameState {
     }
 
     private void drawGrid(Graphics g, String name, String xName, double from, double to, String yName, double minY, double maxY, int xPrecision, int yPrecision) {
+        drawXAxisAndGrid(g, xName, from, to, minY, maxY, xPrecision);
+        drawYAxisAndGrid(g, name, from, to, yName, minY, maxY, yPrecision);
+    }
+
+    private void drawXAxisAndGrid(Graphics g, String xName, double from, double to, double minY, double maxY, int xPrecision) {
         g.setFont(font);
-
         float xAxisLength = screenWidth - 2 * marginPx;
-        float yAxisLength = screenHeight - 2 * marginPx;
 
-        Function<Double, Double> xValueToXPx = MathUtils.linear(from, marginPx, to, screenWidth - marginPx);
         Function<Double, Double> xPxToXValue = MathUtils.linear(marginPx, from, screenWidth - marginPx, to);
         Function<Double, Double> yValueToYPx = MathUtils.linear(minY, screenHeight-marginPx, maxY, marginPx);
-        Function<Double, Double> yPxToYValue = MathUtils.linear(screenHeight-marginPx, minY, marginPx, maxY);
 
         // x grid
-        String xValueFormat = "%." + xPrecision + "f";
+        String xValueFormat = "%." + xPrecision + 'f';
         double xStep = xPxToXValue.apply((double) gridStepPx+marginPx)-from;
         boolean dataIncludesZeroY = minY <= 0 && maxY >= 0;
         float xAxisYCoord = dataIncludesZeroY ? yValueToYPx.apply(0.).floatValue() : (screenHeight/2);
@@ -199,15 +201,21 @@ public class CarPlotsState extends GraphicsGameState {
         }
         // x axis
         g.setLineWidth(2);
-        Arrow.get(new Decart(0.5f * screenWidth, xAxisYCoord), xAxisLength, 0, gray, 2)
+        Arrow.get(new Decart(screenWidth/2, xAxisYCoord), xAxisLength, 0, gray, 2)
                 .forEach(line -> drawLine(g, line));
         g.setColor(white);
         g.drawString(xName, screenWidth-marginPx-xName.length()*textSize/2, xAxisYCoord-textSize*3/2);
+    }
 
+    private void drawYAxisAndGrid(Graphics g, String name, double from, double to, String yName, double minY, double maxY, int yPrecision) {
+        g.setFont(font);
+        float yAxisLength = screenHeight - 2 * marginPx;
 
+        Function<Double, Double> xValueToXPx = MathUtils.linear(from, marginPx, to, screenWidth - marginPx);
+        Function<Double, Double> yPxToYValue = MathUtils.linear(screenHeight-marginPx, minY, marginPx, maxY);
 
         // y grid
-        String yValueFormat = "%." + yPrecision + "f";
+        String yValueFormat = "%." + yPrecision + 'f';
         double yStep = yPxToYValue.apply((double) screenHeight-gridStepPx-marginPx)-minY;
         boolean dataIncludesZeroX = from <= 0 && to >= 0;
         float yAxisXCoord = dataIncludesZeroX ? xValueToXPx.apply(0.).floatValue() : (marginPx);
@@ -221,16 +229,16 @@ public class CarPlotsState extends GraphicsGameState {
             g.drawString(String.format(yValueFormat, maxY - i*yStep), yAxisXCoord+textSize, yPx-textSize/2);
         }
         // y axis
-        Arrow.get(new Decart(yAxisXCoord, 0.5f * screenHeight), screenHeight - 2*marginPx, -PI/2, gray, 2)
+        Arrow.get(new Decart(yAxisXCoord, screenHeight/2), screenHeight - 2*marginPx, -PI/2, gray, 2)
                 .forEach(line -> drawLine(g, line));
         g.setColor(white);
         g.drawString(yName, yAxisXCoord+(float)(abs(log10(maxY))+1+yPrecision)*textSize, marginPx-textSize/2);
 
         g.setFont(headerFont);
-        g.drawString(name, screenWidth/2-name.length()/2*headerTextSize/1.5f, marginPx/2);
+        g.drawString(name, screenWidth/2-name.length()/2*headerTextSize/3*2, marginPx/2);
     }
 
-    private void drawPlotData(Graphics g, List<Decart> plotData, double from, double to, double minY, double maxY) {
+    private void drawPlotData(Graphics g, Iterable<Decart> plotData, double from, double to, double minY, double maxY) {
         float xAxisLength = screenWidth - 2 * marginPx;
         float yAxisLength = screenHeight - 2 * marginPx;
         Function<Double, Float> xToScreenX = x -> (float) (marginPx + (x-from) * (xAxisLength/(to-from)));
