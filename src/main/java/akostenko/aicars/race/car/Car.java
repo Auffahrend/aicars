@@ -10,10 +10,10 @@ import static akostenko.aicars.model.CarModel.frontWeightPercent;
 import static akostenko.aicars.model.CarModel.highSpeedCorneringThreshold;
 import static akostenko.aicars.model.CarModel.mass;
 import static akostenko.aicars.model.CarModel.massCenterHeight;
-import static akostenko.aicars.model.CarModel.rearWeightPercent;
 import static akostenko.aicars.model.CarModel.maxSteering;
 import static akostenko.aicars.model.CarModel.min_rpm;
 import static akostenko.aicars.model.CarModel.peakLateralForceAngle;
+import static akostenko.aicars.model.CarModel.rearWeightPercent;
 import static akostenko.aicars.model.CarModel.tyreRadius;
 import static akostenko.aicars.model.CarModel.tyreRollingFriction;
 import static akostenko.aicars.model.CarModel.tyreStiction;
@@ -27,22 +27,21 @@ import static akostenko.aicars.race.car.CarTelemetry.breakingColor;
 import static akostenko.aicars.race.car.CarTelemetry.textColor;
 import static akostenko.aicars.race.car.CarTelemetry.turningColor;
 import static akostenko.aicars.race.car.CarTelemetry.velocityColor;
-import static java.lang.Math.PI;
-import static java.lang.Math.toRadians;
+import static java.lang.StrictMath.PI;
 import static java.lang.StrictMath.abs;
 import static java.lang.StrictMath.atan;
+import static java.lang.StrictMath.hypot;
 import static java.lang.StrictMath.min;
-import static java.lang.StrictMath.pow;
 import static java.lang.StrictMath.signum;
 import static java.lang.StrictMath.sin;
 import static java.lang.StrictMath.sqrt;
+import static java.lang.StrictMath.toRadians;
 import static java.time.Instant.now;
 
 import akostenko.aicars.drawing.Scale;
 import akostenko.aicars.math.Decart;
 import akostenko.aicars.math.Polar;
 import akostenko.aicars.math.Vector;
-import akostenko.aicars.model.CarModel;
 import akostenko.aicars.race.Driver;
 
 import java.util.Random;
@@ -68,6 +67,7 @@ public class Car<DRIVER extends Driver> {
     protected Vector velocity = ZERO;
     private Vector accelerationA = ZERO;
     private Vector breakingA = ZERO;
+    private Vector turningA = ZERO;
     protected Polar heading = new Polar(1, 0);
     /** <i>rad/s</i> */
     private double carRotationSpeed = 0;
@@ -90,11 +90,13 @@ public class Car<DRIVER extends Driver> {
         carTelemetry.getScalars().add(new CarTelemetryScalar("RPM", rps() * 60 + random.nextInt(120), ""));
         carTelemetry.getScalars().add(new CarTelemetryScalar("Gear", gearbox.current()+1, ""));
         carTelemetry.getScalars().add(new CarTelemetryScalar("Breaking", breakingA.module() / g, "g", 3, breakingColor));
+        carTelemetry.getScalars().add(new CarTelemetryScalar("Turning", turningA.module() / g, "g", 3, turningColor));
         carTelemetry.getVectors().add(new CarTelemetryVector(breakingA.div(g), gScale, breakingColor));
         carTelemetry.getScalars().add(new CarTelemetryScalar("Peak G", peakG() / g, "g", 3, accelerationColor));
 //        carTelemetry.getScalars().add(new CarTelemetryScalar("Downforce", downforceF() / g, "kg"));
         carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*frontWeightPercent, heading.d), frontSlipF().div(mass * g), gScale, turningColor));
         carTelemetry.getVectors().add(new CarTelemetryVector(new Polar(wheelbase*rearWeightPercent, heading.d+PI), rearSlipF().div(mass * g), gScale, turningColor));
+        carTelemetry.getVectors().add(new CarTelemetryVector(turningA.div(g), gScale, turningColor));
         return carTelemetry;
     }
 
@@ -277,9 +279,8 @@ public class Car<DRIVER extends Driver> {
     }
 
     private double rotationTorque() {
-        return wheelbase *
-                (frontSlipF().dot(headingNormal()) * frontWeightPercent
-                - rearSlipF().dot(headingNormal()) * rearWeightPercent);
+        return frontSlipF().dot(headingNormal()) * hypot(wheelbase * frontWeightPercent, axleTrack/2)
+                - rearSlipF().dot(headingNormal()) * hypot(wheelbase * rearWeightPercent, axleTrack /2);
     }
 
     ////////////////
@@ -330,17 +331,20 @@ public class Car<DRIVER extends Driver> {
             }
             carRotationSpeed += rotationSpeedChange;
             heading = heading.rotate(carRotationSpeed * seconds);
-            velocity = velocity.plus(tyresSlipA().multi(seconds));
+            turningA = tyresSlipA();
+            velocity = velocity.plus(turningA.multi(seconds));
         } else if (velocity.module() > 0 && abs(steering.d) > sqrt(PRECISION)) {
             // pure geometry solution
             double frontInnerWheelTurnRadius = wheelbase / sin(abs(steering.d));
-            double rearInnerWheelTurnRadius = sqrt(pow(frontInnerWheelTurnRadius,2) + pow(wheelbase, 2));
+            double rearInnerWheelTurnRadius = hypot(frontInnerWheelTurnRadius, wheelbase);
             double rearAxleCenterTurnRadius = rearInnerWheelTurnRadius + axleTrack / 2;
-            double massCenterTurningRadius = sqrt(pow(rearAxleCenterTurnRadius, 2) + pow(wheelbase*rearWeightPercent, 2));
+            double massCenterTurningRadius = hypot(rearAxleCenterTurnRadius, wheelbase*rearWeightPercent);
 
-            carRotationSpeed += signum(steering.d) * velocity.module() / massCenterTurningRadius;
-            heading = heading.rotate(carRotationSpeed * seconds);
-            velocity = velocity.rotate(carRotationSpeed * seconds);
+            double angle = signum(steering.d) * velocity.module() * seconds / massCenterTurningRadius;
+            carRotationSpeed = 0;
+            heading = heading.rotate(angle);
+            turningA = velocity.rotate(angle).minus(velocity).div(seconds);
+            velocity = velocity.rotate(angle);
         } else {
             carRotationSpeed = 0;
         }

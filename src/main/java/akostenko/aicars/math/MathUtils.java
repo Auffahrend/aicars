@@ -22,4 +22,5 @@ public class MathUtils {
         double y0 = y1 - x1 * k;
         return x -> k*x + y0;
     }
+
 }

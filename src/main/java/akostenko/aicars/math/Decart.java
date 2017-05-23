@@ -2,7 +2,8 @@ package akostenko.aicars.math;
 
 import static java.lang.Math.PI;
 import static java.lang.StrictMath.atan;
-import static java.lang.StrictMath.sqrt;
+import static java.lang.StrictMath.hypot;
+import static java.lang.StrictMath.pow;
 
 public class Decart implements Vector {
     public static final Decart ZERO = new Decart(0,0);
@@ -34,7 +35,7 @@ public class Decart implements Vector {
         } else {
             d = 0;
         }
-        return new Polar(sqrt(x*x + y*y), d);
+        return new Polar(hypot(x, y), d);
     }
 
     @Override
@@ -78,12 +79,12 @@ public class Decart implements Vector {
 
     @Override
     public double module() {
-        return sqrt(moduleSqr());
+        return hypot(x, y);
     }
 
     @Override
     public double moduleSqr() {
-        return x*x + y*y;
+        return pow(module(), 2);
     }
 
     @Override
