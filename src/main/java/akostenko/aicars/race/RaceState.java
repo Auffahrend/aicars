@@ -31,7 +31,6 @@ import akostenko.aicars.race.car.CarTelemetryScalar;
 import akostenko.aicars.race.car.CarTelemetryVector;
 import akostenko.aicars.track.Track;
 import akostenko.aicars.track.TrackSection;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -40,11 +39,12 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.StateBasedGame;
 
-import java.awt.Font;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
@@ -70,7 +70,7 @@ public class RaceState extends GraphicsGameState {
     private final Scale scale = new Scale(1, 20);
     private final Color trackBorder = new Color(100, 100, 100);
 
-    private final ForkJoinPool executor = ForkJoinPool.commonPool();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     public int getID() {
@@ -263,12 +263,14 @@ public class RaceState extends GraphicsGameState {
         msSinceLastCollisionDetection += delta;
 
         if (msSinceLastCarUpdates >= msBetweenCarUpdates) {
-            executor.submit(() -> cars.forEach(car -> car.update(msSinceLastCarUpdates)));
+            cars.forEach(car -> car.update(msSinceLastCarUpdates));
+//            executor.submit(() -> cars.forEach(car -> car.update(msSinceLastCarUpdates)));
             msSinceLastCarUpdates = 0;
         }
 
         if (msSinceLastCollisionDetection >= msBetweenCollisionDetections) {
-            executor.submit(() -> cars.forEach(car -> detectCollision(car, msSinceLastCollisionDetection)));
+//            executor.submit(() -> cars.forEach(car -> detectCollision(car, msSinceLastCollisionDetection)));
+            cars.forEach(car -> detectCollision(car, msSinceLastCollisionDetection));
             msSinceLastCollisionDetection = 0;
         }
     }
