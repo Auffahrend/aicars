@@ -1,21 +1,11 @@
 package akostenko.aicars.menu
 
-import java.util.Arrays
-
 class ModeMenu : AbstractSubMenu<Mode>() {
-    private val modes = Arrays.asList(
-            WithPlayer(),
-            CarPerformanceTests(),
-            CarPhysicsTests())
+    private val modes = listOf(WithPlayer(), CarPerformanceTests(), CarPhysicsTests())
 
-    override val title: String
-        get() = "Mode"
+    override val title: String = "Mode"
 
-    override fun enter() {
+    override fun enter() {}
 
-    }
-
-    override fun items(): List<Mode> {
-        return modes
-    }
+    override val items: List<Mode> = modes
 }

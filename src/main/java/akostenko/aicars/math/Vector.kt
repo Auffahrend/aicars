@@ -6,8 +6,8 @@ interface Vector {
     fun toDecart(): Decart
     operator fun plus(v: Vector): Vector
     operator fun minus(v: Vector): Vector
-    fun negative(): Vector
-    fun multi(k: Double): Vector
+    operator fun unaryMinus(): Vector
+    operator fun times(k: Double): Vector
     operator fun div(k: Double): Vector
     fun rotate(radians: Double): Vector
     fun module(): Double

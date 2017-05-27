@@ -22,22 +22,22 @@ internal class SettableCar<DRIVER : Driver>(driver: DRIVER, track: Track) : Car<
         return this
     }
 
-    fun getTorque(rps: Double): Double? {
+    fun getTorque(rps: Double): Double {
         return torqueMap.get(rps)
     }
 
     /** m/s^2  */
-    val downforceA: Double?
+    val downforceA: Double
         get() = downforceF() / mass
 
-    val rps: Double?
+    val rps: Double
         get() = rps()
 
     /** m/s^2  */
-    val frontTurningForceA: Double?
+    val frontTurningForceA: Double
         get() = frontSlipF().dot(heading.rotate(PI / 2)) / mass
 
     /** m/s^2  */
-    val rearTurningForceA: Double?
+    val rearTurningForceA: Double
         get() = rearSlipF().dot(heading.rotate(PI / 2)) / mass
 }

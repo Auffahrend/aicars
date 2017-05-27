@@ -10,40 +10,27 @@ import java.util.function.Consumer
 import java.util.function.Predicate
 import java.util.stream.Stream
 
-class ComboKeyAction {
+class ComboKeyAction(private val action: () -> Unit,
+                     vararg keys: Int,
+                     private val predicate: () -> Boolean = { true }) {
     private val thisListener: KeyListener
-    private val combo: Collection<IsKeyDownListener>
-    private val predicate: Predicate<Void>
-    private val action: Consumer<Void>
-
-    constructor(action: Consumer<Void>, vararg keys: Int) {
-        this.action = action
-        thisListener = SingleKeyAction({ v -> testCombo() }, keys[0])
-        combo = Arrays.stream(keys)
-                .boxed()
-                .map<IsKeyDownListener>(Function<Int, IsKeyDownListener> { IsKeyDownListener(it) })
-                .collect<List<IsKeyDownListener>, Any>(toList<IsKeyDownListener>())
-        predicate = { v -> true }
-    }
-
-    constructor(action: Consumer<Void>, key: Int, predicate: Predicate<Void>) {
-        this.action = action
-        thisListener = SingleKeyAction({ v -> testCombo() }, key)
-        combo = Stream.of(key)
-                .map<IsKeyDownListener>(Function<Int, IsKeyDownListener> { IsKeyDownListener(it) })
-                .collect<List<IsKeyDownListener>, Any>(toList<IsKeyDownListener>())
-        this.predicate = predicate
-    }
+    private val combo: List<IsKeyDownListener>
 
     private fun testCombo() {
-        if (combo.stream().allMatch { it.isDown } && predicate.test(null)) {
-            action.accept(null)
+        if (predicate() && combo.all { it.isDown }) {
+            action()
         }
     }
 
-    fun listeners(): Collection<KeyListener> {
-        val listeners = ArrayList<KeyListener>(combo)
-        listeners.add(thisListener)
-        return listeners
+    fun listeners(): Array<KeyListener> {
+        return listOf(thisListener, *combo.toTypedArray()).toTypedArray()
+    }
+
+    init {
+        thisListener = SingleKeyAction({ testCombo() }, keys[0])
+        combo = Arrays.stream(keys)
+                .boxed()
+                .map({ IsKeyDownListener(it) })
+                .collect(toList())
     }
 }

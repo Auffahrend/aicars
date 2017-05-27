@@ -1,11 +1,10 @@
 package akostenko.aicars.math
 
-import akostenko.aicars.math.Vector.PRECISION
+import akostenko.aicars.math.Vector.Companion.PRECISION
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.sqrt
-import org.junit.Assert.*
-
-import org.junit.Test
 
 class PolarTest {
 
@@ -15,7 +14,7 @@ class PolarTest {
         val a = Decart(1.0, 0.0)
         val b = Decart(0.0, 1.0)
         val result = a.dot(b)
-        assertEquals(0, result, Companion.getPRECISION())
+        assertEquals(0.0, result, PRECISION)
     }
 
     @Test
@@ -24,7 +23,7 @@ class PolarTest {
         val a = Decart(2.0, 0.0)
         val b = Decart(-3.0, 0.0)
         val result = a.dot(b)
-        assertEquals(-6, result, Companion.getPRECISION())
+        assertEquals(-6.0, result, PRECISION)
     }
 
     @Test
@@ -35,8 +34,8 @@ class PolarTest {
         val result1 = a.dot(b)
         val result2 = b.dot(a)
 
-        assertEquals(3 * sqrt(2.0), result1, Companion.getPRECISION())
-        assertEquals(3 * sqrt(2.0), result2, Companion.getPRECISION())
+        assertEquals(3 * sqrt(2.0), result1, PRECISION)
+        assertEquals(3 * sqrt(2.0), result2, PRECISION)
     }
 
     @Test
@@ -45,7 +44,7 @@ class PolarTest {
         val a = Decart(2.0, 0.0)
         val b = Decart(0.0, -3.0)
         val result = a.cross(b)
-        assertEquals(-6, result, Companion.getPRECISION())
+        assertEquals(-6.0, result, PRECISION)
     }
 
     @Test
@@ -54,7 +53,7 @@ class PolarTest {
         val a = Decart(2.0, 0.0)
         val b = Decart(-3.0, 0.0)
         val result = a.cross(b)
-        assertEquals(0, result, Companion.getPRECISION())
+        assertEquals(0.0, result, PRECISION)
     }
 
     @Test
@@ -65,7 +64,7 @@ class PolarTest {
         val result1 = a.cross(b)
         val result2 = b.cross(a)
 
-        assertEquals(result1, -result2, Companion.getPRECISION())
+        assertEquals(result1, -result2, PRECISION)
     }
 
 }

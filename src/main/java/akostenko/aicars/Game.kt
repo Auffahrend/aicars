@@ -48,27 +48,27 @@ class Game : StateBasedGame(Game.GAME_NAME) {
 
     companion object {
 
-        var screenWidth: Int = 0
-        var screenHeight: Int = 0
+        var screenWidth = 0.0f
+        var screenHeight = 0.0f
         private val GAME_NAME = "AI Cars game"
 
-        private var instance: Game? = null
+        private lateinit var instance: Game
 
         fun get(): Game {
-            return instance!!
+            return instance
         }
 
         @Throws(SlickException::class)
         @JvmStatic fun main(args: Array<String>) {
             instance = Game()
             val app = AppGameContainer(instance)
-            screenHeight = app.screenHeight
-            screenWidth = app.screenWidth
-            app.setDisplayMode(screenWidth, screenHeight, true)
+            screenHeight = app.screenHeight.toFloat()
+            screenWidth = app.screenWidth.toFloat()
+            app.setDisplayMode(screenWidth.toInt(), screenHeight.toInt(), false)
             app.setMinimumLogicUpdateInterval(1)
             app.setMaximumLogicUpdateInterval(10)
             app.start()
-            instance!!.enterState(GameStateIds.getId(MenuState::class))
+            instance.enterState(GameStateIds.getId(MenuState::class))
         }
     }
 }

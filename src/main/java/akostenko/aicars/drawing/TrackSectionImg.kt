@@ -10,12 +10,12 @@ import java.util.stream.Collectors.toList
 
 object TrackSectionImg {
 
-    operator fun get(section: TrackSection, trackWidth: Double, scale: Scale, color: Color, camera: Decart): Collection<Line> {
-        val cameraPx = camera.negative().multi((scale.pixels / scale.size).toDouble())
+    fun build(section: TrackSection, trackWidth: Double, scale: Scale, color: Color, camera: Decart): Collection<Line> {
+        val cameraPx = camera.unaryMinus().times((scale.pixels / scale.size).toDouble())
         if (section.isStraight) {
             return getStraightBorderLines(section, trackWidth).stream()
                     .map { line -> line.scale(scale) }
-                    .map { line -> line.position(cameraPx, color, 3) }
+                    .map { line -> line.position(cameraPx, color, 3f) }
                     .collect(toList())
         } else {
             throw IllegalArgumentException("Not implemented")
@@ -45,7 +45,7 @@ object TrackSectionImg {
     }
 
     private fun createBorder(line: LinesBuilder.LocalLine): TrackBorder {
-        return TrackBorder(line.from(), line.to())
+        return TrackBorder(line.from, line.to)
     }
 
 }

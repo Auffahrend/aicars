@@ -24,7 +24,7 @@ class AccelerationTest(private val targetSpeed: Double // km/h
 
     override fun update(dTime: Double) {
         if (!targetReached) {
-            targetReached = car.speed().module() * 3.6 >= targetSpeed
+            targetReached = car.speed.module() * 3.6 >= targetSpeed
             time += dTime
         }
     }

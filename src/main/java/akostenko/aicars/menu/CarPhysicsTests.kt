@@ -2,8 +2,7 @@ package akostenko.aicars.menu
 
 class CarPhysicsTests : Mode() {
 
-    override val title: String
-        get() = NAME
+    override val title: String = NAME
 
     companion object {
 

@@ -8,14 +8,14 @@ import org.newdawn.slick.state.BasicGameState
 
 abstract class GraphicsGameState : BasicGameState() {
 
-    protected var cameraOffset: Decart? = null
+    protected lateinit var cameraOffset: Decart
 
     protected fun drawLine(g: Graphics, line: Line) {
         g.lineWidth = line.width.toFloat()
         g.color = line.color
         g.drawLine(
-                (line.from.x + cameraOffset!!.x).toFloat(), (line.from.y + cameraOffset!!.y).toFloat(),
-                (line.to.x + cameraOffset!!.x).toFloat(), (line.to.y + cameraOffset!!.y).toFloat())
+                (line.from.x + cameraOffset.x).toFloat(), (line.from.y + cameraOffset.y).toFloat(),
+                (line.to.x + cameraOffset.x).toFloat(), (line.to.y + cameraOffset.y).toFloat())
     }
 
 }

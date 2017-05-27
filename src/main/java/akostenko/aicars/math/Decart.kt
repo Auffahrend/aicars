@@ -28,53 +28,29 @@ class Decart(val x: Double, val y: Double) : Vector {
         return Polar(hypot(x, y), d)
     }
 
-    override fun toDecart(): Decart {
-        return this
-    }
+    override fun toDecart() : Decart = this
 
-    override fun plus(v: Vector): Decart {
-        return addDecart(v.toDecart())
-    }
+    override fun plus(v: Vector) : Decart = addDecart(v.toDecart())
 
-    internal fun addDecart(v: Decart): Decart {
-        return Decart(x + v.x, y + v.y)
-    }
+    internal fun addDecart(v: Decart) : Decart = Decart(x + v.x, y + v.y)
 
-    override fun minus(v: Vector): Decart {
-        return plus(v.negative())
-    }
+    override fun minus(v: Vector) : Decart = plus(-v)
 
-    override fun negative(): Decart {
-        return multi(-1.0)
-    }
+    override fun unaryMinus(): Decart = times(-1.0)
 
-    override fun multi(k: Double): Decart {
-        return Decart(x * k, y * k)
-    }
+    override fun times(k: Double): Decart = Decart(x * k, y * k)
 
-    override fun div(k: Double): Vector {
-        return multi(1.0 / k)
-    }
+    override fun div(k: Double): Decart = times(1.0 / k)
 
-    override fun rotate(radians: Double): Decart {
-        return toPolar().rotate(radians).toDecart()
-    }
+    override fun rotate(radians: Double): Decart = toPolar().rotate(radians).toDecart()
 
-    override fun module(): Double {
-        return hypot(x, y)
-    }
+    override fun module(): Double = hypot(x, y)
 
-    override fun moduleSqr(): Double {
-        return pow(module(), 2.0)
-    }
+    override fun moduleSqr(): Double = pow(module(), 2.0)
 
-    override fun dot(v: Vector): Double {
-        return toPolar().dot(v.toPolar())
-    }
+    override fun dot(v: Vector): Double = toPolar().dot(v.toPolar())
 
-    override fun cross(v: Vector): Double {
-        return toPolar().cross(v.toPolar())
-    }
+    override fun cross(v: Vector): Double = toPolar().cross(v.toPolar())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

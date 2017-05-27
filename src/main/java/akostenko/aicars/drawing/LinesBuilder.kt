@@ -33,7 +33,7 @@ internal class LinesBuilder {
     /** All this lines are correct only while image is centered at (0, 0)
      * They are incompatible with [Line] while are unscaled and have no color
      */
-    internal class LocalLine(private val from:Vector, private val to:Vector) {
+    internal class LocalLine(val from:Vector, val to:Vector) {
 
         fun rotate(radians:Double):LocalLine {
             return LocalLine(from.rotate(radians), to.rotate(radians))
@@ -41,22 +41,14 @@ internal class LinesBuilder {
 
         fun scale(scale:Scale):LocalLine {
             val k = scale.pixels / scale.size
-            return LocalLine(from.multi(k.toDouble()), to.multi(k.toDouble()))
+            return LocalLine(from.times(k.toDouble()), to.times(k.toDouble()))
         }
 
-        fun position(position:Decart, color:Color, width:Int):Line {
+        fun position(position:Decart, color:Color, width:Float):Line {
             return Line(from.toDecart().plus(position),
                     to.toDecart().plus(position),
                     color,
                     width)
-        }
-
-        fun from():Vector {
-            return from
-        }
-
-        fun to():Vector {
-            return to
         }
     }
 }

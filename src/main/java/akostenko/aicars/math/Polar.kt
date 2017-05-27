@@ -7,8 +7,9 @@ import java.lang.StrictMath.sin
 
 class Polar(
         /** length of vector, always >= 0  */
-        val r: Double, d: Double) : Vector {
-    /** direction, *radians*, measured from X axis towards Y axis, always within [0, 2*PI)  */
+        r: Double, d: Double) : Vector {
+    /** direction, *radians*, measured from X axis towards Y axis, always within [-PI, +PI]  */
+    val r: Double
     val d: Double
 
     init {
@@ -19,90 +20,62 @@ class Polar(
         while (d < -PI) d += 2 * PI
         while (d > PI) d -= 2 * PI
         this.d = d
+        this.r = abs(r)
     }
 
-    override fun toPolar(): Polar {
-        return this
-    }
+    override fun toPolar() = this
 
-    override fun toDecart(): Decart {
-        return Decart(r * cos(d), r * sin(d))
-    }
+    override fun toDecart() = Decart(r * cos(d), r * sin(d))
 
-    override fun plus(v: Vector): Polar {
-        return toDecart().plus(v.toDecart()).toPolar()
-    }
+    override fun plus(v: Vector) = toDecart().plus(v.toDecart()).toPolar()
 
-    override fun minus(v: Vector): Polar {
-        return plus(v.negative())
-    }
+    override fun minus(v: Vector) = plus(-v)
 
-    override fun negative(): Polar {
-        return multi(-1.0)
-    }
+    override fun unaryMinus() = times(-1.0)
 
-    override fun multi(k: Double): Polar {
+    override fun times(k: Double): Polar {
         if (k == 0.0) {
             return ZERO
         } else {
-            return Polar(r * abs(k), d + if (k > 0) 0 else PI)
+            return Polar(r * abs(k), d + if (k > 0) 0.0 else StrictMath.PI)
         }
     }
 
-    override fun div(k: Double): Polar {
-        return multi(1.0 / k)
-    }
+    override fun div(k: Double) = times(1.0 / k)
 
-    override fun rotate(radians: Double): Polar {
-        return Polar(r, d + radians)
-    }
+    override fun rotate(radians: Double) = Polar(r, d + radians)
 
-    override fun module(): Double {
-        return r
-    }
+    override fun module() = r
 
-    override fun moduleSqr(): Double {
-        return r * r
-    }
+    override fun moduleSqr() = r * r
 
     override fun dot(v: Vector): Double {
-        val b = v.toPolar()
-        return r * b.r * cos(d - b.d)
+        val other = v.toPolar()
+        return r * other.r * cos(d - other.d)
     }
 
     override fun cross(v: Vector): Double {
-        val b = v.toPolar()
-        return r * b.r * sin(b.d - d)
+        val other = v.toPolar()
+        return r * other.r * sin(other.d - d)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
 
         val polar: Polar
-        if (o is Vector) {
-            polar = o.toPolar()
-        } else
-            return false
-
-        return polar.r - r < Vector.PRECISION && polar.d - d < Vector.PRECISION
+        if (other is Vector) {
+            polar = other.toPolar()
+            return abs(polar.r - r) < Vector.PRECISION && abs(polar.d - d) < Vector.PRECISION
+        } else return false
     }
 
     override fun hashCode(): Int {
-        var result: Int
-        var temp: Long
-        temp = java.lang.Double.doubleToLongBits(r)
-        result = (temp xor temp.ushr(32)).toInt()
-        temp = java.lang.Double.doubleToLongBits(d)
-        result = 31 * result + (temp xor temp.ushr(32)).toInt()
+        var result = r.hashCode()
+        result = 31 * result + d.hashCode()
         return result
     }
 
-    override fun toString(): String {
-        return "Polar{" +
-                "r=" + r +
-                ", d=" + d +
-                '}'
-    }
+    override fun toString(): String = "Polar(r=$r, d=$d)"
 
     companion object {
         val ZERO = Polar(0.0, 0.0)

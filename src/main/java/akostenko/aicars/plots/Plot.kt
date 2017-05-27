@@ -1,21 +1,31 @@
 package akostenko.aicars.plots
 
+import akostenko.aicars.math.Decart
 import java.lang.Double.max
 import java.lang.Double.min
 import java.lang.StrictMath.pow
-
-import akostenko.aicars.math.Decart
-
-import java.util.ArrayList
+import java.util.*
 import java.util.function.Function
 
-internal class Plot(private val name: String, private val xAxis: String, private val yAxis: String, private val fromInit: Double, private val toInit: Double, private val plotFunction: Function<Double, Double>, private val xPixels: Float, private val xPrecision: Int, private val yPrecision: Int) {
+internal class Plot(val name: String,
+                    val xAxis: String,
+                    val yAxis: String,
+                    private val fromInit: Double,
+                    private val toInit: Double,
+                    private val plotFunction: (Double) -> Double,
+                    private val xPixels: Float,
+                    val xPrecision: Int,
+                    val yPrecision: Int) {
 
-    private var from: Double = 0.toDouble()
-    private var to: Double = 0.toDouble()
-    private val plotData = ArrayList<Decart>()
-    private var minY: Double = 0.toDouble()
-    private var maxY: Double = 0.toDouble()
+    var from: Double = 0.0
+        private set
+    var to: Double = 0.0
+        private set
+    val plotData = mutableListOf<Decart>()
+    var minY: Double = 0.0
+        private set
+    var maxY: Double = 0.0
+        private set
 
     init {
         from = fromInit
@@ -48,7 +58,7 @@ internal class Plot(private val name: String, private val xAxis: String, private
         plotData.clear()
         var x = from
         while (x <= to) {
-            plotData.add(Decart(x, plotFunction.apply(x)))
+            plotData.add(Decart(x, plotFunction(x)))
             x += dx
         }
 
@@ -58,45 +68,5 @@ internal class Plot(private val name: String, private val xAxis: String, private
             minY = min(minY, point.y)
             maxY = max(maxY, point.y)
         }
-    }
-
-    fun name(): String {
-        return name
-    }
-
-    fun xAxis(): String {
-        return xAxis
-    }
-
-    fun yAxis(): String {
-        return yAxis
-    }
-
-    fun getPlotData(): List<Decart> {
-        return plotData
-    }
-
-    fun from(): Double {
-        return from
-    }
-
-    fun to(): Double {
-        return to
-    }
-
-    fun minY(): Double {
-        return minY
-    }
-
-    fun maxY(): Double {
-        return maxY
-    }
-
-    fun xPrecision(): Int {
-        return xPrecision
-    }
-
-    fun yPrecision(): Int {
-        return yPrecision
     }
 }

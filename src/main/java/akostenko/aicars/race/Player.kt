@@ -19,12 +19,12 @@ class Player : Driver() {
 
     fun accelerate(apply: Boolean, ms: Double) {
         accelerating += ms / 1000 * fullInputTime * accelerationSensitivity * (if (apply) 1 else -3).toDouble()
-        accelerating = if (accelerating < 0) 0 else if (accelerating > 1) 1 else accelerating
+        accelerating = if (accelerating < 0) 0.0 else if (accelerating > 1) 1.0 else accelerating
     }
 
     fun breaks(apply: Boolean, ms: Double) {
         breaking += ms / 1000 * fullInputTime * breakingSensitivity * (if (apply) 1 else -3).toDouble()
-        breaking = if (breaking < 0) 0 else if (breaking > 1) 1 else breaking
+        breaking = if (breaking < 0) 0.0 else if (breaking > 1) 1.0 else breaking
     }
 
     fun turn(left: Boolean, right: Boolean, ms: Double) {
@@ -35,10 +35,10 @@ class Player : Driver() {
         if (!left && !right) {
             // inertia of steering
             steeringDelta = min(steeringDelta, abs(steering))
-            steeringDelta = if (steering > 0) -steeringDelta else if (steering < 0) steeringDelta else 0
+            steeringDelta = if (steering > 0) -steeringDelta else if (steering < 0) steeringDelta else 0.0
             steering += steeringDelta
         } else {
-            steering = if (steering < -1) -1 else if (steering > 1) 1 else steering
+            steering = if (steering < -1) -1.0 else if (steering > 1) 1.0 else steering
         }
     }
 
@@ -54,7 +54,7 @@ class Player : Driver() {
         return steering
     }
 
-    override fun update(seconds: Double) {
+    override fun update(dTime: Double) {
 
     }
 }

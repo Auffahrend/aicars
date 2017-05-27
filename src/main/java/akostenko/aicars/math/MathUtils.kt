@@ -17,7 +17,7 @@ object MathUtils {
         // y = kx + y0
         val k = (y2 - y1) / (x2 - x1)
         val y0 = y1 - x1 * k
-        return { x : Double -> k * x + y0 }
+        return { x -> k * x + y0 }
     }
 
 }

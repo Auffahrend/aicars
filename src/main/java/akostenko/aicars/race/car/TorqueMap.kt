@@ -1,40 +1,36 @@
 package akostenko.aicars.race.car
 
-import akostenko.aicars.math.MathUtils.linear
-import java.util.Comparator.comparing
-
 import akostenko.aicars.math.Decart
-
-import java.util.ArrayList
-import java.util.Arrays
+import akostenko.aicars.math.MathUtils.linear
+import java.util.*
+import java.util.Comparator.comparing
 import java.util.function.Function
 
-class TorqueMap
 /** points' Xs are RPS and Ys are torque.  */
-(vararg points: Decart) {
-    internal val rpsPoints: MutableList<Double> = ArrayList()
-    internal val torqueApproximations: MutableList<Function<Double, Double>> = ArrayList()
+class TorqueMap(vararg points: Decart) {
+    internal val rpsPoints = mutableListOf<Double>()
+    internal val torqueApproximations = mutableListOf<(Double) -> Double>()
 
     init {
-        Arrays.sort(points, comparing(Function<Decart, Double> { it.getX() }))
+        val sortedPoints = points.toList().sortedBy { it.x }
 
-        if (points.size < 1) {
+        if (sortedPoints.isEmpty()) {
             throw IllegalArgumentException("Torque map must contain at least 1 point!")
         }
 
-        if (points.size == 1) {
+        if (sortedPoints.size == 1) {
             // constant torque
-            addApproximation(0.0, { rps -> points[0].y })
+            addApproximation(0.0, { _ -> sortedPoints.single().y })
         }
 
-        for (i in 0..points.size - 1 - 1) {
-            val _1 = points[i]
-            val _2 = points[i + 1]
-            addApproximation(_1.x, linear(_1.x, _1.y, _2.x, _2.y))
+        for (i in 0..sortedPoints.size - 1 - 1) {
+            val from = sortedPoints[i]
+            val to = sortedPoints[i + 1]
+            addApproximation(from.x, linear(from.x, from.y, to.x, to.y))
         }
     }
 
-    private fun addApproximation(rps: Double, torqueApproximation: Function<Double, Double>) {
+    private fun addApproximation(rps: Double, torqueApproximation: (Double) -> Double) {
         rpsPoints.add(rps)
         torqueApproximations.add(torqueApproximation)
     }
@@ -46,13 +42,11 @@ class TorqueMap
         } else if (rps > rpsPoints[rpsPoints.size - 1]) {
             approximation = torqueApproximations[torqueApproximations.size - 1]
         } else {
-            for (i in 0..rpsPoints.size - 1 - 1) {
-                if (rps >= rpsPoints[i] && rps < rpsPoints[i + 1]) {
-                    approximation = torqueApproximations[i]
-                }
-            }
+            (0..rpsPoints.size - 1 - 1)
+                    .filter { rps >= rpsPoints[it] && rps < rpsPoints[it + 1] }
+                    .forEach { approximation = torqueApproximations[it] }
         }
 
-        return approximation.apply(rps)
+        return approximation(rps)
     }
 }

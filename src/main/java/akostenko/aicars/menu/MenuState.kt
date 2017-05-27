@@ -1,29 +1,24 @@
 package akostenko.aicars.menu
 
+import akostenko.aicars.Game
+import akostenko.aicars.GameSettings
+import akostenko.aicars.GameStateIds
+import akostenko.aicars.keyboard.KeyboardHelper
+import akostenko.aicars.keyboard.SingleKeyAction
 import org.lwjgl.input.Keyboard.KEY_DOWN
 import org.lwjgl.input.Keyboard.KEY_LEFT
 import org.lwjgl.input.Keyboard.KEY_RETURN
 import org.lwjgl.input.Keyboard.KEY_RIGHT
 import org.lwjgl.input.Keyboard.KEY_UP
-
-import akostenko.aicars.GameStateIds
-import akostenko.aicars.Game
-import akostenko.aicars.GameSettings
-import akostenko.aicars.keyboard.KeyboardHelper
-import akostenko.aicars.keyboard.SingleKeyAction
 import org.newdawn.slick.Color
 import org.newdawn.slick.GameContainer
 import org.newdawn.slick.Graphics
-import org.newdawn.slick.Input
 import org.newdawn.slick.KeyListener
 import org.newdawn.slick.SlickException
 import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.BasicGameState
 import org.newdawn.slick.state.StateBasedGame
-
 import java.awt.Font
-import java.util.ArrayList
-import java.util.Arrays
 
 class MenuState : BasicGameState() {
 
@@ -43,7 +38,7 @@ class MenuState : BasicGameState() {
     private val startButton = StartButton()
     private val modeMenu = ModeMenu()
     private val trackMenu = TrackMenu()
-    private val menu = Arrays.asList<SubMenu<*>>(startButton, modeMenu, trackMenu)
+    private val menu = listOf(startButton, modeMenu, trackMenu)
 
     private var currentMenu = 0
 
@@ -58,22 +53,23 @@ class MenuState : BasicGameState() {
     private val subMenuWidth = Game.screenWidth * 0.2f
     private val submenuFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, subMenuHeight), true)
     private val itemFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, subMenuItemHeight), true)
-    private val listeners = ArrayList<KeyListener>()
+    private val listeners = mutableListOf<KeyListener>()
 
     override fun getID(): Int {
-        return GameStateIds.getId(this.javaClass)
+        return GameStateIds.getId(this::class)
     }
 
     @Throws(SlickException::class)
     override fun init(container: GameContainer, game: StateBasedGame) {
         val input = container.input
-        GameSettings.get().globalListeners.forEach(Consumer<KeyListener> { input.addKeyListener(it) })
-        KeyboardHelper.keyListeners.forEach(Consumer<KeyListener> { input.addKeyListener(it) })
-        listeners.add(SingleKeyAction({ v -> menuChange(-1) }, KEY_UP))
-        listeners.add(SingleKeyAction({ v -> menuChange(+1) }, KEY_DOWN))
-        listeners.add(SingleKeyAction({ v -> selectionChange(-1) }, KEY_LEFT))
-        listeners.add(SingleKeyAction({ v -> selectionChange(+1) }, KEY_RIGHT))
-        listeners.add(SingleKeyAction({ v -> enter() }, KEY_RETURN))
+        GameSettings.instance.globalListeners.forEach( { input.addKeyListener(it) })
+        KeyboardHelper.keyListeners.forEach( { input.addKeyListener(it) })
+
+        listeners.add(SingleKeyAction({ -> menuChange(-1) }, KEY_UP))
+        listeners.add(SingleKeyAction({ -> menuChange(+1) }, KEY_DOWN))
+        listeners.add(SingleKeyAction({ -> selectionChange(-1) }, KEY_LEFT))
+        listeners.add(SingleKeyAction({ -> selectionChange(+1) }, KEY_RIGHT))
+        listeners.add(SingleKeyAction({ -> enter() }, KEY_RETURN))
 
         container.setTargetFrameRate(60)
     }
@@ -138,20 +134,19 @@ class MenuState : BasicGameState() {
     override fun leave(container: GameContainer?, game: StateBasedGame?) {
         super.leave(container, game)
         listeners.forEach { listener -> container!!.input.removeKeyListener(listener) }
-        GameSettings.get()
-                .save()
+        GameSettings.instance.save()
     }
 
     private fun updateGameSettings() {
-        GameSettings.get()
-                .setTrack(trackMenu.current).mode = modeMenu.current
+        GameSettings.instance.track = trackMenu.current
+        GameSettings.instance.mode = modeMenu.current
     }
 
     @Throws(SlickException::class)
     override fun enter(container: GameContainer?, game: StateBasedGame?) {
         super.enter(container, game)
-        trackMenu.current = GameSettings.get().track
-        modeMenu.current = GameSettings.get().mode
+        trackMenu.current = GameSettings.instance.track
+        modeMenu.current = GameSettings.instance.mode
         listeners.forEach { listener -> container!!.input.addKeyListener(listener) }
 
     }

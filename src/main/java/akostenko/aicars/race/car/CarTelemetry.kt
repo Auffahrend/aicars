@@ -1,11 +1,10 @@
 package akostenko.aicars.race.car
 
 import org.newdawn.slick.Color
-import java.util.*
 
 class CarTelemetry(val car: Car<*>) {
-    val scalars: List<CarTelemetryScalar> = ArrayList()
-    val vectors: List<CarTelemetryVector> = ArrayList()
+    val scalars = mutableListOf<CarTelemetryScalar>()
+    val vectors = mutableListOf<CarTelemetryVector>()
 
     companion object {
         val breakingColor = Color(250, 70, 70)

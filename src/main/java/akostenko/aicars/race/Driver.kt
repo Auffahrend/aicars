@@ -3,7 +3,7 @@ package akostenko.aicars.race
 import akostenko.aicars.race.car.Car
 
 abstract class Driver {
-    var car: Car<*>? = null
+    lateinit var car: Car<*>
 
 
     abstract fun accelerating(): Double

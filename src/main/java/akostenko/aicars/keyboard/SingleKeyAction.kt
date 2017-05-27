@@ -5,11 +5,11 @@ import org.newdawn.slick.KeyListener
 
 import java.util.function.Consumer
 
-class SingleKeyAction(private val action: Consumer<Void>, private val key: Int) : KeyListener {
+class SingleKeyAction(private val action: () -> Unit, private val key: Int) : KeyListener {
 
     override fun keyPressed(key: Int, c: Char) {
         if (this.key == key) {
-            action.accept(null)
+            action()
         }
     }
 

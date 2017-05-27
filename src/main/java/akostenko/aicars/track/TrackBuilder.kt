@@ -1,34 +1,30 @@
 package akostenko.aicars.track
 
-import java.lang.Math.toRadians
-import java.lang.StrictMath.PI
-
 import akostenko.aicars.math.Decart
 import akostenko.aicars.math.Polar
 import akostenko.aicars.math.Vector
+import java.lang.Math.toRadians
+import java.lang.StrictMath.PI
+import java.util.*
 
-import java.util.ArrayList
-import java.util.Collections
+internal class TrackBuilder private constructor(private var heading: Double,
+                            private var currentPosition: Vector,
+                            private val width: Double,
+                            private var totalLength: Int) {
 
-internal class TrackBuilder {
-
-    private var heading: Double = 0.toDouble()
-    private var currentPosition: Vector? = null
-    private var width: Double = 0.toDouble()
-    private val track = ArrayList<TrackSection>()
-    private var totalLength: Int = 0
+    private val sections = mutableListOf<TrackSection>()
 
     fun straight(length: Double): TrackBuilder {
-        track.add(TrackSection(totalLength, track.size, currentPosition, length, 0.0, heading, width))
+        sections.add(TrackSection(totalLength, sections.size, currentPosition, length, 0.0, heading, width))
         totalLength += length.toInt()
-        currentPosition = currentPosition!!.plus(Polar(length, heading))
+        currentPosition = currentPosition.plus(Polar(length, heading))
         return this
     }
 
     fun right(radius: Double, degrees: Double): TrackBuilder {
         val angle = toRadians(degrees)
-        track.add(TrackSection(totalLength, track.size, currentPosition, angle * radius, radius, heading, width))
-        val turnCenter = currentPosition!!.plus(Polar(radius, heading + PI / 2))
+        sections.add(TrackSection(totalLength, sections.size, currentPosition, angle * radius, radius, heading, width))
+        val turnCenter = currentPosition.plus(Polar(radius, heading + PI / 2))
         totalLength += (radius * toRadians(degrees)).toInt()
         currentPosition = turnCenter.plus(Polar(radius, PI + PI / 2 + heading + angle))
         heading += angle
@@ -37,8 +33,8 @@ internal class TrackBuilder {
 
     fun left(radius: Double, degrees: Double): TrackBuilder {
         val angle = toRadians(degrees)
-        track.add(TrackSection(totalLength, track.size, currentPosition, angle * radius, -radius, heading, width))
-        val turnCenter = currentPosition!!.plus(Polar(radius, heading - PI / 2))
+        sections.add(TrackSection(totalLength, sections.size, currentPosition, angle * radius, -radius, heading, width))
+        val turnCenter = currentPosition.plus(Polar(radius, heading - PI / 2))
         totalLength += (radius * toRadians(degrees)).toInt()
         currentPosition = turnCenter.plus(Polar(radius, PI + heading - PI / 2 - angle))
         heading -= angle
@@ -46,19 +42,11 @@ internal class TrackBuilder {
     }
 
     fun done(): List<TrackSection> {
-        return Collections.unmodifiableList(track)
+        return sections.toList()
     }
 
     companion object {
-
-        fun start(x: Double, y: Double, heading: Double, width: Double): TrackBuilder {
-            val trackBuilder = TrackBuilder()
-            trackBuilder.heading = heading
-            trackBuilder.currentPosition = Decart(x, y)
-            trackBuilder.width = width
-            trackBuilder.totalLength = 0
-            return trackBuilder
-        }
+        fun start(x: Double, y: Double, heading: Double, width: Double): TrackBuilder = TrackBuilder(heading, Decart(x, y), width, 0)
     }
 
 }

@@ -2,8 +2,7 @@ package akostenko.aicars.race.cartest
 
 import akostenko.aicars.race.Driver
 
-class AccelerationAndBreakingTest(private val targetSpeed: Double // m/s
-) : Driver() {
+class AccelerationAndBreakingTest(private val targetSpeed: Double) : Driver() {
     private var time = 0.0
     private var speedReached: Boolean = false
     private var targetReached: Boolean = false
@@ -25,8 +24,8 @@ class AccelerationAndBreakingTest(private val targetSpeed: Double // m/s
 
     override fun update(dTime: Double) {
         if (!targetReached) {
-            speedReached = speedReached || car.speed().module() * 3.6 >= targetSpeed
-            targetReached = speedReached && car.speed().module() <= 0.1
+            speedReached = speedReached || car.speed.module() * 3.6 >= targetSpeed
+            targetReached = speedReached && car.speed.module() <= 0.1
             time += dTime
         }
     }

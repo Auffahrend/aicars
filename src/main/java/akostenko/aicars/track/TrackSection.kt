@@ -11,7 +11,7 @@ class TrackSection internal constructor(distanceFromStart: Int,
                                         val indexOnTrack: Int,
                                         val start: Vector,
                                         val length: Double,
-                                        val radius: Double,
+                                        radius: Double,
                                         val heading: Double // for turns it's a tangent line to the beginning point
                                         , val width: Double) {
     val wayPoints: List<TrackWayPoint>
@@ -44,12 +44,9 @@ class TrackSection internal constructor(distanceFromStart: Int,
         this.wayPoints = Collections.unmodifiableList(wayPoints)
     }
 
-    val isStraight: Boolean
-        get() = radius == 0.0
-
+    val isStraight: Boolean = radius == 0.0
 
     companion object {
-
         private val wayPointStep = 1 // m
     }
 }

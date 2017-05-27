@@ -2,7 +2,6 @@ package akostenko.aicars.keyboard
 
 import org.newdawn.slick.Input
 import org.newdawn.slick.KeyListener
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class IsKeyDownListener(private val key: Int) : KeyListener {

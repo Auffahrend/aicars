@@ -8,8 +8,8 @@ abstract class Mode : MenuItem {
         return Objects.hash(title)
     }
 
-    override fun equals(obj: Any?): Boolean {
-        return obj is Mode && title == obj.title
+    override fun equals(other: Any?): Boolean {
+        return other is Mode && title == other.title
     }
 
     companion object {
@@ -22,8 +22,6 @@ abstract class Mode : MenuItem {
             }
         }
 
-        private fun defaultMode(): Mode {
-            return WithPlayer()
-        }
+        private fun defaultMode(): Mode = WithPlayer()
     }
 }

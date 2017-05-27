@@ -12,10 +12,10 @@ object Arrow {
     private val end = Polar(1.0, 0.0)
     private val finRotation = 0.8 * PI
 
-    fun get(center: Decart, lengthPx: Float, rotation: Double, color: Color, widthPx: Int): Collection<Line> {
+    fun build(center: Decart, lengthPx: Float, rotation: Double, color: Color, widthPx: Float): Collection<Line> {
         val baseLength = start.minus(end).module().toFloat()
         val scale = Scale(baseLength, lengthPx)
-        var finLengthPx = min(lengthPx / 2, (widthPx * 5).toFloat()).toDouble()
+        var finLengthPx = min(lengthPx / 2, (widthPx * 5)).toDouble()
         if (finLengthPx < widthPx * 2) {
             finLengthPx = (widthPx * 2).toDouble()
         }

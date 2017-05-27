@@ -1,7 +1,7 @@
 package akostenko.aicars.race.car
 
 import akostenko.aicars.model.CarModel
-import akostenko.aicars.model.CarModel.Companion.tyreRadius
+import akostenko.aicars.model.CarModel.tyreRadius
 import java.lang.StrictMath.PI
 import java.util.*
 
@@ -27,7 +27,7 @@ class Gearbox(private val car: Car<*>) {
     }
 
     private fun chooseCurrentGear(): Int {
-        val shaftRPS = car.speed().module() / (2.0 * PI * tyreRadius)
+        val shaftRPS = car.speed.module() / (2.0 * PI * tyreRadius)
         for (i in gears.indices) {
             val gearRPS = gears[i].ratio * shaftRPS
             if (gearRPS < CarModel.max_rpm / 60) {
@@ -38,9 +38,8 @@ class Gearbox(private val car: Car<*>) {
         return gears.size - 1 // over RPS on highest gear
     }
 
-    internal fun ratio(): Double {
-        return gears[current].ratio
-    }
+    internal val ratio: Double
+        get() = gears[current].ratio
 
     private class Gear internal constructor(maxSpeed: Double, rpm: Double, tyreRadius: Double) {
         internal val ratio: Double

@@ -1,16 +1,5 @@
 package akostenko.aicars.race
 
-import akostenko.aicars.race.car.CarTelemetry.accelerationColor
-import akostenko.aicars.race.car.CarTelemetry.breakingColor
-import akostenko.aicars.race.car.CarTelemetry.textColor
-import java.lang.Math.PI
-import java.util.Comparator.comparing
-import java.util.Comparator.reverseOrder
-import org.lwjgl.input.Keyboard.KEY_DOWN
-import org.lwjgl.input.Keyboard.KEY_LEFT
-import org.lwjgl.input.Keyboard.KEY_RIGHT
-import org.lwjgl.input.Keyboard.KEY_UP
-
 import akostenko.aicars.Game
 import akostenko.aicars.GameSettings
 import akostenko.aicars.GameStateIds
@@ -22,15 +11,20 @@ import akostenko.aicars.drawing.Scale
 import akostenko.aicars.drawing.TrackSectionImg
 import akostenko.aicars.keyboard.IsKeyDownListener
 import akostenko.aicars.math.Decart
-import akostenko.aicars.math.Vector
 import akostenko.aicars.menu.CarPerformanceTests
 import akostenko.aicars.menu.WithPlayer
 import akostenko.aicars.race.car.Car
-import akostenko.aicars.race.car.CarTelemetry
+import akostenko.aicars.race.car.CarTelemetry.Companion.accelerationColor
+import akostenko.aicars.race.car.CarTelemetry.Companion.breakingColor
+import akostenko.aicars.race.car.CarTelemetry.Companion.textColor
 import akostenko.aicars.race.car.CarTelemetryScalar
 import akostenko.aicars.race.car.CarTelemetryVector
 import akostenko.aicars.track.Track
 import akostenko.aicars.track.TrackSection
+import org.lwjgl.input.Keyboard.KEY_DOWN
+import org.lwjgl.input.Keyboard.KEY_LEFT
+import org.lwjgl.input.Keyboard.KEY_RIGHT
+import org.lwjgl.input.Keyboard.KEY_UP
 import org.newdawn.slick.Color
 import org.newdawn.slick.GameContainer
 import org.newdawn.slick.Graphics
@@ -38,32 +32,29 @@ import org.newdawn.slick.KeyListener
 import org.newdawn.slick.SlickException
 import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.StateBasedGame
-
-import java.awt.*
-import java.util.ArrayList
-import java.util.concurrent.ExecutorService
+import java.awt.Font
+import java.lang.Math.PI
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
-import java.util.stream.IntStream
 
 class RaceState : GraphicsGameState() {
 
-    private var cars: MutableCollection<Car<*>>? = null
+    private lateinit var cars: MutableCollection<Car<*>>
     private var playerCar: Car<Player>? = null
-    private var track: Track? = null
+    private lateinit var track: Track
     private var msSinceLastCollisionDetection = 0
     private var msSinceLastCarUpdates = 0
 
     private val msBetweenCollisionDetections = 1
     private val msBetweenCarUpdates = 10
-    private val listeners = ArrayList<KeyListener>()
+    private lateinit var listeners : List<KeyListener>
     private val accelerateListener = IsKeyDownListener(KEY_UP)
     private val brakeListener = IsKeyDownListener(KEY_DOWN)
     private val turnLeftListener = IsKeyDownListener(KEY_LEFT)
     private val turnRightListener = IsKeyDownListener(KEY_RIGHT)
     private val telemetryTextSize = 14
-    private val lineWidth = 3
-    private val fatLineWidth = 5
+    private val lineWidth = 3f
+    private val fatLineWidth = 5f
     private val telemetryFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true)
     private val scale = Scale(1f, 20f)
     private val trackBorder = Color(100, 100, 100)
@@ -71,7 +62,7 @@ class RaceState : GraphicsGameState() {
     private val executor = Executors.newSingleThreadExecutor()
 
     override fun getID(): Int {
-        return GameStateIds.getId(this.javaClass)
+        return GameStateIds.getId(this::class)
     }
 
     @Throws(SlickException::class)
@@ -82,28 +73,26 @@ class RaceState : GraphicsGameState() {
     }
 
     private fun reset() {
-        cars = ArrayList<Car<*>>()
+        cars = mutableListOf()
         playerCar = null
-        val settings = GameSettings.get()
-        track = settings.track
-        if (settings.mode is WithPlayer) {
-            playerCar = Car(Player(), track)
-            cars!!.add(playerCar)
-        } else if (settings.mode is CarPerformanceTests) {
-            (settings.mode as CarPerformanceTests).drivers
-                    .forEach { driver -> cars!!.add(Car(driver, track)) }
+        this.track = GameSettings.instance.track
+        with(GameSettings.instance) {
+            if (mode is WithPlayer) {
+                playerCar = Car(Player(), track)
+                cars.add(playerCar!!)
+            } else if (mode is CarPerformanceTests) {
+                (mode as CarPerformanceTests).drivers
+                        .forEach { driver -> cars.add(Car(driver, track)) }
+            } else {}
         }
 
-        val trackStart = track!!.sections()[0]
-        cars!!.forEach { car -> car.turn(trackStart.heading).move(trackStart.start) }
+        val trackStart = track.sections.first()
+        cars.forEach { car -> car.turn(trackStart.heading).move(trackStart.start) }
     }
 
     @Throws(SlickException::class)
     override fun init(container: GameContainer, game: StateBasedGame) {
-        listeners.add(accelerateListener)
-        listeners.add(brakeListener)
-        listeners.add(turnLeftListener)
-        listeners.add(turnRightListener)
+        listeners = listOf(accelerateListener, brakeListener, turnLeftListener, turnRightListener)
 
         container.setTargetFrameRate(100)
         cameraOffset = Decart((Game.screenWidth / 2).toDouble(), (Game.screenHeight / 2).toDouble())
@@ -117,47 +106,44 @@ class RaceState : GraphicsGameState() {
 
     @Throws(SlickException::class)
     override fun render(container: GameContainer, game: StateBasedGame, g: Graphics) {
-        val focused = focusedCar
+        val focused = focusedCar()
 
         drawTrack(g, focused, track)
-        cars!!.forEach { car -> drawCar(g, car, focused) }
+        cars.forEach { car -> drawCar(g, car, focused) }
         drawCarTelemetry(g, focused)
 
-        if (cars!!.size > 1) {
+        if (cars.size > 1) {
             drawDriverPositions(g)
         }
     }
 
     private fun drawCar(g: Graphics, car: Car<*>, focused: Car<*>) {
-        CarImg.get(car, focused.position, textColor, scale)
+        CarImg.build(car, focused.position, textColor, scale)
                 .forEach { line -> drawLine(g, line) }
     }
 
     private fun drawTrack(g: Graphics, focused: Car<*>, track: Track) {
-        track.sections()
-                .forEach { section -> drawTrackSection(g, focused, section, track.width) }
+        track.sections.forEach { section -> drawTrackSection(g, focused, section, track.width) }
     }
 
     private fun drawTrackSection(g: Graphics, focused: Car<*>, section: TrackSection, width: Double) {
-        TrackSectionImg.get(section, width, scale, trackBorder, focused.position)
+        TrackSectionImg.build(section, width, scale, trackBorder, focused.position)
                 .forEach { line -> drawLine(g, line) }
     }
 
 
     private fun drawDriverPositions(g: Graphics) {
         g.color = textColor
-        g.lineWidth = lineWidth.toFloat()
+        g.lineWidth = lineWidth
         g.font = telemetryFont
 
-        val carPositions = ArrayList(cars!!)
-        carPositions.sort(comparing<Car<*>, Double>({ car -> getPositionOnTrack(car, track) }, reverseOrder<Double>()))
-        IntStream.range(0, cars!!.size)
-                .forEach { i ->
-                    g.drawString(
-                            String.format("%d. %s%n", i + 1, carPositions[i].driver.name),
-                            Game.screenWidth.toFloat() - telemetryLeftMargin - telemetryNameWidth * 1.5f,
-                            telemetryTopMargin + i * (telemetryTextSize + telemetrySpacing))
-                }
+        val carPositions = cars.sortedByDescending { car -> getPositionOnTrack(car, track) }
+        carPositions.indices.forEach {
+            i -> g.drawString(
+                String.format("%d. %s%n", i + 1, carPositions[i].driver.name),
+                Game.screenWidth - telemetryLeftMargin - telemetryNameWidth * 1.5f,
+                telemetryTopMargin + i * (telemetryTextSize + telemetrySpacing))
+        }
     }
 
     private fun getPositionOnTrack(car: Car<*>, track: Track): Double {
@@ -177,7 +163,7 @@ class RaceState : GraphicsGameState() {
 
     private fun drawTelemetry(g: Graphics, car: Car<*>) {
         g.font = telemetryFont
-        g.lineWidth = lineWidth.toFloat()
+        g.lineWidth = lineWidth
 
         val currentY = AtomicReference(telemetryTopMargin + telemetrySpacing)
 
@@ -191,18 +177,18 @@ class RaceState : GraphicsGameState() {
     }
 
     private fun drawTelemetryScalar(g: Graphics, value: CarTelemetryScalar, currentY: AtomicReference<Float>) {
-        g.color = value.color()
-        g.drawString(value.name(), telemetryNameX, currentY.get())
-        g.drawString(value.value(), telemetryValueX, currentY.get())
-        currentY.accumulateAndGet(telemetryTextSize + telemetrySpacing, BinaryOperator<Float> { a, b -> java.lang.Float.sum(a, b) })
+        g.color = value.color
+        g.drawString(value.name, telemetryNameX, currentY.get())
+        g.drawString(value.textValue(), telemetryValueX, currentY.get())
+        currentY.accumulateAndGet(telemetryTextSize + telemetrySpacing, { a, b -> a + b })
     }
 
     private fun drawTelemetryVector(g: Graphics, car: Car<*>, camera: Decart, item: CarTelemetryVector) {
-        val from = car.position.plus(item.appliedTo()).minus(camera).multi((scale.pixels / scale.size).toDouble())
-        val centerOffset = item.vector().multi(0.5).multi((item.scale().pixels / item.scale().size).toDouble())
-        Arrow.get(from.plus(centerOffset),
-                item.vector().module().toFloat() * item.scale().pixels / item.scale().size,
-                item.vector().toPolar().d, item.color(), lineWidth)
+        val from = (car.position + item.appliedTo - camera) * (scale.pixels / scale.size).toDouble()
+        val centerOffset = item.vector * 0.5 * (item.scale.pixels / item.scale.size).toDouble()
+        Arrow.build(from + centerOffset,
+                item.vector.module().toFloat() * item.scale.pixels / item.scale.size,
+                item.vector.toPolar().d, item.color, lineWidth)
                 .forEach { line -> drawLine(g, line) }
     }
 
@@ -210,46 +196,43 @@ class RaceState : GraphicsGameState() {
     private val arrowSpace = 3f //px
     private val grey = Color(40, 40, 40)
     private val arrowsBlock = Decart((Game.screenWidth - arrowSize * 4).toDouble(), (Game.screenHeight - arrowSize * 3).toDouble())
-    private val upArrowCenter = arrowsBlock.plus(Decart((arrowSize * 3 / 2).toDouble(), (arrowSize / 2).toDouble()))
-    private val downArrowCenter = arrowsBlock.plus(Decart((arrowSize * 3 / 2).toDouble(), (arrowSize * 3 / 2).toDouble()))
-    private val leftArrowCenter = arrowsBlock.plus(Decart((arrowSize * 1 / 2).toDouble(), (arrowSize * 3 / 2).toDouble()))
-    private val rightArrowCenter = arrowsBlock.plus(Decart((arrowSize * 5 / 2).toDouble(), (arrowSize * 3 / 2).toDouble()))
+    private val upArrowCenter = arrowsBlock + Decart((arrowSize * 3 / 2).toDouble(), (arrowSize / 2).toDouble())
+    private val downArrowCenter = arrowsBlock + Decart((arrowSize * 3 / 2).toDouble(), (arrowSize * 3 / 2).toDouble())
+    private val leftArrowCenter = arrowsBlock + Decart((arrowSize * 1 / 2).toDouble(), (arrowSize * 3 / 2).toDouble())
+    private val rightArrowCenter = arrowsBlock + Decart((arrowSize * 5 / 2).toDouble(), (arrowSize * 3 / 2).toDouble())
 
     private fun drawDriverInput(g: Graphics, driver: Driver) {
-        Arrow.get(upArrowCenter, arrowSize - arrowSpace * 2, -PI / 2,
+        Arrow.build(upArrowCenter, arrowSize - arrowSpace * 2, -PI / 2,
                 if (driver.accelerating() > 0) accelerationColor else grey,
                 if (driver.accelerating() > 0) fatLineWidth else lineWidth)
                 .forEach { line -> drawUILine(g, line) }
-        Arrow.get(downArrowCenter, arrowSize - arrowSpace * 2, PI / 2,
+        Arrow.build(downArrowCenter, arrowSize - arrowSpace * 2, PI / 2,
                 if (driver.breaking() > 0) breakingColor else grey,
                 if (driver.breaking() > 0) fatLineWidth else lineWidth)
                 .forEach { line -> drawUILine(g, line) }
-        Arrow.get(leftArrowCenter, arrowSize, PI,
+        Arrow.build(leftArrowCenter, arrowSize, PI,
                 if (turnLeftListener.isDown || driver.steering() < 0) textColor else grey,
                 if (turnLeftListener.isDown || driver.steering() < 0) fatLineWidth else lineWidth)
                 .forEach { line -> drawUILine(g, line) }
-        Arrow.get(rightArrowCenter, arrowSize, 0.0,
+        Arrow.build(rightArrowCenter, arrowSize, 0.0,
                 if (turnRightListener.isDown || driver.steering() > 0) textColor else grey,
                 if (turnRightListener.isDown || driver.steering() > 0) fatLineWidth else lineWidth)
                 .forEach { line -> drawUILine(g, line) }
     }
 
     private fun drawUILine(g: Graphics, line: Line) {
-        g.lineWidth = line.width.toFloat()
+        g.lineWidth = line.width
         g.color = line.color
         g.drawLine(
                 line.from.x.toFloat(), line.from.y.toFloat(),
                 line.to.x.toFloat(), line.to.y.toFloat())
     }
 
-    private val focusedCar: Car<*>
-        get() {
+    private fun focusedCar(): Car<*> {
             if (playerCar != null) {
-                return playerCar
+                return playerCar!!
             } else {
-                return cars!!.stream()
-                        .max(comparing<Car<*>, Int>(Function<Car<*>, Int> { it.trackDistance() }))
-                        .orElseThrow { IllegalStateException("No cars in game") }
+                return cars.maxBy { it.trackDistance }!!
             }
         }
 
@@ -263,14 +246,14 @@ class RaceState : GraphicsGameState() {
         msSinceLastCollisionDetection += delta
 
         if (msSinceLastCarUpdates >= msBetweenCarUpdates) {
-            cars!!.forEach { car -> car.update(msSinceLastCarUpdates) }
+            cars.forEach { car -> car.update(msSinceLastCarUpdates) }
             //            executor.submit(() -> cars.forEach(car -> car.update(msSinceLastCarUpdates)));
             msSinceLastCarUpdates = 0
         }
 
         if (msSinceLastCollisionDetection >= msBetweenCollisionDetections) {
             //            executor.submit(() -> cars.forEach(car -> detectCollision(car, msSinceLastCollisionDetection)));
-            cars!!.forEach { car -> detectCollision(car, msSinceLastCollisionDetection) }
+            cars.forEach { car -> detectCollision(car, msSinceLastCollisionDetection) }
             msSinceLastCollisionDetection = 0
         }
     }
