@@ -1,0 +1,17 @@
+Required
+    Fix combo keys
+    Add circular track section drawing
+    Add collision detection
+    Add neural net driver
+        Input:
+            - next N track sections, projected to car position
+            - speed, forces, etc
+        Output: driver inputs
+    Add fit-function: lap-time/avg speed
+    Add natural selection
+    Add collision forces
+    Convert images into data classes (instead of companion factory)
+
+Optional
+    Improve track drawing (10m grid?)
+    Add curbs
