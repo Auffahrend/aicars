@@ -4,10 +4,10 @@ import org.newdawn.slick.Input
 import org.newdawn.slick.KeyListener
 import org.slf4j.LoggerFactory
 
-class IsKeyDownListener(private val key: Int) : KeyListener {
+class IsKeyDownListener(val key: Int) : KeyListener {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
-    var isDown = false
+    var isDown : Boolean = false
         private set
 
     override fun keyPressed(key: Int, c: Char) {

@@ -11,11 +11,11 @@ object KeyboardHelper {
     private val lAlt = IsKeyDownListener(Keyboard.KEY_LMENU)
     private val rAlt = IsKeyDownListener(Keyboard.KEY_RMENU)
 
-    val keyListeners: List<KeyListener> = listOf(lShift, rShift, lCtrl, rCtrl, lAlt, rAlt)
+    val listeners: List<KeyListener> = listOf(lShift, rShift, lCtrl, rCtrl, lAlt, rAlt)
 
-    val isShiftDown: Boolean = lShift.isDown || rShift.isDown
+    fun isShiftDown(): Boolean = lShift.isDown || rShift.isDown
 
-    val isCtrlDown: Boolean = lCtrl.isDown || rCtrl.isDown
+    fun isCtrlDown(): Boolean = lCtrl.isDown || rCtrl.isDown
 
-    val isAltDown: Boolean = lAlt.isDown || rAlt.isDown
+    fun isAltDown(): Boolean = lAlt.isDown || rAlt.isDown
 }

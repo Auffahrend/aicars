@@ -63,7 +63,7 @@ class MenuState : BasicGameState() {
     override fun init(container: GameContainer, game: StateBasedGame) {
         val input = container.input
         GameSettings.instance.globalListeners.forEach( { input.addKeyListener(it) })
-        KeyboardHelper.keyListeners.forEach( { input.addKeyListener(it) })
+        KeyboardHelper.listeners.forEach( { input.addKeyListener(it) })
 
         listeners.add(SingleKeyAction({ -> menuChange(-1) }, KEY_UP))
         listeners.add(SingleKeyAction({ -> menuChange(+1) }, KEY_DOWN))

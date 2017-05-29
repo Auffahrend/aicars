@@ -1,19 +1,11 @@
 package akostenko.aicars.keyboard
 
-import java.util.stream.Collectors.toList
-
 import org.newdawn.slick.KeyListener
-
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.function.Consumer
-import java.util.function.Predicate
-import java.util.stream.Stream
 
 class ComboKeyAction(private val action: () -> Unit,
                      vararg keys: Int,
                      private val predicate: () -> Boolean = { true }) {
-    private val thisListener: KeyListener
+    private val mainTrigger: KeyListener
     private val combo: List<IsKeyDownListener>
 
     private fun testCombo() {
@@ -22,15 +14,12 @@ class ComboKeyAction(private val action: () -> Unit,
         }
     }
 
-    fun listeners(): Array<KeyListener> {
-        return listOf(thisListener, *combo.toTypedArray()).toTypedArray()
+    fun listeners(): List<KeyListener> {
+        return listOf(*combo.toTypedArray(), mainTrigger)
     }
 
     init {
-        thisListener = SingleKeyAction({ testCombo() }, keys[0])
-        combo = Arrays.stream(keys)
-                .boxed()
-                .map({ IsKeyDownListener(it) })
-                .collect(toList())
+        mainTrigger = SingleKeyAction({ testCombo() }, keys[0])
+        combo = keys.map { IsKeyDownListener(it) }
     }
 }

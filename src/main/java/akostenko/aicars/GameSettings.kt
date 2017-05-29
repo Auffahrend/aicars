@@ -85,9 +85,10 @@ class GameSettings {
 
             defaults.globalListeners = listOf(
                     SingleKeyAction({ -> Game.get().noticeAction(GameAction.QUIT)}, KEY_ESCAPE),
-                    *ComboKeyAction({ -> Game.get().noticeAction(GameAction.QUIT) }, KEY_Q, predicate = {KeyboardHelper.isCtrlDown}).listeners(),
-                    *ComboKeyAction({ -> Game.get().noticeAction(GameAction.RESTART) }, KEY_R, predicate = {KeyboardHelper.isCtrlDown}).listeners())
-
+                    *ComboKeyAction({ -> Game.get().noticeAction(GameAction.QUIT) }, KEY_Q,
+                            predicate = { -> KeyboardHelper.isCtrlDown()}).listeners().toTypedArray(),
+                    *ComboKeyAction({ -> Game.get().noticeAction(GameAction.RESTART) }, KEY_R,
+                            predicate = { -> KeyboardHelper.isCtrlDown()}).listeners().toTypedArray())
             return defaults
         }
     }
