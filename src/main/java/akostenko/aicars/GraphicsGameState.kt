@@ -1,21 +1,46 @@
 package akostenko.aicars
 
+import akostenko.aicars.drawing.ArcLine
 import akostenko.aicars.drawing.Line
+import akostenko.aicars.drawing.StraightLine
 import akostenko.aicars.math.Decart
 
 import org.newdawn.slick.Graphics
 import org.newdawn.slick.state.BasicGameState
+import java.lang.IllegalArgumentException
+import java.lang.Integer.min
+import java.lang.Math.toDegrees
 
 abstract class GraphicsGameState : BasicGameState() {
 
     protected lateinit var cameraOffset: Decart
 
     protected fun drawLine(g: Graphics, line: Line) {
-        g.lineWidth = line.width.toFloat()
-        g.color = line.color
+        if (line is StraightLine) drawStraightLine(g, line)
+        else if (line is ArcLine) drawArc(g, line)
+        else throw IllegalArgumentException("Not supported line ${line}")
+    }
+
+    private fun drawStraightLine(g: Graphics, straightLine: StraightLine) {
+        g.lineWidth = straightLine.width
+        g.color = straightLine.color
         g.drawLine(
-                (line.from.x + cameraOffset.x).toFloat(), (line.from.y + cameraOffset.y).toFloat(),
-                (line.to.x + cameraOffset.x).toFloat(), (line.to.y + cameraOffset.y).toFloat())
+                (straightLine.from.x + cameraOffset.x).toFloat(), (straightLine.from.y + cameraOffset.y).toFloat(),
+                (straightLine.to.x + cameraOffset.x).toFloat(), (straightLine.to.y + cameraOffset.y).toFloat())
+    }
+
+    private fun drawArc(g: Graphics, arcLine: ArcLine) {
+        g.lineWidth = arcLine.width
+        g.color = arcLine.color
+        g.drawArc(
+                (arcLine.center.x - arcLine.radius + cameraOffset.x).toFloat(),
+                (arcLine.center.y - arcLine.radius + cameraOffset.y).toFloat(),
+                arcLine.radius.toFloat() * 2,
+                arcLine.radius.toFloat() * 2,
+                min(arcLine.radius.toInt() * 2, 150),
+                toDegrees(arcLine.from).toFloat(),
+                toDegrees(arcLine.to).toFloat()
+        )
     }
 
 }

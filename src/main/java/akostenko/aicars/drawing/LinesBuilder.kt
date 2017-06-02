@@ -31,7 +31,7 @@ internal class LinesBuilder {
     }
 
     /** All this lines are correct only while image is centered at (0, 0)
-     * They are incompatible with [Line] while are unscaled and have no color
+     * They are incompatible with [StraightLine] while are unscaled and have no color
      */
     internal class LocalLine(val from:Vector, val to:Vector) {
 
@@ -41,14 +41,30 @@ internal class LinesBuilder {
 
         fun scale(scale:Scale):LocalLine {
             val k = scale.pixels / scale.size
-            return LocalLine(from.times(k.toDouble()), to.times(k.toDouble()))
+            return LocalLine(from * k.toDouble(), to * k.toDouble())
         }
 
-        fun position(position:Decart, color:Color, width:Float):Line {
-            return Line(from.toDecart().plus(position),
+        fun place(position:Decart, color:Color, width:Float): StraightLine {
+            return StraightLine(from.toDecart().plus(position),
                     to.toDecart().plus(position),
                     color,
                     width)
+        }
+    }
+
+    internal class LocalArc(val center: Vector, val radius: Double, val from: Double, val to: Double) {
+
+        fun rotate(radians: Double): LocalArc {
+            return LocalArc(center, radius, from + radians, to + radians)
+        }
+
+        fun scale(scale: Scale): LocalArc {
+            val k = scale.pixels / scale.size
+            return LocalArc(center * k.toDouble(), radius * k, from, to)
+        }
+
+        fun place(position: Decart, color:Color, width:Float): ArcLine {
+            return ArcLine(position + center, radius, from, to, color, width)
         }
     }
 }

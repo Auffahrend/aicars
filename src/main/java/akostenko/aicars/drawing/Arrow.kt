@@ -12,7 +12,7 @@ object Arrow {
     private val end = Polar(1.0, 0.0)
     private val finRotation = 0.8 * PI
 
-    fun build(center: Decart, lengthPx: Float, rotation: Double, color: Color, widthPx: Float): Collection<Line> {
+    fun build(center: Decart, lengthPx: Float, rotation: Double, color: Color, widthPx: Float): Collection<StraightLine> {
         val baseLength = start.minus(end).module().toFloat()
         val scale = Scale(baseLength, lengthPx)
         var finLengthPx = min(lengthPx / 2, (widthPx * 5)).toDouble()
@@ -29,7 +29,7 @@ object Arrow {
                 .build().stream()
                 .map { line -> line.scale(scale) }
                 .map { line -> line.rotate(rotation) }
-                .map { line -> line.position(center, color, widthPx) }
+                .map { line -> line.place(center, color, widthPx) }
                 .collect(toList())
     }
 }

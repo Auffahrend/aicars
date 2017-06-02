@@ -13,30 +13,39 @@ object TrackSectionImg {
     fun build(section: TrackSection, trackWidth: Double, scale: Scale, color: Color, camera: Decart): Collection<Line> {
         val cameraPx = camera.unaryMinus().times((scale.pixels / scale.size).toDouble())
         if (section.isStraight) {
-            return getStraightBorderLines(section, trackWidth).stream()
+            return getStraightBorderLines(section)
                     .map { line -> line.scale(scale) }
-                    .map { line -> line.position(cameraPx, color, 3f) }
-                    .collect(toList())
+                    .map { line -> line.place(cameraPx, color, 3f) }
         } else {
-            throw IllegalArgumentException("Not implemented")
+            return getArcBorderLines(section)
+                    .map { arc -> arc.scale(scale) }
+                    .map { arc -> arc.place(cameraPx, color, 3f)}
         }
     }
 
-    private fun getStraightBorderLines(section: TrackSection, trackWidth: Double): Collection<LinesBuilder.LocalLine> {
+    private fun getStraightBorderLines(section: TrackSection): Collection<LinesBuilder.LocalLine> {
         val sectionStart = section.start.toPolar()
         val sectionEnd = section.start.toPolar().plus(Polar(section.length, section.heading))
 
-        val rightBorder = Polar(trackWidth / 2, section.heading + PI / 2)
-        val leftBorder = Polar(trackWidth / 2, section.heading - PI / 2)
+        val rightBorder = Polar(section.width / 2, section.heading + PI / 2)
+        val leftBorder = Polar(section.width / 2, section.heading - PI / 2)
         return LinesBuilder()
                 .between(sectionStart.plus(rightBorder), sectionEnd.plus(rightBorder))
                 .between(sectionStart.plus(leftBorder), sectionEnd.plus(leftBorder))
                 .build()
     }
 
+    private fun getArcBorderLines(section: TrackSection): Collection<LinesBuilder.LocalArc> {
+        val center = section.start + Polar(section.radius, section.heading + PI/2)
+        val from = (section.start - center).toPolar().d
+        val to = from + section.length / section.radius
+        return listOf(LinesBuilder.LocalArc(center, section.radius - section.width/2, from, to),
+                LinesBuilder.LocalArc(center, section.radius + section.width/2, from, to))
+    }
+
     fun getBorders(section: TrackSection, trackWidth: Double): Collection<TrackBorder> {
         if (section.isStraight) {
-            return getStraightBorderLines(section, trackWidth).stream()
+            return getStraightBorderLines(section).stream()
                     .map({ createBorder(it) })
                     .collect(toList())
         } else {

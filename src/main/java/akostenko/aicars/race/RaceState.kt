@@ -6,11 +6,10 @@ import akostenko.aicars.GameStateIds
 import akostenko.aicars.GraphicsGameState
 import akostenko.aicars.drawing.Arrow
 import akostenko.aicars.drawing.CarImg
-import akostenko.aicars.drawing.Line
+import akostenko.aicars.drawing.StraightLine
 import akostenko.aicars.drawing.Scale
 import akostenko.aicars.drawing.TrackSectionImg
 import akostenko.aicars.keyboard.IsKeyDownListener
-import akostenko.aicars.keyboard.KeyboardHelper
 import akostenko.aicars.math.Decart
 import akostenko.aicars.menu.CarPerformanceTests
 import akostenko.aicars.menu.WithPlayer
@@ -221,12 +220,12 @@ class RaceState : GraphicsGameState() {
                 .forEach { line -> drawUILine(g, line) }
     }
 
-    private fun drawUILine(g: Graphics, line: Line) {
-        g.lineWidth = line.width
-        g.color = line.color
+    private fun drawUILine(g: Graphics, straightLine: StraightLine) {
+        g.lineWidth = straightLine.width
+        g.color = straightLine.color
         g.drawLine(
-                line.from.x.toFloat(), line.from.y.toFloat(),
-                line.to.x.toFloat(), line.to.y.toFloat())
+                straightLine.from.x.toFloat(), straightLine.from.y.toFloat(),
+                straightLine.to.x.toFloat(), straightLine.to.y.toFloat())
     }
 
     private fun focusedCar(): Car<*> {

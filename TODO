@@ -1,5 +1,4 @@
 Required
-    Add circular track section drawing
     Add collision detection
     Add neural net driver
         Input:
@@ -17,3 +16,4 @@ Optional
 
 Fixed
     Fix combo keys
+    Add circular track section drawing

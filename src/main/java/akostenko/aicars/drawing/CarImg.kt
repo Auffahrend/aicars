@@ -26,7 +26,7 @@ object CarImg {
     private val carAxis_p1 = Decart(wheelbase * frontWeightPercent * 1.5, 0.0)
     private val carAxis_p2 = Decart(-wheelbase * rearWeightPercent, 0.0)
 
-    fun build(car: Car<*>, cameraPosition: Decart, color: Color, scale: Scale): Collection<Line> {
+    fun build(car: Car<*>, cameraPosition: Decart, color: Color, scale: Scale): Collection<StraightLine> {
         val positionPx = car.position.minus(cameraPosition)
                 .times((scale.pixels / scale.size).toDouble())
 
@@ -45,7 +45,7 @@ object CarImg {
                 .build().stream()
                 .map { line -> line.rotate(car.heading.toPolar().d) }
                 .map { line -> line.scale(scale) }
-                .map { line -> line.position(positionPx, color, 3f) }
+                .map { line -> line.place(positionPx, color, 3f) }
                 .collect(toList())
     }
 

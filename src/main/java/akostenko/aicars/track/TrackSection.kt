@@ -11,7 +11,7 @@ class TrackSection internal constructor(distanceFromStart: Int,
                                         val indexOnTrack: Int,
                                         val start: Vector,
                                         val length: Double,
-                                        radius: Double,
+                                        val radius: Double,
                                         val heading: Double // for turns it's a tangent line to the beginning point
                                         , val width: Double) {
     val wayPoints: List<TrackWayPoint>

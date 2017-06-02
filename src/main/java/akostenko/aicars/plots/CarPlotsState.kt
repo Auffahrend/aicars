@@ -6,7 +6,7 @@ import akostenko.aicars.GameSettings
 import akostenko.aicars.GameStateIds
 import akostenko.aicars.GraphicsGameState
 import akostenko.aicars.drawing.Arrow
-import akostenko.aicars.drawing.Line
+import akostenko.aicars.drawing.StraightLine
 import akostenko.aicars.keyboard.SingleKeyAction
 import akostenko.aicars.math.Decart
 import akostenko.aicars.math.MathUtils
@@ -184,7 +184,7 @@ class CarPlotsState : GraphicsGameState() {
         var i = 0
         while (i <= (xAxisLength - marginPx) / gridStepPx) {
             val xPx = marginPx + i * gridStepPx
-            drawLine(g, Line(
+            drawLine(g, StraightLine(
                     Decart(xPx.toDouble(), marginPx.toDouble()),
                     Decart(xPx.toDouble(), (screenHeight - marginPx).toDouble()),
                     darkGray, 1f))
@@ -215,7 +215,7 @@ class CarPlotsState : GraphicsGameState() {
         var i = 0
         while (i <= (yAxisLength - marginPx) / gridStepPx) {
             val yPx = marginPx + i * gridStepPx
-            drawLine(g, Line(
+            drawLine(g, StraightLine(
                     Decart(marginPx.toDouble(), yPx.toDouble()),
                     Decart((screenWidth - marginPx).toDouble(), yPx.toDouble()),
                     darkGray, 1f))
@@ -241,7 +241,7 @@ class CarPlotsState : GraphicsGameState() {
 
         plotData.forEach { point ->
             val screenCoordinates = Decart(xToScreenX(point.x), yToScreenY(point.y))
-            drawLine(g, Line(screenCoordinates, screenCoordinates, white, 1f))
+            drawLine(g, StraightLine(screenCoordinates, screenCoordinates, white, 1f))
         }
     }
 
