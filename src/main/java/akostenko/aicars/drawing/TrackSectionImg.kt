@@ -6,6 +6,7 @@ import akostenko.aicars.track.TrackBorder
 import akostenko.aicars.track.TrackSection
 import org.newdawn.slick.Color
 import java.lang.Math.PI
+import java.lang.Math.abs
 import java.util.stream.Collectors.toList
 
 object TrackSectionImg {
@@ -37,8 +38,13 @@ object TrackSectionImg {
 
     private fun getArcBorderLines(section: TrackSection): Collection<LinesBuilder.LocalArc> {
         val center = section.start + Polar(section.radius, section.heading + PI/2)
-        val from = (section.start - center).toPolar().d
-        val to = from + section.length / section.radius
+        var from = (section.start - center).toPolar().d - if (section.radius < 0) PI else 0.0
+        var to = from + section.length / section.radius
+        if (section.radius < 0) {
+            val t = to;
+            to = from;
+            from = t;
+        }
         return listOf(LinesBuilder.LocalArc(center, section.radius - section.width/2, from, to),
                 LinesBuilder.LocalArc(center, section.radius + section.width/2, from, to))
     }

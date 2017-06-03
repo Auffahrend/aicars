@@ -3,6 +3,7 @@ package akostenko.aicars.track
 import akostenko.aicars.math.Decart
 import akostenko.aicars.math.Polar
 import akostenko.aicars.math.Vector
+import org.slf4j.LoggerFactory
 import java.lang.Math.toRadians
 import java.lang.StrictMath.PI
 import java.util.*

@@ -50,6 +50,7 @@ abstract class Track : MenuItem {
     companion object {
         fun forName(name: String): Track {
             when (name) {
+                DebugTrack.NAME -> return DebugTrack()
                 MonzaTrack.NAME -> return MonzaTrack()
                 IndySpeedway.NAME -> return IndySpeedway()
                 else -> return defaultTrack()

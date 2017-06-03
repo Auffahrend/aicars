@@ -32,12 +32,14 @@ import org.newdawn.slick.KeyListener
 import org.newdawn.slick.SlickException
 import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.StateBasedGame
+import org.slf4j.LoggerFactory
 import java.awt.Font
 import java.lang.Math.PI
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
 
 class RaceState : GraphicsGameState() {
+    private val logger = LoggerFactory.getLogger(this.javaClass)
 
     private lateinit var cars: MutableCollection<Car<*>>
     private var playerCar: Car<Player>? = null
@@ -70,6 +72,13 @@ class RaceState : GraphicsGameState() {
         super.enter(container, game)
         listeners.forEach { listener -> container!!.input.addKeyListener(listener) }
         reset()
+        debugTrackSections()
+    }
+
+    private fun debugTrackSections() {
+        val firstWP = track.sections.first().wayPoints.first().position
+        logger.debug("Distance between start and finish: ${(firstWP - track.sections.last().wayPoints.last().position).toPolar()}")
+        logger.debug("Minimal distance between start and last section: ${track.sections.last().wayPoints.map{ (firstWP - it.position).module()}.min()}")
     }
 
     private fun reset() {
@@ -124,7 +133,7 @@ class RaceState : GraphicsGameState() {
 
     private fun drawTrack(g: Graphics, focused: Car<*>, track: Track) {
         track.sections
-                .filter { isVisible(it, focused.position) }
+//                .filter { isVisible(it, focused.position) }
                 .forEach { section -> drawTrackSection(g, focused, section, track.width) }
     }
 

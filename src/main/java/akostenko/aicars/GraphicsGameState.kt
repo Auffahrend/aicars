@@ -9,7 +9,10 @@ import org.newdawn.slick.Graphics
 import org.newdawn.slick.state.BasicGameState
 import java.lang.IllegalArgumentException
 import java.lang.Integer.min
+import java.lang.Math.max
+import java.lang.Math.min
 import java.lang.Math.toDegrees
+import java.lang.StrictMath.PI
 
 abstract class GraphicsGameState : BasicGameState() {
 
@@ -32,14 +35,16 @@ abstract class GraphicsGameState : BasicGameState() {
     private fun drawArc(g: Graphics, arcLine: ArcLine) {
         g.lineWidth = arcLine.width
         g.color = arcLine.color
+        val from = min(arcLine.from, arcLine.to)
+        val to = max(arcLine.from, arcLine.to)
         g.drawArc(
                 (arcLine.center.x - arcLine.radius + cameraOffset.x).toFloat(),
                 (arcLine.center.y - arcLine.radius + cameraOffset.y).toFloat(),
                 arcLine.radius.toFloat() * 2,
                 arcLine.radius.toFloat() * 2,
-                min(arcLine.radius.toInt() * 2, 150),
-                toDegrees(arcLine.from).toFloat(),
-                toDegrees(arcLine.to).toFloat()
+                //min(arcLine.radius.toInt() * 2, 150),
+                toDegrees(from).toFloat(),
+                toDegrees(to).toFloat()
         )
     }
 
