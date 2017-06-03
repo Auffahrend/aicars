@@ -18,7 +18,7 @@ abstract class GraphicsGameState : BasicGameState() {
     protected fun drawLine(g: Graphics, line: Line) {
         if (line is StraightLine) drawStraightLine(g, line)
         else if (line is ArcLine) drawArc(g, line)
-        else throw IllegalArgumentException("Not supported line ${line}")
+        else throw IllegalArgumentException("Not supported line $line")
     }
 
     private fun drawStraightLine(g: Graphics, straightLine: StraightLine) {

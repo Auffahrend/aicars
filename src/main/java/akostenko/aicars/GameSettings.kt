@@ -6,7 +6,7 @@ import akostenko.aicars.keyboard.KeyboardHelper
 import akostenko.aicars.keyboard.SingleKeyAction
 import akostenko.aicars.menu.Mode
 import akostenko.aicars.menu.WithPlayer
-import akostenko.aicars.track.StraightTrack
+import akostenko.aicars.track.MonzaTrack
 import akostenko.aicars.track.Track
 import org.lwjgl.input.Keyboard.KEY_ESCAPE
 import org.lwjgl.input.Keyboard.KEY_Q
@@ -24,7 +24,7 @@ class GameSettings {
 
     var globalListeners: List<KeyListener> = emptyList()
         private set
-    var track: Track = StraightTrack()
+    var track: Track = MonzaTrack()
     var mode: Mode = WithPlayer()
 
     fun save() {

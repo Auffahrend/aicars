@@ -50,14 +50,14 @@ abstract class Track : MenuItem {
     companion object {
         fun forName(name: String): Track {
             when (name) {
-                StraightTrack.NAME -> return StraightTrack()
-                CircularTrack.NAME -> return CircularTrack()
+                MonzaTrack.NAME -> return MonzaTrack()
+                IndySpeedway.NAME -> return IndySpeedway()
                 else -> return defaultTrack()
             }
         }
 
         private fun defaultTrack(): Track {
-            return StraightTrack()
+            return MonzaTrack()
         }
     }
 }

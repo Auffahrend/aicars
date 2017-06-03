@@ -56,7 +56,7 @@ class RaceState : GraphicsGameState() {
     private val lineWidth = 3f
     private val fatLineWidth = 5f
     private val telemetryFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true)
-    private val scale = Scale(1f, 20f)
+    private val scale = Scale(1f, 10f)
     private val trackBorder = Color(100, 100, 100)
 
     private val executor = Executors.newSingleThreadExecutor()
@@ -123,7 +123,14 @@ class RaceState : GraphicsGameState() {
     }
 
     private fun drawTrack(g: Graphics, focused: Car<*>, track: Track) {
-        track.sections.forEach { section -> drawTrackSection(g, focused, section, track.width) }
+        track.sections
+                .filter { isVisible(it, focused.position) }
+                .forEach { section -> drawTrackSection(g, focused, section, track.width) }
+    }
+
+    private var visibilityRadius = Game.screenWidth/scale.pixels * scale.size
+    private fun isVisible(section: TrackSection, camera: Decart): Boolean {
+        return section.wayPoints.any { (it.position-camera).module() < visibilityRadius }
     }
 
     private fun drawTrackSection(g: Graphics, focused: Car<*>, section: TrackSection, width: Double) {
