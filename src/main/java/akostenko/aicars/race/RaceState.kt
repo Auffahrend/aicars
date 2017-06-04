@@ -10,6 +10,7 @@ import akostenko.aicars.drawing.StraightLine
 import akostenko.aicars.drawing.Scale
 import akostenko.aicars.drawing.TrackSectionImg
 import akostenko.aicars.keyboard.IsKeyDownListener
+import akostenko.aicars.keyboard.SingleKeyAction
 import akostenko.aicars.math.Decart
 import akostenko.aicars.menu.CarPerformanceTests
 import akostenko.aicars.menu.WithPlayer
@@ -21,9 +22,11 @@ import akostenko.aicars.race.car.CarTelemetryScalar
 import akostenko.aicars.race.car.CarTelemetryVector
 import akostenko.aicars.track.Track
 import akostenko.aicars.track.TrackSection
+import org.lwjgl.input.Keyboard.KEY_ADD
 import org.lwjgl.input.Keyboard.KEY_DOWN
 import org.lwjgl.input.Keyboard.KEY_LEFT
 import org.lwjgl.input.Keyboard.KEY_RIGHT
+import org.lwjgl.input.Keyboard.KEY_SUBTRACT
 import org.lwjgl.input.Keyboard.KEY_UP
 import org.newdawn.slick.Color
 import org.newdawn.slick.GameContainer
@@ -35,6 +38,7 @@ import org.newdawn.slick.state.StateBasedGame
 import org.slf4j.LoggerFactory
 import java.awt.Font
 import java.lang.Math.PI
+import java.lang.Math.pow
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
 
@@ -58,7 +62,7 @@ class RaceState : GraphicsGameState() {
     private val lineWidth = 3f
     private val fatLineWidth = 5f
     private val telemetryFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true)
-    private val scale = Scale(1f, 10f)
+    private var scale = Scale(1f, 5f)
     private val trackBorder = Color(100, 100, 100)
 
     private val executor = Executors.newSingleThreadExecutor()
@@ -101,10 +105,16 @@ class RaceState : GraphicsGameState() {
 
     @Throws(SlickException::class)
     override fun init(container: GameContainer, game: StateBasedGame) {
-        listeners = listOf(accelerateListener, brakeListener, turnLeftListener, turnRightListener)
+        listeners = listOf(accelerateListener, brakeListener, turnLeftListener, turnRightListener,
+                SingleKeyAction({changeScale(+1)}, KEY_ADD), SingleKeyAction({changeScale(-1)}, KEY_SUBTRACT))
 
         container.setTargetFrameRate(100)
         cameraOffset = Decart((Game.screenWidth / 2).toDouble(), (Game.screenHeight / 2).toDouble())
+    }
+
+    private fun changeScale(step: Int) {
+        scale = Scale(scale.size, scale.pixels * pow(1.5, step.toDouble()).toFloat())
+        if (scale.pixels < 2) scale = Scale(scale.size*2, scale.pixels*2)
     }
 
     @Throws(SlickException::class)

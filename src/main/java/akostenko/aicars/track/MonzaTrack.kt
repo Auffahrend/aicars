@@ -4,7 +4,7 @@ class MonzaTrack : Track() {
     override val width = 10.0 // m
 
     override val sections = TrackBuilder.start(0.0, 0.0, 0.0, width)
-            .straight(900.0)
+            .straight(940.0)
             // Retiffilo
             .right(12.0, 80.0).straight(22.0).left(11.0, 100.0)
             .straight(105.0)
@@ -26,7 +26,7 @@ class MonzaTrack : Track() {
             .straight(600.0)
             // Ascari
             .left(35.0, 55.0).straight(45.0).right(115.0, 50.0).left(40.0, 20.0).left(71.0, 20.0)
-            .straight(961.0)
+            .straight(1001.0)
             // Parabolica
             .right(70.0, 90.0).right(130.0, 55.0).right(340.0, 25.0).right(1461.0, 10.0)
             .straight(53.0-8.81)

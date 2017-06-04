@@ -1,3 +1,3 @@
 package akostenko.aicars.drawing
 
-class Scale(val size: Float, val pixels: Float)
+data class Scale(val size: Float, val pixels: Float)
