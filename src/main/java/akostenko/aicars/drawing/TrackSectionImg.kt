@@ -6,13 +6,11 @@ import akostenko.aicars.track.TrackBorder
 import akostenko.aicars.track.TrackSection
 import org.newdawn.slick.Color
 import java.lang.Math.PI
-import java.lang.Math.abs
-import java.util.stream.Collectors.toList
 
 object TrackSectionImg {
 
-    fun build(section: TrackSection, trackWidth: Double, scale: Scale, color: Color, camera: Decart): Collection<Line> {
-        val cameraPx = camera.unaryMinus().times((scale.pixels / scale.size).toDouble())
+    fun build(section: TrackSection, scale: Scale, color: Color, camera: Decart): Collection<Line> {
+        val cameraPx = scale.to(-camera).toDecart()
         if (section.isStraight) {
             return getStraightBorderLines(section)
                     .map { line -> line.scale(scale) }
@@ -49,11 +47,10 @@ object TrackSectionImg {
                 LinesBuilder.LocalArc(center, section.radius + section.width/2, from, to))
     }
 
-    fun getBorders(section: TrackSection, trackWidth: Double): Collection<TrackBorder> {
+    fun getBorders(section: TrackSection): Collection<TrackBorder> {
         if (section.isStraight) {
-            return getStraightBorderLines(section).stream()
+            return getStraightBorderLines(section)
                     .map({ createBorder(it) })
-                    .collect(toList())
         } else {
             throw IllegalArgumentException("Not implemented")
         }

@@ -27,8 +27,7 @@ object CarImg {
     private val carAxis_p2 = Decart(-wheelbase * rearWeightPercent, 0.0)
 
     fun build(car: Car<*>, cameraPosition: Decart, color: Color, scale: Scale): Collection<StraightLine> {
-        val positionPx = car.position.minus(cameraPosition)
-                .times((scale.pixels / scale.size).toDouble())
+        val positionPx = scale.to(car.position - cameraPosition).toDecart()
 
         return LinesBuilder()
                 .from(FL_wheel).towards(car.steering.toPolar().d, tyreRadius)
@@ -42,11 +41,11 @@ object CarImg {
                 .between(rearAxle_p1, rearAxle_p2)
 
                 .between(carAxis_p1, carAxis_p2)
-                .build().stream()
+                .build()
                 .map { line -> line.rotate(car.heading.toPolar().d) }
                 .map { line -> line.scale(scale) }
                 .map { line -> line.place(positionPx, color, 3f) }
-                .collect(toList())
+
     }
 
 }

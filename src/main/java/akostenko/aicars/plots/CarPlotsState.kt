@@ -184,7 +184,7 @@ class CarPlotsState : GraphicsGameState() {
         var i = 0
         while (i <= (xAxisLength - marginPx) / gridStepPx) {
             val xPx = marginPx + i * gridStepPx
-            drawLine(g, StraightLine(
+            drawScaledLine(g, StraightLine(
                     Decart(xPx.toDouble(), marginPx.toDouble()),
                     Decart(xPx.toDouble(), (screenHeight - marginPx).toDouble()),
                     darkGray, 1f))
@@ -195,7 +195,7 @@ class CarPlotsState : GraphicsGameState() {
         // x axis
         g.lineWidth = 2f
         Arrow.build(Decart((screenWidth / 2).toDouble(), xAxisYCoord.toDouble()), xAxisLength, 0.0, gray, 2f)
-                .forEach { line -> drawLine(g, line) }
+                .forEach { line -> drawScaledLine(g, line) }
         g.color = white
         g.drawString(xName, screenWidth.toFloat() - marginPx - (xName.length * textSize / 2).toFloat(), xAxisYCoord - textSize * 3 / 2)
     }
@@ -215,7 +215,7 @@ class CarPlotsState : GraphicsGameState() {
         var i = 0
         while (i <= (yAxisLength - marginPx) / gridStepPx) {
             val yPx = marginPx + i * gridStepPx
-            drawLine(g, StraightLine(
+            drawScaledLine(g, StraightLine(
                     Decart(marginPx.toDouble(), yPx.toDouble()),
                     Decart((screenWidth - marginPx).toDouble(), yPx.toDouble()),
                     darkGray, 1f))
@@ -225,7 +225,7 @@ class CarPlotsState : GraphicsGameState() {
         }
         // y axis
         Arrow.build(Decart(yAxisXCoord.toDouble(), (screenHeight / 2).toDouble()), screenHeight - 2 * marginPx, -PI / 2, gray, 2f)
-                .forEach { line -> drawLine(g, line) }
+                .forEach { line -> drawScaledLine(g, line) }
         g.color = white
         g.drawString(yName, yAxisXCoord + (abs(log10(maxY)) + 1.0 + yPrecision.toDouble()).toFloat() * textSize, marginPx - textSize / 2)
 
@@ -241,7 +241,7 @@ class CarPlotsState : GraphicsGameState() {
 
         plotData.forEach { point ->
             val screenCoordinates = Decart(xToScreenX(point.x), yToScreenY(point.y))
-            drawLine(g, StraightLine(screenCoordinates, screenCoordinates, white, 1f))
+            drawScaledLine(g, StraightLine(screenCoordinates, screenCoordinates, white, 1f))
         }
     }
 

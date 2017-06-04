@@ -6,8 +6,8 @@ import akostenko.aicars.GameStateIds
 import akostenko.aicars.GraphicsGameState
 import akostenko.aicars.drawing.Arrow
 import akostenko.aicars.drawing.CarImg
-import akostenko.aicars.drawing.StraightLine
 import akostenko.aicars.drawing.Scale
+import akostenko.aicars.drawing.StraightLine
 import akostenko.aicars.drawing.TrackSectionImg
 import akostenko.aicars.keyboard.IsKeyDownListener
 import akostenko.aicars.keyboard.SingleKeyAction
@@ -62,7 +62,7 @@ class RaceState : GraphicsGameState() {
     private val lineWidth = 3f
     private val fatLineWidth = 5f
     private val telemetryFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, telemetryTextSize), true)
-    private var scale = Scale(1f, 5f)
+    private var scale = Scale(1.0, 5f)
     private val trackBorder = Color(100, 100, 100)
 
     private val executor = Executors.newSingleThreadExecutor()
@@ -83,6 +83,7 @@ class RaceState : GraphicsGameState() {
         val firstWP = track.sections.first().wayPoints.first().position
         logger.debug("Distance between start and finish: ${(firstWP - track.sections.last().wayPoints.last().position).toPolar()}")
         logger.debug("Minimal distance between start and last section: ${track.sections.last().wayPoints.map{ (firstWP - it.position).module()}.min()}")
+        logger.debug("Total track distance: ${track.sections.flatMap { it.wayPoints }.size}")
     }
 
     private fun reset() {
@@ -138,7 +139,8 @@ class RaceState : GraphicsGameState() {
 
     private fun drawCar(g: Graphics, car: Car<*>, focused: Car<*>) {
         CarImg.build(car, focused.position, textColor, scale)
-                .forEach { line -> drawLine(g, line) }
+                .forEach { line -> drawScaledLine(g, line) }
+        drawUnscaledLine(g, StraightLine(focused.position, focused.closestWP.position.toDecart(), breakingColor, 2f), focused.position, scale)
     }
 
     private fun drawTrack(g: Graphics, focused: Car<*>, track: Track) {
@@ -147,14 +149,14 @@ class RaceState : GraphicsGameState() {
                 .forEach { section -> drawTrackSection(g, focused, section, track.width) }
     }
 
-    private var visibilityRadius = Game.screenWidth/scale.pixels * scale.size
+    private var visibilityRadius = scale.from(Game.screenWidth)
     private fun isVisible(section: TrackSection, camera: Decart): Boolean {
         return section.wayPoints.any { (it.position-camera).module() < visibilityRadius }
     }
 
     private fun drawTrackSection(g: Graphics, focused: Car<*>, section: TrackSection, width: Double) {
-        TrackSectionImg.build(section, width, scale, trackBorder, focused.position)
-                .forEach { line -> drawLine(g, line) }
+        TrackSectionImg.build(section, scale, trackBorder, focused.position)
+                .forEach { line -> drawScaledLine(g, line) }
     }
 
 
@@ -163,7 +165,7 @@ class RaceState : GraphicsGameState() {
         g.lineWidth = lineWidth
         g.font = telemetryFont
 
-        val carPositions = cars.sortedByDescending { car -> getPositionOnTrack(car, track) }
+        val carPositions = cars.sortedByDescending { getPositionOnTrack(it) }
         carPositions.indices.forEach {
             i -> g.drawString(
                 String.format("%d. %s%n", i + 1, carPositions[i].driver.name),
@@ -172,7 +174,7 @@ class RaceState : GraphicsGameState() {
         }
     }
 
-    private fun getPositionOnTrack(car: Car<*>, track: Track): Double {
+    private fun getPositionOnTrack(car: Car<*>): Double {
         return car.position.module()
     }
 
@@ -210,12 +212,12 @@ class RaceState : GraphicsGameState() {
     }
 
     private fun drawTelemetryVector(g: Graphics, car: Car<*>, camera: Decart, item: CarTelemetryVector) {
-        val from = (car.position + item.appliedTo - camera) * (scale.pixels / scale.size).toDouble()
-        val centerOffset = item.vector * 0.5 * (item.scale.pixels / item.scale.size).toDouble()
+        val from = scale.to(car.position + item.appliedTo - camera).toDecart()
+        val centerOffset = item.scale.to(item.vector * 0.5)
         Arrow.build(from + centerOffset,
-                item.vector.module().toFloat() * item.scale.pixels / item.scale.size,
+                item.scale.to(item.vector.module()),
                 item.vector.toPolar().d, item.color, lineWidth)
-                .forEach { line -> drawLine(g, line) }
+                .forEach { line -> drawScaledLine(g, line) }
     }
 
     private val arrowSize = 30f //px
@@ -244,14 +246,6 @@ class RaceState : GraphicsGameState() {
                 if (turnRightListener.isDown || driver.steering() > 0) textColor else grey,
                 if (turnRightListener.isDown || driver.steering() > 0) fatLineWidth else lineWidth)
                 .forEach { line -> drawUILine(g, line) }
-    }
-
-    private fun drawUILine(g: Graphics, straightLine: StraightLine) {
-        g.lineWidth = straightLine.width
-        g.color = straightLine.color
-        g.drawLine(
-                straightLine.from.x.toFloat(), straightLine.from.y.toFloat(),
-                straightLine.to.x.toFloat(), straightLine.to.y.toFloat())
     }
 
     private fun focusedCar(): Car<*> {

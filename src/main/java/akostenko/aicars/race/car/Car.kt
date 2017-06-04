@@ -61,7 +61,8 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
     protected val gearbox = Gearbox(this)
     private val laps = 0
     /** *m*  */
-    private var closestWP: TrackWayPoint
+    var closestWP: TrackWayPoint
+        private set
     /** *m*  */
     /** *m*  */
     var position = Decart.ZERO
@@ -80,8 +81,8 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
     /** direction of steering wheels  */
     var steering = Polar(1.0, 0.0)
         protected set
-    private val velocityScale = Scale(100f, 200f)
-    private val gScale = Scale(5f, 200f)
+    private val velocityScale = Scale(100.0, 200f)
+    private val gScale = Scale(5.0, 200f)
     private val closestWayPointSelector: (Collection<TrackWayPoint>) -> TrackWayPoint = {
         waypoints -> waypoints
                 .sortedBy({ wp -> (wp.position - position).module() })
