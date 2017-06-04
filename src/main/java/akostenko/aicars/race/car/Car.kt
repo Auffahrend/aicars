@@ -45,8 +45,6 @@ import java.lang.StrictMath.sqrt
 import java.lang.StrictMath.toRadians
 import java.time.Instant.now
 import java.util.*
-import java.util.Comparator.comparing
-import java.util.stream.Stream
 
 open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
 

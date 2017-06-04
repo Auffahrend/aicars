@@ -38,21 +38,23 @@ class MenuState : BasicGameState() {
     private val startButton = StartButton()
     private val modeMenu = ModeMenu()
     private val trackMenu = TrackMenu()
-    private val menu = listOf(startButton, modeMenu, trackMenu)
+    private val debugMenu = DebugMenu()
+    private val collisionsMenu = CollisionsMenu()
+    private val menu = listOf(startButton, modeMenu, trackMenu, collisionsMenu, debugMenu)
 
     private var currentMenu = 0
 
-    private val lineWidth = 3
+    private val lineWidth = 3f
     private val fontColor = Color(220, 200, 50)
     private val leftMargin = Game.screenWidth * 0.2f
     private val rightMargin = Game.screenWidth * 0.2f
     private val topMargin = Game.screenHeight * 0.2f
     private val bottomMargin = Game.screenHeight * 0.2f
-    private val subMenuHeight = 36
-    private val subMenuItemHeight = 24
+    private val subMenuHeight = 36f
+    private val subMenuItemHeight = 24f
     private val subMenuWidth = Game.screenWidth * 0.2f
-    private val submenuFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, subMenuHeight), true)
-    private val itemFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, subMenuItemHeight), true)
+    private val submenuFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, subMenuHeight.toInt()), true)
+    private val itemFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, subMenuItemHeight.toInt()), true)
     private val listeners = mutableListOf<KeyListener>()
 
     override fun getID(): Int {
@@ -92,7 +94,7 @@ class MenuState : BasicGameState() {
 
     @Throws(SlickException::class)
     override fun render(container: GameContainer, game: StateBasedGame, g: Graphics) {
-        g.lineWidth = lineWidth.toFloat()
+        g.lineWidth = lineWidth
         g.color = fontColor
 
         menu.forEach { submenu ->
@@ -107,7 +109,8 @@ class MenuState : BasicGameState() {
         g.font = submenuFont
         g.drawString(submenu.title, leftMargin, currentY)
         if (currentMenu == menu.indexOf(submenu)) {
-            g.drawLine(leftMargin, currentY + subMenuHeight.toFloat() + lineWidth.toFloat(), leftMargin + subMenuWidth - 5 * lineWidth, currentY + subMenuHeight.toFloat() + lineWidth.toFloat())
+            g.drawLine(leftMargin, currentY + subMenuHeight + lineWidth,
+                    leftMargin + subMenuWidth - 5 * lineWidth, currentY + subMenuHeight + lineWidth)
         }
     }
 
@@ -115,12 +118,13 @@ class MenuState : BasicGameState() {
         g.font = itemFont
         val itemY = currentY + subMenuHeight - subMenuItemHeight
         val items = submenu.items
-        val itemWidth = (Game.screenWidth.toFloat() - leftMargin - rightMargin - subMenuWidth) / items.size
+        val itemWidth = (Game.screenWidth - leftMargin - rightMargin - subMenuWidth) / items.size
         items.forEach { item ->
             val currentX = leftMargin + subMenuWidth + submenu.items.indexOf(item) * itemWidth
             g.drawString(item.title, currentX, itemY)
             if (submenu.isCurrent(item)) {
-                g.drawLine(currentX, itemY + subMenuItemHeight.toFloat() + lineWidth.toFloat(), currentX + itemWidth - 5 * lineWidth, itemY + subMenuItemHeight.toFloat() + lineWidth.toFloat())
+                g.drawLine(currentX, itemY + subMenuItemHeight + lineWidth,
+                        currentX + itemWidth - 5 * lineWidth, itemY + subMenuItemHeight + lineWidth)
             }
         }
     }
@@ -133,13 +137,15 @@ class MenuState : BasicGameState() {
     @Throws(SlickException::class)
     override fun leave(container: GameContainer?, game: StateBasedGame?) {
         super.leave(container, game)
-        listeners.forEach { listener -> container!!.input.removeKeyListener(listener) }
+        listeners.forEach { container!!.input.removeKeyListener(it) }
         GameSettings.instance.save()
     }
 
     private fun updateGameSettings() {
         GameSettings.instance.track = trackMenu.current
         GameSettings.instance.mode = modeMenu.current
+        GameSettings.instance.debug = debugMenu.current
+        GameSettings.instance.collisions = collisionsMenu.current
     }
 
     @Throws(SlickException::class)
@@ -147,6 +153,8 @@ class MenuState : BasicGameState() {
         super.enter(container, game)
         trackMenu.current = GameSettings.instance.track
         modeMenu.current = GameSettings.instance.mode
+        debugMenu.current = GameSettings.instance.debug
+        collisionsMenu.current = GameSettings.instance.collisions
         listeners.forEach { listener -> container!!.input.addKeyListener(listener) }
 
     }

@@ -4,6 +4,8 @@ import akostenko.aicars.keyboard.ComboKeyAction
 import akostenko.aicars.keyboard.GameAction
 import akostenko.aicars.keyboard.KeyboardHelper
 import akostenko.aicars.keyboard.SingleKeyAction
+import akostenko.aicars.menu.CollisionsMode
+import akostenko.aicars.menu.DebugMode
 import akostenko.aicars.menu.Mode
 import akostenko.aicars.menu.WithPlayer
 import akostenko.aicars.track.MonzaTrack
@@ -26,9 +28,12 @@ class GameSettings {
         private set
     var track: Track = MonzaTrack()
     var mode: Mode = WithPlayer()
+    var debug: DebugMode = DebugMode.defaultMode
+    var collisions: CollisionsMode = CollisionsMode.defaultMode
 
     fun save() {
-        val content = listOf(trackToken + track.title, modeToken + mode.title)
+        val content = listOf(trackToken + track.title, modeToken + mode.title,
+                debugToken + debug.title, collisionsToken + collisions.title)
         try {
             if (Files.exists(settingsPath)) {
                 Files.write(settingsPath, content, TRUNCATE_EXISTING, WRITE)
@@ -45,6 +50,8 @@ class GameSettings {
         private val settingsPath = Paths.get("settings.ini")
         private val trackToken = "track="
         private val modeToken = "mode="
+        private val debugToken = "debug="
+        private val collisionsToken = "collisions="
 
         val instance: GameSettings by lazy { restore() }
 
@@ -72,6 +79,12 @@ class GameSettings {
                             if (line.startsWith(modeToken)) {
                                 settings.mode = Mode.forName(line.split(modeToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
                             }
+                            if (line.startsWith(debugToken)) {
+                                settings.debug = DebugMode.forName(line.split(debugToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
+                            }
+                            if (line.startsWith(collisionsToken)) {
+                                settings.collisions = CollisionsMode.forName(line.split(collisionsToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
+                            }
                         }
             } catch (e: IOException) {
                 throw RuntimeException(e)
@@ -93,3 +106,4 @@ class GameSettings {
         }
     }
 }
+

@@ -46,7 +46,7 @@ internal class TrackBuilder private constructor(private var heading: Double,
         return sections.toList()
     }
 
-    companion object {
+    internal companion object {
         fun start(x: Double, y: Double, heading: Double, width: Double): TrackBuilder = TrackBuilder(heading, Decart(x, y), width, 0)
     }
 
