@@ -17,17 +17,31 @@ abstract class Track : MenuItem {
         return other is Track && title == other.title
     }
 
+    fun getNextSection(current: TrackSection): TrackSection {
+        val currentSectionIndex = current.indexOnTrack
+        if (sections.size > currentSectionIndex + 1) {
+            return sections[currentSectionIndex + 1]
+        } else {
+            // next lap
+            return sections.first()
+        }
+    }
+
+    fun getPrevSection(current: TrackSection): TrackSection {
+        val currentSectionIndex = current.indexOnTrack
+        if (currentSectionIndex > 0) {
+            return sections[currentSectionIndex - 1]
+        } else {
+            // previous lap
+            return sections.last()
+        }
+    }
+
     fun getNextWayPoint(current: TrackWayPoint): TrackWayPoint {
         if (current.section.wayPoints.size > current.indexInSection + 1) {
             return current.section.wayPoints[current.indexInSection + 1]
         } else {
-            val currentSectionIndex = current.section.indexOnTrack
-            if (sections.size > currentSectionIndex + 1) {
-                return sections[currentSectionIndex + 1].wayPoints.first()
-            } else {
-                // next lap
-                return sections.first().wayPoints.first()
-            }
+            return getNextSection(current.section).wayPoints.first()
         }
     }
 
@@ -35,19 +49,11 @@ abstract class Track : MenuItem {
         if (current.indexInSection > 0) {
             return current.section.wayPoints[current.indexInSection - 1]
         } else {
-            val currentSectionIndex = current.section.indexOnTrack
-            if (currentSectionIndex > 0) {
-                val previousSection = sections[currentSectionIndex - 1]
-                return previousSection.wayPoints.last()
-            } else {
-                // previous lap
-                val lastSection = sections.last()
-                return lastSection.wayPoints[lastSection.wayPoints.size - 1]
-            }
+            return getPrevSection(current.section).wayPoints.last()
         }
     }
-
     companion object {
+
         fun forName(name: String): Track {
             when (name) {
                 DebugTrack.NAME -> return DebugTrack()
@@ -56,9 +62,9 @@ abstract class Track : MenuItem {
                 else -> return defaultTrack()
             }
         }
-
         private fun defaultTrack(): Track {
             return MonzaTrack()
         }
+
     }
 }

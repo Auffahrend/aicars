@@ -1,11 +1,12 @@
 package akostenko.aicars.race
 
+import akostenko.aicars.math.MathUtils.linear
 import java.lang.StrictMath.abs
 import java.lang.StrictMath.min
 
 class Player : Driver() {
 
-    private val steeringSensitivity = 4.0
+    private val steeringSensitivity : (Double) -> Double = linear(50/3.6, 4.0, 400/3.6, 0.5)
     private val accelerationSensitivity = 5.0
     private val breakingSensitivity = 10.0
     private val fullInputTime = 0.5
@@ -28,7 +29,7 @@ class Player : Driver() {
     }
 
     fun turn(left: Boolean, right: Boolean, ms: Double) {
-        var steeringDelta = ms / 1000 * fullInputTime * steeringSensitivity
+        var steeringDelta = ms / 1000 * fullInputTime * steeringSensitivity(car.speed.module())
         val turnLeftDelta = steeringDelta * (if (left) -1 else 0).toDouble() * (if (steering > 0) 2 else 1).toDouble()
         val turnRightDelta = steeringDelta * (if (right) +1 else 0).toDouble() * (if (steering < 0) 2 else 1).toDouble()
         steering += turnLeftDelta + turnRightDelta

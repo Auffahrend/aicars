@@ -275,7 +275,14 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
     }
 
     private fun findClosestWayPoint(): TrackWayPoint {
-        return closestWayPointSelector(listOf(closestWP, track.getNextWayPoint(closestWP), track.getPreviousWayPoint(closestWP)))
+        var changed = true
+        var closest = closestWP
+        while (changed) {
+            var current = closestWayPointSelector(listOf(closest, track.getNextWayPoint(closest), track.getPreviousWayPoint(closest)))
+            changed = (closest != current)
+            closest = current
+        }
+        return closest
     }
 
     private fun applyAccelerationForces(seconds: Double) {
