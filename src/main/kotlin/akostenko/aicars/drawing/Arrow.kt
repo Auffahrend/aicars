@@ -5,7 +5,6 @@ import akostenko.aicars.math.Polar
 import org.newdawn.slick.Color
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.min
-import java.util.stream.Collectors.toList
 
 object Arrow {
     private val start = Polar(1.0, PI)
