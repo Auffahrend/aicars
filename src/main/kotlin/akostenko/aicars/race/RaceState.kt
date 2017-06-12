@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory
 import java.awt.Font
 import java.lang.Math.PI
 import java.lang.Math.pow
-import java.util.concurrent.Executors
+import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.atomic.AtomicReference
 
 class RaceState : GraphicsGameState() {
@@ -49,11 +49,9 @@ class RaceState : GraphicsGameState() {
     private lateinit var cars: MutableCollection<Car<*>>
     private var playerCar: Car<Player>? = null
     private lateinit var track: Track
-    private var msSinceLastCollisionDetection = 0
     private var msSinceLastCarUpdates = 0
 
-    private val msBetweenCollisionDetections = 1
-    private val msBetweenCarUpdates = 10
+    private val msBetweenCarUpdates = 1
     private lateinit var listeners : List<KeyListener>
     private val accelerateListener = IsKeyDownListener(KEY_UP)
     private val brakeListener = IsKeyDownListener(KEY_DOWN)
@@ -66,7 +64,7 @@ class RaceState : GraphicsGameState() {
     private var scale = Scale(1.0, 5f)
     private val trackBorder = Color(100, 100, 100)
 
-    private val executor = Executors.newSingleThreadExecutor()
+    private val executor = ForkJoinPool.commonPool();
 
     override fun getID(): Int {
         return GameStateIds.getId(this::class)
@@ -221,29 +219,29 @@ class RaceState : GraphicsGameState() {
                 .forEach { line -> drawScaledLine(g, line) }
     }
 
-    private val arrowSize = 30f //px
+    private val arrowSize = 30.0 //px
     private val arrowSpace = 3f //px
     private val grey = Color(40, 40, 40)
-    private val arrowsBlock = Decart((Game.screenWidth - arrowSize * 4).toDouble(), (Game.screenHeight - arrowSize * 3).toDouble())
-    private val upArrowCenter = arrowsBlock + Decart((arrowSize * 3 / 2).toDouble(), (arrowSize / 2).toDouble())
-    private val downArrowCenter = arrowsBlock + Decart((arrowSize * 3 / 2).toDouble(), (arrowSize * 3 / 2).toDouble())
-    private val leftArrowCenter = arrowsBlock + Decart((arrowSize * 1 / 2).toDouble(), (arrowSize * 3 / 2).toDouble())
-    private val rightArrowCenter = arrowsBlock + Decart((arrowSize * 5 / 2).toDouble(), (arrowSize * 3 / 2).toDouble())
+    private val arrowsBlock = Decart((Game.screenWidth - arrowSize * 4), (Game.screenHeight - arrowSize * 3))
+    private val upArrowCenter = arrowsBlock + Decart((arrowSize * 3 / 2), (arrowSize / 2))
+    private val downArrowCenter = arrowsBlock + Decart((arrowSize * 3 / 2), (arrowSize * 3 / 2))
+    private val leftArrowCenter = arrowsBlock + Decart((arrowSize * 1 / 2), (arrowSize * 3 / 2))
+    private val rightArrowCenter = arrowsBlock + Decart((arrowSize * 5 / 2), (arrowSize * 3 / 2))
 
     private fun drawDriverInput(g: Graphics, driver: Driver) {
-        Arrow.build(upArrowCenter, arrowSize - arrowSpace * 2, -PI / 2,
+        Arrow.build(upArrowCenter, arrowSize.toFloat() - arrowSpace * 2, -PI / 2,
                 if (driver.accelerating() > 0) accelerationColor else grey,
                 if (driver.accelerating() > 0) fatLineWidth else lineWidth)
                 .forEach { line -> drawUILine(g, line) }
-        Arrow.build(downArrowCenter, arrowSize - arrowSpace * 2, PI / 2,
+        Arrow.build(downArrowCenter, arrowSize.toFloat() - arrowSpace * 2, PI / 2,
                 if (driver.breaking() > 0) breakingColor else grey,
                 if (driver.breaking() > 0) fatLineWidth else lineWidth)
                 .forEach { line -> drawUILine(g, line) }
-        Arrow.build(leftArrowCenter, arrowSize, PI,
+        Arrow.build(leftArrowCenter, arrowSize.toFloat(), PI,
                 if (turnLeftListener.isDown || driver.steering() < 0) textColor else grey,
                 if (turnLeftListener.isDown || driver.steering() < 0) fatLineWidth else lineWidth)
                 .forEach { line -> drawUILine(g, line) }
-        Arrow.build(rightArrowCenter, arrowSize, 0.0,
+        Arrow.build(rightArrowCenter, arrowSize.toFloat(), 0.0,
                 if (turnRightListener.isDown || driver.steering() > 0) textColor else grey,
                 if (turnRightListener.isDown || driver.steering() > 0) fatLineWidth else lineWidth)
                 .forEach { line -> drawUILine(g, line) }
@@ -264,23 +262,10 @@ class RaceState : GraphicsGameState() {
         }
 
         msSinceLastCarUpdates += delta
-        msSinceLastCollisionDetection += delta
 
-        if (msSinceLastCarUpdates >= msBetweenCarUpdates) {
-            cars.forEach { car -> car.update(msSinceLastCarUpdates) }
-            //            executor.submit(() -> cars.forEach(car -> car.update(msSinceLastCarUpdates)));
-            msSinceLastCarUpdates = 0
-        }
-
-        if (msSinceLastCollisionDetection >= msBetweenCollisionDetections) {
-            //            executor.submit(() -> cars.forEach(car -> detectCollision(car, msSinceLastCollisionDetection)));
-            cars.forEach { car -> detectCollision(car, msSinceLastCollisionDetection) }
-            msSinceLastCollisionDetection = 0
-        }
-    }
-
-    private fun detectCollision(car: Car<*>, msDelta: Int) {
-
+        cars.map {car -> executor.submit({ car.update(msSinceLastCarUpdates) } )}
+                .forEach { it.join()}
+        msSinceLastCarUpdates = 0
     }
 
     private fun processInput(player: Player, delta: Int) {

@@ -22,19 +22,19 @@ object TrackSectionImg {
         }
     }
 
-    private fun getStraightBorderLines(section: TrackSection): Collection<LinesBuilder.LocalLine> {
+    private fun getStraightBorderLines(section: TrackSection): Collection<LinesBuilder.RelativeLine> {
         val sectionStart = section.start.toPolar()
         val sectionEnd = section.start.toPolar().plus(Polar(section.length, section.heading))
 
-        val rightBorder = Polar(section.width / 2, section.heading + PI / 2)
-        val leftBorder = Polar(section.width / 2, section.heading - PI / 2)
+        val rightBorderOffset = Polar(section.width / 2, section.heading + PI/2)
+        val leftBorderOffset = Polar(section.width / 2, section.heading - PI/2)
         return LinesBuilder()
-                .between(sectionStart.plus(rightBorder), sectionEnd.plus(rightBorder))
-                .between(sectionStart.plus(leftBorder), sectionEnd.plus(leftBorder))
+                .between(sectionStart + rightBorderOffset, sectionEnd + rightBorderOffset)
+                .between(sectionStart+ leftBorderOffset, sectionEnd + leftBorderOffset)
                 .build()
     }
 
-    private fun getArcBorderLines(section: TrackSection): Collection<LinesBuilder.LocalArc> {
+    private fun getArcBorderLines(section: TrackSection): Collection<LinesBuilder.RelativeArc> {
         val center = section.start + Polar(section.radius, section.heading + PI/2)
         var from = (section.start - center).toPolar().d - if (section.radius < 0) PI else 0.0
         var to = from + section.length / section.radius
@@ -43,8 +43,8 @@ object TrackSectionImg {
             to = from;
             from = t;
         }
-        return listOf(LinesBuilder.LocalArc(center, section.radius - section.width/2, from, to),
-                LinesBuilder.LocalArc(center, section.radius + section.width/2, from, to))
+        return listOf(LinesBuilder.RelativeArc(center, section.radius - section.width/2, from, to),
+                LinesBuilder.RelativeArc(center, section.radius + section.width/2, from, to))
     }
 
     fun getBorders(section: TrackSection): Collection<TrackBorder> {
@@ -56,7 +56,7 @@ object TrackSectionImg {
         }
     }
 
-    private fun createBorder(line: LinesBuilder.LocalLine): TrackBorder {
+    private fun createBorder(line: LinesBuilder.RelativeLine): TrackBorder {
         return TrackBorder(line.from, line.to)
     }
 

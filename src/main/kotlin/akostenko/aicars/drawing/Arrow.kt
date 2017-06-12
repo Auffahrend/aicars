@@ -12,7 +12,7 @@ object Arrow {
     private val finRotation = 0.8 * PI
 
     fun build(center: Decart, lengthPx: Float, rotation: Double, color: Color, widthPx: Float): Collection<StraightLine> {
-        val baseLength = start.minus(end).module()
+        val baseLength = (start-end).module()
         val scale = Scale(baseLength, lengthPx)
         var finLengthPx = min(lengthPx / 2, (widthPx * 5))
         if (finLengthPx < widthPx * 2) {
@@ -22,7 +22,7 @@ object Arrow {
 
         return LinesBuilder()
                 // shortening main line to prevent it overlapping with fins
-                .from(start).towards(end.minus(start).toPolar().d, (baseLength - scale.from(widthPx)))
+                .from(start).towards((end-start).toPolar().d, (baseLength - scale.from(widthPx)))
                 .from(end).towards(end.toPolar().d + finRotation, finLength)
                 .from(end).towards(end.toPolar().d - finRotation, finLength)
                 .build()

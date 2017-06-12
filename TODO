@@ -7,12 +7,12 @@ Required
         Output: driver inputs
     Add fit-function: lap-time/avg speed
     Add natural selection
-    Add collision forces
     Convert images into data classes (instead of companion factory)
 
 Optional
     Improve track drawing (10m grid?)
     Add curbs
+    Add collision forces
 
 
 ===============================================================

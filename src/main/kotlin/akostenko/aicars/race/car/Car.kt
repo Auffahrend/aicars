@@ -272,13 +272,20 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
         applyAccelerationForces(seconds)
         applyTurningForces(seconds)
         applyBreakingForces(seconds)
+        applyCollisionImpact()
+    }
+
+    private fun applyCollisionImpact() {
+//        listOf(closestWP.section, track.getNextSection(closestWP.section), track.getPrevSection(closestWP.section))
+//                .flatMap { it.getBorders() }
+//                .filter {}
     }
 
     private fun findClosestWayPoint(): TrackWayPoint {
         var changed = true
         var closest = closestWP
         while (changed) {
-            var current = closestWayPointSelector(listOf(closest, track.getNextWayPoint(closest), track.getPreviousWayPoint(closest)))
+            val current = closestWayPointSelector(listOf(closest, track.getNextWayPoint(closest), track.getPreviousWayPoint(closest)))
             changed = (closest != current)
             closest = current
         }

@@ -20,8 +20,10 @@ abstract class GraphicsGameState : BasicGameState() {
         g.lineWidth = straightLine.width
         g.color = straightLine.color
         g.drawLine(
-                straightLine.from.x.toFloat(), straightLine.from.y.toFloat(),
-                straightLine.to.x.toFloat(), straightLine.to.y.toFloat())
+                straightLine.from.x.toFloat(),
+                straightLine.from.y.toFloat(),
+                straightLine.to.x.toFloat(),
+                straightLine.to.y.toFloat())
     }
 
     protected fun drawScaledLine(g: Graphics, line: Line) {
@@ -44,8 +46,10 @@ abstract class GraphicsGameState : BasicGameState() {
         g.lineWidth = straightLine.width
         g.color = straightLine.color
         g.drawLine(
-                (straightLine.from.x + cameraOffset.x).toFloat(), (straightLine.from.y + cameraOffset.y).toFloat(),
-                (straightLine.to.x + cameraOffset.x).toFloat(), (straightLine.to.y + cameraOffset.y).toFloat())
+                (straightLine.from.x + cameraOffset.x).toFloat(),
+                (straightLine.from.y + cameraOffset.y).toFloat(),
+                (straightLine.to.x + cameraOffset.x).toFloat(),
+                (straightLine.to.y + cameraOffset.y).toFloat())
     }
 
     private fun drawArc(g: Graphics, arcLine: ArcLine) {

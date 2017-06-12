@@ -7,10 +7,10 @@ import org.newdawn.slick.Color
 import java.util.*
 
 internal class LinesBuilder {
-    private val lines = ArrayList<LocalLine>()
+    private val lines = ArrayList<RelativeLine>()
 
     fun between(from: Vector, to: Vector): LinesBuilder {
-        lines.add(LocalLine(from, to))
+        lines.add(RelativeLine(from, to))
         return this
     }
 
@@ -18,14 +18,14 @@ internal class LinesBuilder {
         return LineFromTo(from)
     }
 
-    fun build(): Collection<LocalLine> {
+    fun build(): Collection<RelativeLine> {
         return lines
     }
 
     internal inner class LineFromTo(private val from: Vector) {
 
         fun towards(direction: Double, size: Double): LinesBuilder {
-            this@LinesBuilder.lines.add(LocalLine(from, from.plus(Polar(size, direction))))
+            this@LinesBuilder.lines.add(RelativeLine(from, from.plus(Polar(size, direction))))
             return this@LinesBuilder
         }
     }
@@ -33,15 +33,15 @@ internal class LinesBuilder {
     /** All this lines are correct only while image is centered at (0, 0)
      * They are incompatible with [StraightLine] while are unscaled and have no color
      */
-    internal class LocalLine(val from:Vector, val to:Vector) {
+    internal class RelativeLine(val from:Vector, val to:Vector) {
 
-        fun rotate(radians:Double):LocalLine {
-            return LocalLine(from.rotate(radians), to.rotate(radians))
+        fun rotate(radians:Double): RelativeLine {
+            return RelativeLine(from.rotate(radians), to.rotate(radians))
         }
 
-        fun scale(scale:Scale):LocalLine {
+        fun scale(scale:Scale): RelativeLine {
             val k = scale.pixels / scale.size
-            return LocalLine(from * k.toDouble(), to * k.toDouble())
+            return RelativeLine(from * k, to * k)
         }
 
         fun place(position:Decart, color:Color, width:Float): StraightLine {
@@ -52,15 +52,15 @@ internal class LinesBuilder {
         }
     }
 
-    internal class LocalArc(val center: Vector, val radius: Double, val from: Double, val to: Double) {
+    internal class RelativeArc(val center: Vector, val radius: Double, val from: Double, val to: Double) {
 
-        fun rotate(radians: Double): LocalArc {
-            return LocalArc(center, radius, from + radians, to + radians)
+        fun rotate(radians: Double): RelativeArc {
+            return RelativeArc(center, radius, from + radians, to + radians)
         }
 
-        fun scale(scale: Scale): LocalArc {
+        fun scale(scale: Scale): RelativeArc {
             val k = scale.pixels / scale.size
-            return LocalArc(center * k.toDouble(), radius * k, from, to)
+            return RelativeArc(center * k, radius * k, from, to)
         }
 
         fun place(position: Decart, color:Color, width:Float): ArcLine {
