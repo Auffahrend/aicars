@@ -52,7 +52,6 @@ abstract class GraphicsGameState : BasicGameState() {
                 scale.to(arcLine.center.y - arcLine.radius - camera.y) + cameraOffset.y.toFloat(),
                 scale.to(arcLine.radius * 2),
                 scale.to(arcLine.radius * 2),
-                //min(arcLine.radius.toInt() * 2, 150),
                 toDegrees(from).toFloat(),
                 toDegrees(to).toFloat()
         )

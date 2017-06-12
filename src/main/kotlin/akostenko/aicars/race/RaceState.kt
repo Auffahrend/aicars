@@ -63,7 +63,7 @@ class RaceState : GraphicsGameState() {
     private var scale = Scale(1.0, 5f)
     private val trackBorder = Color(100, 100, 100)
 
-    private val executor = ForkJoinPool.commonPool();
+    private val executor = ForkJoinPool.commonPool()
 
     override fun getID(): Int {
         return GameStateIds.getId(this::class)
@@ -183,7 +183,6 @@ class RaceState : GraphicsGameState() {
     private val telemetrySpacing = 5f
     private val telemetryNameX = telemetryLeftMargin + telemetrySpacing
     private val telemetryValueX = telemetryNameX + telemetryNameWidth + telemetrySpacing
-    private val noopScale = Scale(1.0, 1f)
     private fun drawCarTelemetry(g: Graphics, car: Car<*>) {
         drawTelemetry(g, car)
         drawDriverInput(g, car.driver)

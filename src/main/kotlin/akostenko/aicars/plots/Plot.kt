@@ -4,8 +4,6 @@ import akostenko.aicars.math.Decart
 import java.lang.Double.max
 import java.lang.Double.min
 import java.lang.StrictMath.pow
-import java.util.*
-import java.util.function.Function
 
 internal class Plot(val name: String,
                     val xAxis: String,

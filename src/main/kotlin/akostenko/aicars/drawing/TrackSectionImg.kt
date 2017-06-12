@@ -32,9 +32,9 @@ object TrackSectionImg {
         var from = (section.start - center).toPolar().d - if (section.radius < 0) PI else 0.0
         var to = from + section.length / section.radius
         if (section.radius < 0) {
-            val t = to;
-            to = from;
-            from = t;
+            val t = to
+            to = from
+            from = t
         }
         return listOf(ArcLine(center, section.radius - section.width/2, from, to, color, 3f),
                 ArcLine(center, section.radius + section.width/2, from, to, color, 3f))

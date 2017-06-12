@@ -180,7 +180,7 @@ class CarPlotsState : GraphicsGameState() {
         val xValueFormat = "%." + xPrecision + 'f'
         val xStep = xPxToXValue(gridStepPx.toDouble() + marginPx) - from
         val dataIncludesZeroY = minY <= 0 && maxY >= 0
-        val xAxisYCoord = if (dataIncludesZeroY) yValueToYPx(0.0).toFloat() else screenHeight.toFloat() / 2
+        val xAxisYCoord = if (dataIncludesZeroY) yValueToYPx(0.0).toFloat() else screenHeight / 2
         var i = 0
         while (i <= (xAxisLength - marginPx) / gridStepPx) {
             val xPx = marginPx + i * gridStepPx
@@ -197,7 +197,7 @@ class CarPlotsState : GraphicsGameState() {
         Arrow.build(Decart((screenWidth / 2).toDouble(), xAxisYCoord.toDouble()), xAxisLength, 0.0, gray, 2f)
                 .forEach { line -> drawUILine(g, line) }
         g.color = white
-        g.drawString(xName, screenWidth.toFloat() - marginPx - (xName.length * textSize / 2).toFloat(), xAxisYCoord - textSize * 3 / 2)
+        g.drawString(xName, screenWidth - marginPx - (xName.length * textSize / 2).toFloat(), xAxisYCoord - textSize * 3 / 2)
     }
 
     private fun drawYAxisAndGrid(g: Graphics, name: String, from: Double, to: Double, yName: String, minY: Double, maxY: Double, yPrecision: Int) {
@@ -230,7 +230,7 @@ class CarPlotsState : GraphicsGameState() {
         g.drawString(yName, yAxisXCoord + (abs(log10(maxY)) + 1.0 + yPrecision.toDouble()).toFloat() * textSize, marginPx - textSize / 2)
 
         g.font = headerFont
-        g.drawString(name, (screenWidth / 2 - name.length / 2 * headerTextSize / 3 * 2).toFloat(), marginPx / 2)
+        g.drawString(name, (screenWidth / 2 - name.length / 2 * headerTextSize / 3 * 2), marginPx / 2)
     }
 
     private fun drawPlotData(g: Graphics, plotData: Iterable<Decart>, from: Double, to: Double, minY: Double, maxY: Double) {

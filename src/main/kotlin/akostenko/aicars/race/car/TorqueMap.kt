@@ -2,9 +2,6 @@ package akostenko.aicars.race.car
 
 import akostenko.aicars.math.Decart
 import akostenko.aicars.math.MathUtils.linear
-import java.util.*
-import java.util.Comparator.comparing
-import java.util.function.Function
 
 /** points' Xs are RPS and Ys are torque.  */
 class TorqueMap(vararg points: Decart) {
@@ -35,7 +32,7 @@ class TorqueMap(vararg points: Decart) {
         torqueApproximations.add(torqueApproximation)
     }
 
-    operator fun get(rps: Double): Double {
+    fun get(rps: Double): Double {
         var approximation = torqueApproximations[0]
         if (rps < rpsPoints[0]) {
             approximation = torqueApproximations[0]
