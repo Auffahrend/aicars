@@ -21,7 +21,6 @@ import akostenko.aicars.race.car.CarTelemetry.Companion.textColor
 import akostenko.aicars.race.car.CarTelemetryScalar
 import akostenko.aicars.race.car.CarTelemetryVector
 import akostenko.aicars.track.Track
-import akostenko.aicars.track.TrackBuilder
 import akostenko.aicars.track.TrackSection
 import org.lwjgl.input.Keyboard.KEY_ADD
 import org.lwjgl.input.Keyboard.KEY_DOWN
@@ -136,16 +135,17 @@ class RaceState : GraphicsGameState() {
         }
     }
 
-    private fun drawCar(g: Graphics, car: Car<*>, focused: Car<*>) {
-        CarImg.build(car, focused.position, textColor, scale)
-                .forEach { line -> drawScaledLine(g, line) }
-        drawUnscaledLine(g, StraightLine(focused.position, focused.closestWP.position.toDecart(), breakingColor, 2f), focused.position, scale)
+    private fun drawCar(g: Graphics, car: Car<*>, camera: Car<*>) {
+        CarImg.build(car, textColor)
+                .forEach { line -> drawRealLine(g, line, camera.position, scale) }
+        val lineToClosestTracMarker = StraightLine(car.position, car.closestWP.position.toDecart(), breakingColor, 2f)
+        drawRealLine(g, lineToClosestTracMarker, camera.position, scale)
     }
 
     private fun drawTrack(g: Graphics, focused: Car<*>, track: Track) {
         track.sections
 //                .filter { isVisible(it, focused.position) }
-                .forEach { section -> drawTrackSection(g, focused, section, track.width) }
+                .forEach { section -> drawTrackSection(g, focused, section) }
     }
 
     private var visibilityRadius = scale.from(Game.screenWidth)
@@ -153,9 +153,9 @@ class RaceState : GraphicsGameState() {
         return section.wayPoints.any { (it.position-camera).module() < visibilityRadius }
     }
 
-    private fun drawTrackSection(g: Graphics, focused: Car<*>, section: TrackSection, width: Double) {
-        TrackSectionImg.build(section, scale, trackBorder, focused.position)
-                .forEach { line -> drawScaledLine(g, line) }
+    private fun drawTrackSection(g: Graphics, focused: Car<*>, section: TrackSection) {
+        TrackSectionImg.build(section, trackBorder)
+                .forEach { line -> drawRealLine(g, line, focused.position, scale) }
     }
 
 
@@ -183,6 +183,7 @@ class RaceState : GraphicsGameState() {
     private val telemetrySpacing = 5f
     private val telemetryNameX = telemetryLeftMargin + telemetrySpacing
     private val telemetryValueX = telemetryNameX + telemetryNameWidth + telemetrySpacing
+    private val noopScale = Scale(1.0, 1f)
     private fun drawCarTelemetry(g: Graphics, car: Car<*>) {
         drawTelemetry(g, car)
         drawDriverInput(g, car.driver)
@@ -211,12 +212,12 @@ class RaceState : GraphicsGameState() {
     }
 
     private fun drawTelemetryVector(g: Graphics, car: Car<*>, camera: Decart, item: CarTelemetryVector) {
-        val from = scale.to(car.position + item.appliedTo - camera).toDecart()
+        val from = scale.to(car.position + item.appliedTo - camera).toDecart() + cameraOffset
         val centerOffset = item.scale.to(item.vector * 0.5)
         Arrow.build(from + centerOffset,
                 item.scale.to(item.vector.module()),
                 item.vector.toPolar().d, item.color, lineWidth)
-                .forEach { line -> drawScaledLine(g, line) }
+                .forEach { line -> drawUILine(g, line) }
     }
 
     private val arrowSize = 30.0 //px

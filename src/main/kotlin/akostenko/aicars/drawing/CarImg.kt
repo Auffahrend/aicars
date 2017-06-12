@@ -1,6 +1,7 @@
 package akostenko.aicars.drawing
 
 import akostenko.aicars.math.Decart
+import akostenko.aicars.math.Decart.Companion.ZERO
 import akostenko.aicars.model.CarModel.axleTrack
 import akostenko.aicars.model.CarModel.frontWeightPercent
 import akostenko.aicars.model.CarModel.rearWeightPercent
@@ -9,7 +10,6 @@ import akostenko.aicars.model.CarModel.wheelbase
 import akostenko.aicars.race.car.Car
 import org.newdawn.slick.Color
 import java.lang.StrictMath.PI
-import java.util.stream.Collectors.toList
 
 object CarImg {
 
@@ -26,10 +26,9 @@ object CarImg {
     private val carAxis_p1 = Decart(wheelbase * frontWeightPercent * 1.5, 0.0)
     private val carAxis_p2 = Decart(-wheelbase * rearWeightPercent, 0.0)
 
-    fun build(car: Car<*>, cameraPosition: Decart, color: Color, scale: Scale): Collection<StraightLine> {
-        val positionPx = scale.to(car.position - cameraPosition).toDecart()
+    fun build(car: Car<*>, color: Color): Collection<Line> {
 
-        return LinesBuilder()
+        return StraightLinesBuilder(color, 3f)
                 .from(FL_wheel).towards(car.steering.toPolar().d, tyreRadius)
                 .from(FL_wheel).towards(car.steering.toPolar().d + PI, tyreRadius)
                 .between(FL_wheel, FR_wheel)
@@ -42,9 +41,8 @@ object CarImg {
 
                 .between(carAxis_p1, carAxis_p2)
                 .build()
-                .map { line -> line.rotate(car.heading.toPolar().d) }
-                .map { line -> line.scale(scale) }
-                .map { line -> line.place(positionPx, color, 3f) }
+                .map { line -> line.rotate(car.heading.toPolar().d, ZERO) }
+                .map { (from, to, c, w) -> StraightLine(from+car.position, to+car.position, c, w) }
 
     }
 

@@ -26,13 +26,13 @@ abstract class GraphicsGameState : BasicGameState() {
                 straightLine.to.y.toFloat())
     }
 
-    protected fun drawScaledLine(g: Graphics, line: Line) {
-        if (line is StraightLine) drawStraightLine(g, line)
-        else if (line is ArcLine) drawArc(g, line)
+    protected fun drawRealLine(g: Graphics, line: Line, camera: Decart, scale: Scale) {
+        if (line is StraightLine) drawStraightLine(g, line, camera, scale)
+        else if (line is ArcLine) drawArc(g, line, camera, scale)
         else throw IllegalArgumentException("Not supported line $line")
     }
 
-    protected fun drawUnscaledLine(g: Graphics, line: StraightLine, camera: Decart, scale: Scale) {
+    private fun drawStraightLine(g: Graphics, line: StraightLine, camera: Decart, scale: Scale) {
         g.lineWidth = line.width
         g.color = line.color
         g.drawLine(
@@ -42,26 +42,16 @@ abstract class GraphicsGameState : BasicGameState() {
                 (scale.to(line.to.y - camera.y) + cameraOffset.y).toFloat())
     }
 
-    private fun drawStraightLine(g: Graphics, straightLine: StraightLine) {
-        g.lineWidth = straightLine.width
-        g.color = straightLine.color
-        g.drawLine(
-                (straightLine.from.x + cameraOffset.x).toFloat(),
-                (straightLine.from.y + cameraOffset.y).toFloat(),
-                (straightLine.to.x + cameraOffset.x).toFloat(),
-                (straightLine.to.y + cameraOffset.y).toFloat())
-    }
-
-    private fun drawArc(g: Graphics, arcLine: ArcLine) {
+    private fun drawArc(g: Graphics, arcLine: ArcLine, camera: Decart, scale: Scale) {
         g.lineWidth = arcLine.width
         g.color = arcLine.color
         val from = min(arcLine.from, arcLine.to)
         val to = max(arcLine.from, arcLine.to)
         g.drawArc(
-                (arcLine.center.x - arcLine.radius + cameraOffset.x).toFloat(),
-                (arcLine.center.y - arcLine.radius + cameraOffset.y).toFloat(),
-                arcLine.radius.toFloat() * 2,
-                arcLine.radius.toFloat() * 2,
+                scale.to(arcLine.center.x - arcLine.radius - camera.x) + cameraOffset.x.toFloat(),
+                scale.to(arcLine.center.y - arcLine.radius - camera.y) + cameraOffset.y.toFloat(),
+                scale.to(arcLine.radius * 2),
+                scale.to(arcLine.radius * 2),
                 //min(arcLine.radius.toInt() * 2, 150),
                 toDegrees(from).toFloat(),
                 toDegrees(to).toFloat()
