@@ -46,6 +46,7 @@ class CarPlotsState : GraphicsGameState() {
     private val gray = Color(150, 150, 150)
     private val darkGray = Color(50, 50, 50)
     private val white = Color.white
+    private val lineWidth = 2f
 
     private val listeners = mutableListOf<KeyListener>()
     private val plotWidthPx = screenWidth - 2 * marginPx
@@ -184,18 +185,18 @@ class CarPlotsState : GraphicsGameState() {
         var i = 0
         while (i <= (xAxisLength - marginPx) / gridStepPx) {
             val xPx = marginPx + i * gridStepPx
-            drawUILine(g, StraightLine(
-                    Decart(xPx.toDouble(), marginPx.toDouble()),
-                    Decart(xPx.toDouble(), (screenHeight - marginPx).toDouble()),
-                    darkGray, 1f))
+            drawUILine(g,
+                    StraightLine(Decart(xPx.toDouble(), marginPx.toDouble()),
+                            Decart(xPx.toDouble(), (screenHeight - marginPx).toDouble())),
+                    darkGray, 1f)
             g.color = white
             g.drawString(String.format(xValueFormat, from + i * xStep), xPx, xAxisYCoord + textSize / 2)
             i++
         }
         // x axis
-        g.lineWidth = 2f
-        Arrow.build(Decart((screenWidth / 2).toDouble(), xAxisYCoord.toDouble()), xAxisLength, 0.0, gray, 2f)
-                .forEach { line -> drawUILine(g, line) }
+        g.lineWidth = lineWidth
+        Arrow.build(Decart((screenWidth / 2).toDouble(), xAxisYCoord.toDouble()), xAxisLength, 0.0, lineWidth)
+                .forEach { line -> drawUILine(g, line, gray, lineWidth) }
         g.color = white
         g.drawString(xName, screenWidth - marginPx - (xName.length * textSize / 2).toFloat(), xAxisYCoord - textSize * 3 / 2)
     }
@@ -215,17 +216,17 @@ class CarPlotsState : GraphicsGameState() {
         var i = 0
         while (i <= (yAxisLength - marginPx) / gridStepPx) {
             val yPx = marginPx + i * gridStepPx
-            drawUILine(g, StraightLine(
-                    Decart(marginPx.toDouble(), yPx.toDouble()),
-                    Decart((screenWidth - marginPx).toDouble(), yPx.toDouble()),
-                    darkGray, 1f))
+            drawUILine(g,
+                    StraightLine(Decart(marginPx.toDouble(), yPx.toDouble()),
+                            Decart((screenWidth - marginPx).toDouble(), yPx.toDouble())),
+                    darkGray, 1f)
             g.color = white
             g.drawString(String.format(yValueFormat, maxY - i * yStep), yAxisXCoord + textSize, yPx - textSize / 2)
             i++
         }
         // y axis
-        Arrow.build(Decart(yAxisXCoord.toDouble(), (screenHeight / 2).toDouble()), screenHeight - 2 * marginPx, -PI / 2, gray, 2f)
-                .forEach { line -> drawUILine(g, line) }
+        Arrow.build(Decart(yAxisXCoord.toDouble(), (screenHeight / 2).toDouble()), screenHeight - 2 * marginPx, -PI / 2, lineWidth)
+                .forEach { line -> drawUILine(g, line, gray, lineWidth) }
         g.color = white
         g.drawString(yName, yAxisXCoord + (abs(log10(maxY)) + 1.0 + yPrecision.toDouble()).toFloat() * textSize, marginPx - textSize / 2)
 
@@ -241,7 +242,7 @@ class CarPlotsState : GraphicsGameState() {
 
         plotData.forEach { point ->
             val screenCoordinates = Decart(xToScreenX(point.x), yToScreenY(point.y))
-            drawUILine(g, StraightLine(screenCoordinates, screenCoordinates, white, 1f))
+            drawUILine(g, StraightLine(screenCoordinates, screenCoordinates), white, 1f)
         }
     }
 

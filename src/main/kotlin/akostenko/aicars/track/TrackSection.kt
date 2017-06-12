@@ -1,5 +1,8 @@
 package akostenko.aicars.track
 
+import akostenko.aicars.drawing.ArcLine
+import akostenko.aicars.drawing.Line
+import akostenko.aicars.drawing.StraightLinesBuilder
 import akostenko.aicars.math.Polar
 import akostenko.aicars.math.Vector
 import java.lang.StrictMath.abs
@@ -45,6 +48,33 @@ class TrackSection internal constructor(distanceFromStart: Int,
     }
 
     val isStraight: Boolean = radius == 0.0
+
+    val borders: Collection<Line> = if (isStraight) getStraightBorderLines() else getArcBorderLines()
+
+    private fun getStraightBorderLines(): Collection<Line> {
+        val sectionStart = start.toPolar()
+        val sectionEnd = start.toPolar() + Polar(length, heading)
+
+        val rightBorderOffset = Polar(width / 2, heading + Math.PI /2)
+        val leftBorderOffset = Polar(width / 2, heading - Math.PI /2)
+        return StraightLinesBuilder()
+                .between(sectionStart + rightBorderOffset, sectionEnd + rightBorderOffset)
+                .between(sectionStart+ leftBorderOffset, sectionEnd + leftBorderOffset)
+                .build()
+    }
+
+    private fun getArcBorderLines(): Collection<Line> {
+        val center = start.toDecart() + Polar(radius, heading + Math.PI /2)
+        var from = (start - center).toPolar().d - if (radius < 0) Math.PI else 0.0
+        var to = from + length / radius
+        if (radius < 0) {
+            val t = to
+            to = from
+            from = t
+        }
+        return listOf(ArcLine(center, radius - width/2, from, to),
+                ArcLine(center, radius + width/2, from, to))
+    }
 
     companion object {
         private val wayPointStep = 1 // m

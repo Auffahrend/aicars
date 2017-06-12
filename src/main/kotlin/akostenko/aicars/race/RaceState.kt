@@ -136,10 +136,10 @@ class RaceState : GraphicsGameState() {
     }
 
     private fun drawCar(g: Graphics, car: Car<*>, camera: Car<*>) {
-        CarImg.build(car, textColor)
-                .forEach { line -> drawRealLine(g, line, camera.position, scale) }
-        val lineToClosestTracMarker = StraightLine(car.position, car.closestWP.position.toDecart(), breakingColor, 2f)
-        drawRealLine(g, lineToClosestTracMarker, camera.position, scale)
+        CarImg.build(car)
+                .forEach { line -> drawRealLine(g, line, camera.position, scale, textColor, 3f) }
+        val lineToClosestTrackMarker = StraightLine(car.position, car.closestWP.position.toDecart())
+        drawRealLine(g, lineToClosestTrackMarker, camera.position, scale, breakingColor, 2f)
     }
 
     private fun drawTrack(g: Graphics, focused: Car<*>, track: Track) {
@@ -154,8 +154,8 @@ class RaceState : GraphicsGameState() {
     }
 
     private fun drawTrackSection(g: Graphics, focused: Car<*>, section: TrackSection) {
-        TrackSectionImg.build(section, trackBorder)
-                .forEach { line -> drawRealLine(g, line, focused.position, scale) }
+        section.borders
+                .forEach { line -> drawRealLine(g, line, focused.position, scale, trackBorder, 3f) }
     }
 
 
@@ -213,10 +213,8 @@ class RaceState : GraphicsGameState() {
     private fun drawTelemetryVector(g: Graphics, car: Car<*>, camera: Decart, item: CarTelemetryVector) {
         val from = scale.to(car.position + item.appliedTo - camera).toDecart() + cameraOffset
         val centerOffset = item.scale.to(item.vector * 0.5)
-        Arrow.build(from + centerOffset,
-                item.scale.to(item.vector.module()),
-                item.vector.toPolar().d, item.color, lineWidth)
-                .forEach { line -> drawUILine(g, line) }
+        Arrow.build(from + centerOffset, item.scale.to(item.vector.module()), item.vector.toPolar().d, lineWidth)
+                .forEach { line -> drawUILine(g, line, item.color, lineWidth) }
     }
 
     private val arrowSize = 30.0 //px
@@ -229,22 +227,29 @@ class RaceState : GraphicsGameState() {
     private val rightArrowCenter = arrowsBlock + Decart((arrowSize * 5 / 2), (arrowSize * 3 / 2))
 
     private fun drawDriverInput(g: Graphics, driver: Driver) {
-        Arrow.build(upArrowCenter, arrowSize.toFloat() - arrowSpace * 2, -PI / 2,
-                if (driver.accelerating() > 0) accelerationColor else grey,
-                if (driver.accelerating() > 0) fatLineWidth else lineWidth)
-                .forEach { line -> drawUILine(g, line) }
-        Arrow.build(downArrowCenter, arrowSize.toFloat() - arrowSpace * 2, PI / 2,
-                if (driver.breaking() > 0) breakingColor else grey,
-                if (driver.breaking() > 0) fatLineWidth else lineWidth)
-                .forEach { line -> drawUILine(g, line) }
-        Arrow.build(leftArrowCenter, arrowSize.toFloat(), PI,
-                if (turnLeftListener.isDown || driver.steering() < 0) textColor else grey,
-                if (turnLeftListener.isDown || driver.steering() < 0) fatLineWidth else lineWidth)
-                .forEach { line -> drawUILine(g, line) }
-        Arrow.build(rightArrowCenter, arrowSize.toFloat(), 0.0,
-                if (turnRightListener.isDown || driver.steering() > 0) textColor else grey,
-                if (turnRightListener.isDown || driver.steering() > 0) fatLineWidth else lineWidth)
-                .forEach { line -> drawUILine(g, line) }
+        val accelerationLinesWidth = if (driver.accelerating() > 0) fatLineWidth else lineWidth
+        Arrow.build(upArrowCenter, arrowSize.toFloat() - arrowSpace * 2, -PI / 2, accelerationLinesWidth)
+                .forEach { line -> drawUILine(g, line,
+                        if (driver.accelerating() > 0) accelerationColor else grey,
+                        accelerationLinesWidth) }
+
+        val breakingLinesWidth = if (driver.breaking() > 0) fatLineWidth else lineWidth
+        Arrow.build(downArrowCenter, arrowSize.toFloat() - arrowSpace * 2, PI / 2, breakingLinesWidth)
+                .forEach { line -> drawUILine(g, line,
+                        if (driver.breaking() > 0) breakingColor else grey,
+                        breakingLinesWidth) }
+
+        val leftLinesWidth = if (turnLeftListener.isDown || driver.steering() < 0) fatLineWidth else lineWidth
+        Arrow.build(leftArrowCenter, arrowSize.toFloat(), PI, leftLinesWidth)
+                .forEach { line -> drawUILine(g, line,
+                        if (turnLeftListener.isDown || driver.steering() < 0) textColor else grey,
+                        leftLinesWidth) }
+
+        val rightLinesWidth = if (turnRightListener.isDown || driver.steering() > 0) fatLineWidth else lineWidth
+        Arrow.build(rightArrowCenter, arrowSize.toFloat(), 0.0, rightLinesWidth)
+                .forEach { line -> drawUILine(g, line,
+                        if (turnRightListener.isDown || driver.steering() > 0) textColor else grey,
+                        rightLinesWidth) }
     }
 
     private fun focusedCar(): Car<*> {

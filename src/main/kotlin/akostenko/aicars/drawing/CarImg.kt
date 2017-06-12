@@ -8,7 +8,6 @@ import akostenko.aicars.model.CarModel.rearWeightPercent
 import akostenko.aicars.model.CarModel.tyreRadius
 import akostenko.aicars.model.CarModel.wheelbase
 import akostenko.aicars.race.car.Car
-import org.newdawn.slick.Color
 import java.lang.StrictMath.PI
 
 object CarImg {
@@ -26,9 +25,9 @@ object CarImg {
     private val carAxis_p1 = Decart(wheelbase * frontWeightPercent * 1.5, 0.0)
     private val carAxis_p2 = Decart(-wheelbase * rearWeightPercent, 0.0)
 
-    fun build(car: Car<*>, color: Color): Collection<Line> {
+    fun build(car: Car<*>): Collection<Line> {
 
-        return StraightLinesBuilder(color, 3f)
+        return StraightLinesBuilder()
                 .from(FL_wheel).towards(car.steering.toPolar().d, tyreRadius)
                 .from(FL_wheel).towards(car.steering.toPolar().d + PI, tyreRadius)
                 .between(FL_wheel, FR_wheel)
@@ -42,7 +41,7 @@ object CarImg {
                 .between(carAxis_p1, carAxis_p2)
                 .build()
                 .map { line -> line.rotate(car.heading.toPolar().d, ZERO) }
-                .map { (from, to, c, w) -> StraightLine(from+car.position, to+car.position, c, w) }
+                .map { (from, to) -> StraightLine(from+car.position, to+car.position) }
 
     }
 

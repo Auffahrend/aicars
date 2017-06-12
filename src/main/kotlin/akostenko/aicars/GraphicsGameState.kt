@@ -5,6 +5,7 @@ import akostenko.aicars.drawing.Line
 import akostenko.aicars.drawing.Scale
 import akostenko.aicars.drawing.StraightLine
 import akostenko.aicars.math.Decart
+import org.newdawn.slick.Color
 import org.newdawn.slick.Graphics
 import org.newdawn.slick.state.BasicGameState
 import java.lang.IllegalArgumentException
@@ -16,9 +17,9 @@ abstract class GraphicsGameState : BasicGameState() {
 
     protected lateinit var cameraOffset: Decart
 
-    protected fun drawUILine(g: Graphics, straightLine: StraightLine) {
-        g.lineWidth = straightLine.width
-        g.color = straightLine.color
+    protected fun drawUILine(g: Graphics, straightLine: StraightLine, color: Color, width: Float) {
+        g.lineWidth = width
+        g.color = color
         g.drawLine(
                 straightLine.from.x.toFloat(),
                 straightLine.from.y.toFloat(),
@@ -26,15 +27,15 @@ abstract class GraphicsGameState : BasicGameState() {
                 straightLine.to.y.toFloat())
     }
 
-    protected fun drawRealLine(g: Graphics, line: Line, camera: Decart, scale: Scale) {
-        if (line is StraightLine) drawStraightLine(g, line, camera, scale)
-        else if (line is ArcLine) drawArc(g, line, camera, scale)
+    protected fun drawRealLine(g: Graphics, line: Line, camera: Decart, scale: Scale, color: Color, width: Float) {
+        if (line is StraightLine) drawStraightLine(g, line, camera, scale, color, width)
+        else if (line is ArcLine) drawArc(g, line, camera, scale, color, width)
         else throw IllegalArgumentException("Not supported line $line")
     }
 
-    private fun drawStraightLine(g: Graphics, line: StraightLine, camera: Decart, scale: Scale) {
-        g.lineWidth = line.width
-        g.color = line.color
+    private fun drawStraightLine(g: Graphics, line: StraightLine, camera: Decart, scale: Scale, color: Color, width: Float) {
+        g.lineWidth = width
+        g.color = color
         g.drawLine(
                 (scale.to(line.from.x - camera.x) + cameraOffset.x).toFloat(),
                 (scale.to(line.from.y - camera.y) + cameraOffset.y).toFloat(),
@@ -42,9 +43,9 @@ abstract class GraphicsGameState : BasicGameState() {
                 (scale.to(line.to.y - camera.y) + cameraOffset.y).toFloat())
     }
 
-    private fun drawArc(g: Graphics, arcLine: ArcLine, camera: Decart, scale: Scale) {
-        g.lineWidth = arcLine.width
-        g.color = arcLine.color
+    private fun drawArc(g: Graphics, arcLine: ArcLine, camera: Decart, scale: Scale, color: Color, width: Float) {
+        g.lineWidth = width
+        g.color = color
         val from = min(arcLine.from, arcLine.to)
         val to = max(arcLine.from, arcLine.to)
         g.drawArc(
