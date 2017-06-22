@@ -1,7 +1,9 @@
 package akostenko.aicars.race.car
 
+import akostenko.aicars.drawing.CarImg
 import akostenko.aicars.drawing.Scale
 import akostenko.aicars.math.Decart
+import akostenko.aicars.math.MathUtils
 import akostenko.aicars.math.Polar
 import akostenko.aicars.math.Polar.Companion.ZERO
 import akostenko.aicars.math.Vector
@@ -276,9 +278,16 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
     }
 
     private fun applyCollisionImpact() {
-//        listOf(closestWP.section, track.getNextSection(closestWP.section), track.getPrevSection(closestWP.section))
-//                .flatMap { it.getBorders() }
-//                .filter {}
+        val collisions = listOf(closestWP.section, track.getNextSection(closestWP.section), track.getPrevSection(closestWP.section))
+                .flatMap { it.borders }
+                .flatMap { border -> CarImg.build(this).map { carLine -> border to carLine } }
+                .map { MathUtils.findIntersection(it) }
+                .filter { it != null }
+
+        if (collisions.isNotEmpty()) {
+            velocity = ZERO
+            heading = Polar(1.0, closestWP.section.heading)
+        }
     }
 
     private fun findClosestWayPoint(): TrackWayPoint {

@@ -8,7 +8,6 @@ import akostenko.aicars.drawing.Arrow
 import akostenko.aicars.drawing.CarImg
 import akostenko.aicars.drawing.Scale
 import akostenko.aicars.drawing.StraightLine
-import akostenko.aicars.drawing.TrackSectionImg
 import akostenko.aicars.keyboard.IsKeyDownListener
 import akostenko.aicars.keyboard.SingleKeyAction
 import akostenko.aicars.math.Decart

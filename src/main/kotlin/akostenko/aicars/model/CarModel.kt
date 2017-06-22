@@ -37,7 +37,7 @@ object CarModel {
     val frontWeightPercent = 1 - rearWeightPercent
     val length = 5.5 // m
     val maxSteering = 0.2 * PI
-    val peakLateralForceAngle = toRadians(3.0)
+    val peakLateralForceAngle = toRadians(5.0)
     /** starting from this speed (m/s) pure geometry turning physics is replaced with dynamic forces turning physics.  */
     val highSpeedCorneringThreshold = 10.0
 }
