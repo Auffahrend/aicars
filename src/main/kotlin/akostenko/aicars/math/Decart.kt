@@ -8,7 +8,7 @@ import java.lang.StrictMath.pow
 
 class Decart(val x: Double, val y: Double) : Vector {
 
-    override fun toPolar(): Polar {
+    private val polar : Polar by lazy {
         var d: Double
         if (x != 0.0) {
             d = atan(y / x)
@@ -25,8 +25,10 @@ class Decart(val x: Double, val y: Double) : Vector {
         } else {
             d = 0.0
         }
-        return Polar(hypot(x, y), d)
+        Polar(hypot(x, y), d)
     }
+
+    override fun toPolar(): Polar = polar
 
     override fun toDecart() : Decart = this
 

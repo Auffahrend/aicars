@@ -281,8 +281,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
         val collisions = listOf(closestWP.section, track.getNextSection(closestWP.section), track.getPrevSection(closestWP.section))
                 .flatMap { it.borders }
                 .flatMap { border -> CarImg.build(this).map { carLine -> border to carLine } }
-                .map { MathUtils.findIntersection(it) }
-                .filter { it != null }
+                .flatMap { MathUtils.findIntersection(it) }
 
         if (collisions.isNotEmpty()) {
             velocity = ZERO

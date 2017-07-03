@@ -11,6 +11,8 @@ class Polar(
     /** direction, *radians*, measured from X axis towards Y axis, always within [-PI, +PI]  */
     val r: Double
     val d: Double
+    // TODO reuse this into Decart.polar and vise versa
+    private val decart : Decart by lazy { Decart(r * cos(d), r * sin(d)) }
 
     init {
         var d = d
@@ -25,7 +27,7 @@ class Polar(
 
     override fun toPolar() = this
 
-    override fun toDecart() = Decart(r * cos(d), r * sin(d))
+    override fun toDecart() = decart
 
     override fun plus(v: Vector) = toDecart().plus(v.toDecart()).toPolar()
 
