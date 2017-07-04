@@ -85,15 +85,15 @@ object MathUtils {
             }
         } else {
             // (kx + b)**2 + x**2 = r**2
-            // (k+1)**2 x**2 + 2kb x + b**2 - r**2 = 0
-            // D = (2kb)**2 - 4(k+1)**2 * (b**2 - r**2)
-            // x = (+-sqrt(D) - 2kb) / 2(k+1)**2
+            // (k**2+1) x**2 + 2kb x + b**2 - r**2 = 0
+            // D = (2kb)**2 - 4(k**2+1) * (b**2 - r**2)
+            // x = (+-sqrt(D) - 2kb) / 2(k**2+1)
             val k = tan(movedLine.direction)
             val b = movedLine.yFunction(0.0)
-            val D = (2*k*b).times(2) - 4*(k+1).times(2)*(b.times(2) - second.radius.times(2))
+            val D = (2*k*b).sqr() - 4*(k.sqr() + 1)*(b.sqr() - second.radius.sqr())
             if (D >= 0) {
-                val x1 = (sqrt(D) - 2*k*b)/2/(k+1).times(2)
-                val x2 = (-sqrt(D) - 2*k*b)/2/(k+1).times(2)
+                val x1 = (sqrt(D) - 2*k*b)/2/(k.sqr() + 1)
+                val x2 = (-sqrt(D) - 2*k*b)/2/(k.sqr() + 1)
                 points = listOf(
                         Decart(x1, movedLine.yFunction(x1)),
                         Decart(x2, movedLine.yFunction(x2)))
@@ -118,3 +118,5 @@ object MathUtils {
 
     data class Intersection<out L1:Line, out L2:Line>(val line1: L1, val line2: L2, val point: Vector)
 }
+
+private fun Double.sqr(): Double = this * this

@@ -1,7 +1,6 @@
 package akostenko.aicars.drawing
 
 import akostenko.aicars.math.Decart
-import akostenko.aicars.math.MathUtils
 import akostenko.aicars.math.MathUtils.linear
 import akostenko.aicars.math.Vector
 import java.lang.StrictMath.PI

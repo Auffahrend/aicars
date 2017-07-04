@@ -1,5 +1,6 @@
 package akostenko.aicars.race.car
 
+import akostenko.aicars.GameSettings
 import akostenko.aicars.drawing.CarImg
 import akostenko.aicars.drawing.Scale
 import akostenko.aicars.math.Decart
@@ -278,14 +279,16 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
     }
 
     private fun applyCollisionImpact() {
-        val collisions = listOf(closestWP.section, track.getNextSection(closestWP.section), track.getPrevSection(closestWP.section))
-                .flatMap { it.borders }
-                .flatMap { border -> CarImg.build(this).map { carLine -> border to carLine } }
-                .flatMap { MathUtils.findIntersection(it) }
+        if (GameSettings.instance.collisions.isOn) {
+            val collisions = listOf(closestWP.section, track.getNextSection(closestWP.section), track.getPrevSection(closestWP.section))
+                    .flatMap { it.borders }
+                    .flatMap { border -> CarImg.build(this).map { carLine -> border to carLine } }
+                    .flatMap { MathUtils.findIntersection(it) }
 
-        if (collisions.isNotEmpty()) {
-            velocity = ZERO
-            heading = Polar(1.0, closestWP.section.heading)
+            if (collisions.isNotEmpty()) {
+                velocity = ZERO
+                heading = Polar(1.0, closestWP.section.heading)
+            }
         }
     }
 

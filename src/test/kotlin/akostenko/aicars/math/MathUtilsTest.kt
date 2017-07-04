@@ -2,9 +2,7 @@ package akostenko.aicars.math
 
 import akostenko.aicars.drawing.ArcLine
 import akostenko.aicars.drawing.StraightLine
-import javafx.scene.shape.Arc
-import org.junit.Assert.*
-
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.StrictMath.PI
 
@@ -95,6 +93,15 @@ class MathUtilsTest {
         val line2 = ArcLine(Decart(2.0, 2.0), 2.0, 0.0, 2*PI)
         assertEquals(
                 listOf(MathUtils.Intersection(line1, line2, Decart(4.0, 2.0))),
+                MathUtils.findIntersection(line1 to line2))
+    }
+
+    @Test
+    fun findIntersection_StraightToArc6() {
+        val line1 = StraightLine(Decart(-50.0, -50.0), Decart(-42.0, -42.0))
+        val line2 = ArcLine(Decart(-40.0, -45.0), -5.0, -2*PI, 0.0)
+        assertEquals(
+                listOf(MathUtils.Intersection(line1, line2, Decart(-45.0, -45.0))),
                 MathUtils.findIntersection(line1 to line2))
     }
 }
