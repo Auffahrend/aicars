@@ -74,7 +74,7 @@ object MathUtils {
         val movedLine = StraightLine(first.from - second.center, first.to - second.center)
         var points = emptyList<Vector>()
         if (first.isVertical) {
-            if (movedLine.from.x in -second.radius..second.radius) {
+            if (movedLine.from.x in -abs(second.radius)..abs(second.radius)) {
                 val y1 = second.circle.innerY1Function(movedLine.from.x)
                 val y2 = second.circle.innerY2Function(movedLine.from.x)
                 points = listOf(
@@ -86,22 +86,10 @@ object MathUtils {
         } else {
             // (kx + b)**2 + x**2 = r**2
             // (k**2+1) x**2 + 2kb x + b**2 - r**2 = 0
-            // D = (2kb)**2 - 4(k**2+1) * (b**2 - r**2)
-            // x = (+-sqrt(D) - 2kb) / 2(k**2+1)
             val k = tan(movedLine.direction)
             val b = movedLine.yFunction(0.0)
-            val D = (2*k*b).sqr() - 4*(k.sqr() + 1)*(b.sqr() - second.radius.sqr())
-            if (D >= 0) {
-                val x1 = (sqrt(D) - 2*k*b)/2/(k.sqr() + 1)
-                val x2 = (-sqrt(D) - 2*k*b)/2/(k.sqr() + 1)
-                points = listOf(
-                        Decart(x1, movedLine.yFunction(x1)),
-                        Decart(x2, movedLine.yFunction(x2)))
-
-                if (D < Vector.PRECISION) {
-                    points = points.take(1)
-                }
-            }
+            points = squareRoots(k.sqr() + 1, 2*k*b, b.sqr() - second.radius.sqr())
+                    .map { x -> Decart(x, movedLine.yFunction(x)) }
         }
 
         return points
@@ -110,6 +98,21 @@ object MathUtils {
                 .filter { second.contains(it) }
                 .sortedWith ( compareBy({ it.toDecart().x }, { it.toDecart().y }) )
                 .map { Intersection(first, second, it) }
+    }
+
+    private fun squareRoots(a: Double, b: Double, c: Double): List<Double> {
+        val D = b.sqr() - 4 * a * c
+        if (D >= 0) {
+            val x1 = (sqrt(D) - b) / (2 * a)
+            val x2 = (-sqrt(D) - b) / (2 * a)
+
+            if (D < Vector.PRECISION) {
+                return listOf(x1)
+            } else {
+                return listOf(x1, x2)
+            }
+        }
+        return emptyList()
     }
 
     private fun findIntersection(first: ArcLine, second: ArcLine): List<Intersection<ArcLine, ArcLine>> {

@@ -23,6 +23,6 @@ interface Vector {
     fun cross(v: Vector): Double
 
     companion object {
-        val PRECISION = 0.000_000_000_000_001
+        val PRECISION = 0.000_000_000_1
     }
 }

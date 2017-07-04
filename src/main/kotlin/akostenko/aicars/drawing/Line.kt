@@ -42,13 +42,15 @@ data class Circle(val center: Decart, val radius: Double) : Line() {
     val innerY1Function : (Double) -> Double = { x ->   sqrt(radius*radius - x*x) }
     val innerY2Function : (Double) -> Double = { x -> - sqrt(radius*radius - x*x) }
     fun contains(point: Vector): Boolean {
-        return point.toDecart().x in center.x-radius .. center.x+radius
+        return point.toDecart().x in center.x-abs(radius) .. center.x+abs(radius)
                 && (abs(innerY1Function(point.toDecart().x-center.x) - (point.toDecart().y - center.y)) <= Vector.PRECISION
                 || abs(innerY2Function(point.toDecart().x-center.x) - (point.toDecart().y - center.y)) <= Vector.PRECISION)
     }
 }
 
 data class ArcLine(val center: Decart, val radius: Double, val from: Double, val to: Double) : Line() {
+    val check = {if (from > to) throw IllegalArgumentException("'from' angle must be less then 'to' angle") }
+
     override fun rotate(radians: Double, center: Vector) = ArcLine(
             (this.center - center).rotate(radians) + center, radius,
             from + radians,
@@ -56,8 +58,9 @@ data class ArcLine(val center: Decart, val radius: Double, val from: Double, val
     val circle by lazy { Circle(center, radius) }
     fun contains(point: Vector): Boolean {
         var pointDirection = (point - center).toPolar().d
+        if (radius < 0) pointDirection -= PI
         while (pointDirection < from) pointDirection += 2*PI
-        while (pointDirection > from+2*PI) pointDirection -= 2*PI
+        while (pointDirection > from && pointDirection > to) pointDirection -= 2*PI
         return circle.contains(point)
                 && from <= pointDirection
                 && pointDirection <= to

@@ -8,6 +8,7 @@ import akostenko.aicars.model.CarModel.rearWeightPercent
 import akostenko.aicars.model.CarModel.tyreRadius
 import akostenko.aicars.model.CarModel.wheelbase
 import akostenko.aicars.race.car.Car
+import java.lang.Math.PI
 
 object CarImg {
 
@@ -27,15 +28,15 @@ object CarImg {
     fun build(car: Car<*>): Collection<Line> {
 
         return StraightLinesBuilder()
-//                .from(FL_wheel).towards(car.steering.toPolar().d, tyreRadius)
-//                .from(FL_wheel).towards(car.steering.toPolar().d + PI, tyreRadius)
-//                .between(FL_wheel, FR_wheel)
-//                .from(FR_wheel).towards(car.steering.toPolar().d, tyreRadius)
-//                .from(FR_wheel).towards(car.steering.toPolar().d + PI, tyreRadius)
+                .from(FL_wheel).towards(car.steering.toPolar().d, tyreRadius)
+                .from(FL_wheel).towards(car.steering.toPolar().d + PI, tyreRadius)
+                .between(FL_wheel, FR_wheel)
+                .from(FR_wheel).towards(car.steering.toPolar().d, tyreRadius)
+                .from(FR_wheel).towards(car.steering.toPolar().d + PI, tyreRadius)
 
-//                .between(RL_wheel_p1, RL_wheel_p2)
-//                .between(RR_wheel_p1, RR_wheel_p2)
-//                .between(rearAxle_p1, rearAxle_p2)
+                .between(RL_wheel_p1, RL_wheel_p2)
+                .between(RR_wheel_p1, RR_wheel_p2)
+                .between(rearAxle_p1, rearAxle_p2)
 
                 .between(carAxis_p1, carAxis_p2)
                 .build()

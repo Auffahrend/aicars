@@ -287,7 +287,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
 
             if (collisions.isNotEmpty()) {
                 velocity = ZERO
-                heading = Polar(1.0, closestWP.section.heading)
+                heading = Polar(1.0, (closestWP.position - track.getPreviousWayPoint(closestWP).position).toPolar().d)
             }
         }
     }
