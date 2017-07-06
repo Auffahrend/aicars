@@ -260,6 +260,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
     init {
         driver.car = this
         heading = Polar(1.0, 0.0)
+        position = track.sections.first().start.toDecart()
         closestWP = closestWayPointSelector(track.sections.flatMap { section -> section.wayPoints })
     }
 
