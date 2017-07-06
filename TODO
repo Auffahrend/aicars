@@ -1,5 +1,4 @@
 Required
-    Add collision detection
     Add neural net driver
         Input:
             - next N track sections, projected to car position
@@ -20,3 +19,4 @@ Fixed
     Fix combo keys
     Add circular track section drawing
     Fix track distance detection
+    Add collision detection
