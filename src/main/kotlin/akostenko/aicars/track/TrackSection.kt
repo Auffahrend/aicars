@@ -49,7 +49,7 @@ class TrackSection internal constructor(distanceFromStart: Int,
 
     val isStraight: Boolean = radius == 0.0
 
-    val borders: Collection<Line> = if (isStraight) getStraightBorderLines() else getArcBorderLines()
+    val borders: Collection<Line> by lazy { if (isStraight) getStraightBorderLines() else getArcBorderLines() }
 
     private fun getStraightBorderLines(): Collection<Line> {
         val sectionStart = start.toPolar()
@@ -81,9 +81,9 @@ class TrackSection internal constructor(distanceFromStart: Int,
                 ArcLine(center, radius + width/2, from, to)) +
                 if (indexOnTrack == 0) {
                     val directionToStartFromCenter = Polar(1.0, (start - center).toPolar().d)
-                    StraightLinesBuilder(true)
-                            .between(center + directionToStartFromCenter*(radius-width/2),
-                                    center + directionToStartFromCenter*(radius+width/2))
+                    StraightLinesBuilder(false)
+                            .between(center + directionToStartFromCenter*(abs(radius)-width/2),
+                                    center + directionToStartFromCenter*(abs(radius)+width/2))
                             .build()
                 }
                 else emptyList()
