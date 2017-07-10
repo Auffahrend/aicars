@@ -7,14 +7,15 @@ import java.lang.StrictMath.PI
 import java.lang.StrictMath.abs
 import java.lang.StrictMath.sqrt
 
-sealed class Line {
+sealed class Line(open val collidable: Boolean) {
     abstract fun rotate(radians: Double, center: Vector): Line
 }
 
-data class StraightLine(val from: Decart, val to: Decart) : Line() {
+data class StraightLine(val from: Decart, val to: Decart, override val collidable: Boolean = true) : Line(collidable) {
     override fun rotate(radians: Double, center: Vector) = StraightLine(
             (from-center).rotate(radians) + center,
-            (to-center).rotate(radians) + center)
+            (to-center).rotate(radians) + center,
+            collidable)
 
     val direction by lazy { (to-from).toPolar().d }
     val isVertical by lazy {
@@ -35,7 +36,7 @@ data class StraightLine(val from: Decart, val to: Decart) : Line() {
     }
 }
 
-data class Circle(val center: Decart, val radius: Double) : Line() {
+data class Circle(val center: Decart, val radius: Double) : Line(true) {
     override fun rotate(radians: Double, center: Vector) = Circle(
             (this.center - center).rotate(radians) + center, radius)
 
@@ -48,7 +49,7 @@ data class Circle(val center: Decart, val radius: Double) : Line() {
     }
 }
 
-data class ArcLine(val center: Decart, val radius: Double, val from: Double, val to: Double) : Line() {
+data class ArcLine(val center: Decart, val radius: Double, val from: Double, val to: Double) : Line(true) {
     val check = {if (from > to) throw IllegalArgumentException("'from' angle must be less then 'to' angle") }
 
     override fun rotate(radians: Double, center: Vector) = ArcLine(

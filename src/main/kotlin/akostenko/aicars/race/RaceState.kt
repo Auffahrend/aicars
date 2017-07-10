@@ -137,14 +137,17 @@ class RaceState : GraphicsGameState() {
     private fun drawCar(g: Graphics, car: Car<*>, camera: Car<*>) {
         CarImg.build(car)
                 .forEach { line -> drawRealLine(g, line, camera.position, scale, textColor, 3f) }
-        val lineToClosestTrackMarker = StraightLine(car.position, car.closestWP.position.toDecart())
+        val lineToClosestTrackMarker = StraightLine(car.position, car.closestWP.position.toDecart(), false)
         drawRealLine(g, lineToClosestTrackMarker, camera.position, scale, breakingColor, 2f)
     }
 
     private fun drawTrack(g: Graphics, focused: Car<*>, track: Track) {
         track.sections
 //                .filter { isVisible(it, focused.position) }
-                .forEach { section -> drawTrackSection(g, focused, section) }
+                .forEach { drawTrackSection(g, focused, it) }
+
+        track.markers
+                .forEach { drawTrackMarker(g, it, focused.position, scale, Color.white, 2.5f) }
     }
 
     private var visibilityRadius = scale.from(Game.screenWidth)
@@ -156,7 +159,6 @@ class RaceState : GraphicsGameState() {
         section.borders
                 .forEach { line -> drawRealLine(g, line, focused.position, scale, trackBorder, 3f) }
     }
-
 
     private fun drawDriverPositions(g: Graphics) {
         g.color = textColor

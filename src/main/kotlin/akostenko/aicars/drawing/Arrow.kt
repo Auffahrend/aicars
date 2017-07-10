@@ -3,7 +3,6 @@ package akostenko.aicars.drawing
 import akostenko.aicars.math.Decart
 import akostenko.aicars.math.Decart.Companion.ZERO
 import akostenko.aicars.math.Polar
-import org.newdawn.slick.Color
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.min
 
@@ -21,14 +20,14 @@ object Arrow {
         }
         val finLength = scale.from(finLengthPx)
 
-        return StraightLinesBuilder()
+        return StraightLinesBuilder(false)
                 // shortening main line to prevent it overlapping with fins
                 .from(start).towards((end-start).toPolar().d, (baseLength - scale.from(widthPx)))
                 .from(end).towards(end.toPolar().d + finRotation, finLength)
                 .from(end).towards(end.toPolar().d - finRotation, finLength)
                 .build()
-                .map { (from, to) -> StraightLine(scale.to(from).toDecart(), scale.to(to).toDecart()) }
+                .map { (from, to, collidable) -> StraightLine(scale.to(from).toDecart(), scale.to(to).toDecart(), collidable) }
                 .map { line -> line.rotate(rotation, ZERO) }
-                .map { (from, to) -> StraightLine(center + from, center + to)  }
+                .map { (from, to, collidable) -> StraightLine(center + from, center + to, collidable)  }
     }
 }

@@ -283,7 +283,8 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
         if (GameSettings.instance.collisions.isOn) {
             val collisions = listOf(closestWP.section, track.getNextSection(closestWP.section), track.getPrevSection(closestWP.section))
                     .flatMap { it.borders }
-                    .flatMap { border -> CarImg.build(this).map { carLine -> border to carLine } }
+                    .filter { it.collidable }
+                    .flatMap { border -> CarImg.build(this).filter { it.collidable }.map { carLine -> border to carLine } }
                     .flatMap { MathUtils.findIntersection(it) }
 
             if (collisions.isNotEmpty()) {

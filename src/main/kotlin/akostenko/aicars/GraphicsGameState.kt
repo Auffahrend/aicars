@@ -5,9 +5,12 @@ import akostenko.aicars.drawing.Line
 import akostenko.aicars.drawing.Scale
 import akostenko.aicars.drawing.StraightLine
 import akostenko.aicars.math.Decart
+import akostenko.aicars.track.TrackMarker
 import org.newdawn.slick.Color
 import org.newdawn.slick.Graphics
+import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.BasicGameState
+import java.awt.Font
 import java.lang.IllegalArgumentException
 import java.lang.Math.max
 import java.lang.Math.min
@@ -25,6 +28,25 @@ abstract class GraphicsGameState : BasicGameState() {
                 straightLine.from.y.toFloat(),
                 straightLine.to.x.toFloat(),
                 straightLine.to.y.toFloat())
+    }
+
+    private val trackTextFontsBySize = mutableMapOf<Int, TrueTypeFont>()
+    /**
+     * @param size height of a character in meters
+     */
+    protected fun drawTrackMarker(g: Graphics, marker: TrackMarker, camera: Decart, scale: Scale, color: Color, size: Float) {
+
+        var text = marker.text.trim()
+        if (text.length > 5) text = text.substring(0..4)
+
+        //1.5 is character's height/width
+        val textOffset = Decart(-text.length.toFloat()/2 * size/1.5, -size/2.0)
+        g.color = color
+        g.font = trackTextFontsBySize.computeIfAbsent(scale.to(size.toDouble()).toInt(),
+                { TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, max(it, 1)), true) })
+        g.drawString(marker.text,
+                scale.to(marker.position.toDecart().x - camera.x + textOffset.x) + cameraOffset.x.toFloat(),
+                scale.to(marker.position.toDecart().y - camera.y + textOffset.y) + cameraOffset.y.toFloat())
     }
 
     protected fun drawRealLine(g: Graphics, line: Line, camera: Decart, scale: Scale, color: Color, width: Float) {

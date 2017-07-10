@@ -27,7 +27,7 @@ object CarImg {
 
     fun build(car: Car<*>): Collection<Line> {
 
-        return StraightLinesBuilder()
+        return StraightLinesBuilder(true)
                 .from(FL_wheel).towards(car.steering.toPolar().d, tyreRadius)
                 .from(FL_wheel).towards(car.steering.toPolar().d + PI, tyreRadius)
                 .between(FL_wheel, FR_wheel)
@@ -41,7 +41,7 @@ object CarImg {
                 .between(carAxis_p1, carAxis_p2)
                 .build()
                 .map { line -> line.rotate(car.heading.toPolar().d, ZERO) }
-                .map { (from, to) -> StraightLine(from+car.position, to+car.position) }
+                .map { (from, to, collidable) -> StraightLine(from+car.position, to+car.position, collidable) }
 
     }
 

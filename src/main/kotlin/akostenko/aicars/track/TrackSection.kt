@@ -24,7 +24,7 @@ class TrackSection internal constructor(distanceFromStart: Int,
             throw IllegalArgumentException("Length of track section must be positive!")
         }
 
-        val totalWayPoints = length.toInt() / wayPointStep + if (length % wayPointStep > 0) 1 else 0
+        val totalWayPoints = length.toInt() / wayPointDistanceMeters + if (length % wayPointDistanceMeters > 0) 1 else 0
         val wayPoints = ArrayList<TrackWayPoint>(totalWayPoints)
         var wayPointPosition = start
         var headingToNextWayPoint = heading
@@ -32,10 +32,10 @@ class TrackSection internal constructor(distanceFromStart: Int,
         if (radius == 0.0) {
             for (i in 0..totalWayPoints - 1) {
                 wayPoints.add(TrackWayPoint(this, wayPointPosition, i, distanceFromStart + i))
-                wayPointPosition = wayPointPosition.plus(Polar(wayPointStep.toDouble(), headingToNextWayPoint))
+                wayPointPosition = wayPointPosition.plus(Polar(wayPointDistanceMeters.toDouble(), headingToNextWayPoint))
             }
         } else {
-            val angleBetweenWayPoints = wayPointStep / abs(radius)
+            val angleBetweenWayPoints = wayPointDistanceMeters / abs(radius)
             val distanceBetweenWayPoints = 2.0 * abs(radius) * sin(angleBetweenWayPoints / 2)
             for (i in 0..totalWayPoints - 1) {
                 wayPoints.add(TrackWayPoint(this, wayPointPosition, i, distanceFromStart + i))
@@ -57,12 +57,13 @@ class TrackSection internal constructor(distanceFromStart: Int,
 
         val rightBorderOffset = Polar(width / 2, heading + Math.PI /2)
         val leftBorderOffset = Polar(width / 2, heading - Math.PI /2)
-        return StraightLinesBuilder()
+        return StraightLinesBuilder(true)
                 .between(sectionStart + rightBorderOffset, sectionEnd + rightBorderOffset)
                 .between(sectionStart +  leftBorderOffset, sectionEnd + leftBorderOffset)
                 .build() +
                 if (indexOnTrack == 0)
-                    StraightLinesBuilder().between(sectionStart + leftBorderOffset, sectionStart + rightBorderOffset)
+                    StraightLinesBuilder(false)
+                            .between(sectionStart + leftBorderOffset, sectionStart + rightBorderOffset)
                             .build()
                     else emptyList()
     }
@@ -80,15 +81,16 @@ class TrackSection internal constructor(distanceFromStart: Int,
                 ArcLine(center, radius + width/2, from, to)) +
                 if (indexOnTrack == 0) {
                     val directionToStartFromCenter = Polar(1.0, (start - center).toPolar().d)
-                    StraightLinesBuilder().between(center + directionToStartFromCenter*(radius-width/2),
-                            center + directionToStartFromCenter*(radius+width/2))
+                    StraightLinesBuilder(true)
+                            .between(center + directionToStartFromCenter*(radius-width/2),
+                                    center + directionToStartFromCenter*(radius+width/2))
                             .build()
                 }
                 else emptyList()
     }
 
     companion object {
-        private val wayPointStep = 1 // m
+        internal val wayPointDistanceMeters = 1 // m
     }
 }
 
