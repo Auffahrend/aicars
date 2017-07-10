@@ -1,4 +1,5 @@
 Required
+    Add corner markers
     Add neural net driver
         Input:
             - next N track sections, projected to car position

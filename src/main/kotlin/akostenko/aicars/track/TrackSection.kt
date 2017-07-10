@@ -59,8 +59,12 @@ class TrackSection internal constructor(distanceFromStart: Int,
         val leftBorderOffset = Polar(width / 2, heading - Math.PI /2)
         return StraightLinesBuilder()
                 .between(sectionStart + rightBorderOffset, sectionEnd + rightBorderOffset)
-                .between(sectionStart+ leftBorderOffset, sectionEnd + leftBorderOffset)
-                .build()
+                .between(sectionStart +  leftBorderOffset, sectionEnd + leftBorderOffset)
+                .build() +
+                if (indexOnTrack == 0)
+                    StraightLinesBuilder().between(sectionStart + leftBorderOffset, sectionStart + rightBorderOffset)
+                            .build()
+                    else emptyList()
     }
 
     private fun getArcBorderLines(): Collection<Line> {
@@ -73,10 +77,18 @@ class TrackSection internal constructor(distanceFromStart: Int,
             from = t
         }
         return listOf(ArcLine(center, radius - width/2, from, to),
-                ArcLine(center, radius + width/2, from, to))
+                ArcLine(center, radius + width/2, from, to)) +
+                if (indexOnTrack == 0) {
+                    val directionToStartFromCenter = Polar(1.0, (start - center).toPolar().d)
+                    StraightLinesBuilder().between(center + directionToStartFromCenter*(radius-width/2),
+                            center + directionToStartFromCenter*(radius+width/2))
+                            .build()
+                }
+                else emptyList()
     }
 
     companion object {
         private val wayPointStep = 1 // m
     }
 }
+

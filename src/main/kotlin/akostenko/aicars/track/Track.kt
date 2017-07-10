@@ -1,5 +1,6 @@
 package akostenko.aicars.track
 
+import akostenko.aicars.math.Vector
 import akostenko.aicars.menu.MenuItem
 import java.util.*
 
@@ -8,6 +9,13 @@ abstract class Track : MenuItem {
     abstract val width: Double
 
     abstract val sections: List<TrackSection>
+
+    private val turnMarkersOffsets = listOf(-200, -150, -100, -50)
+    val markers: List<TrackMarker> by lazy {
+        sections
+                .filter { !it.isStraight }
+                .map { section -> { turnMarkersOffsets.filter { it.toDouble() <= this.getPrevSection(section).length } }}
+    }
 
     override fun hashCode(): Int {
         return Objects.hash(title)
@@ -52,6 +60,7 @@ abstract class Track : MenuItem {
             return getPrevSection(current.section).wayPoints.last()
         }
     }
+
     companion object {
 
         fun forName(name: String): Track {
@@ -68,3 +77,6 @@ abstract class Track : MenuItem {
 
     }
 }
+
+data class TrackMarker(val position : Vector, val text : String)
+
