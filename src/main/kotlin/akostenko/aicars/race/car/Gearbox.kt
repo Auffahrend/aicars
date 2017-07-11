@@ -3,10 +3,9 @@ package akostenko.aicars.race.car
 import akostenko.aicars.model.CarModel
 import akostenko.aicars.model.CarModel.tyreRadius
 import java.lang.StrictMath.PI
-import java.util.*
 
 class Gearbox(private val car: Car<*>) {
-    private val gears = ArrayList<Gear>(8)
+    private val gears = mutableListOf<Gear>()
     internal var current = 0
 
     init {
@@ -21,6 +20,8 @@ class Gearbox(private val car: Car<*>) {
             add(Gear(330.0 / 3.6, 12000.0, tyreRadius))
         }
     }
+
+    fun maxSpeed(tyreRadius: Double): Double = CarModel.max_rpm/60 / gears.last().ratio * (2.0 * PI * tyreRadius)
 
     fun update() {
         current = chooseCurrentGear()
@@ -40,10 +41,9 @@ class Gearbox(private val car: Car<*>) {
 
     internal val ratio: Double
         get() = gears[current].ratio
-
     private class Gear internal constructor(maxSpeed: Double, rpm: Double, tyreRadius: Double) {
-        internal val ratio: Double
 
+        internal val ratio: Double
         init {
             if (rpm <= 0 || maxSpeed <= 0 || tyreRadius <= 0) {
                 throw IllegalArgumentException("Must be > 0")
@@ -51,5 +51,6 @@ class Gearbox(private val car: Car<*>) {
 
             ratio = rpm / 60 / (maxSpeed / (2.0 * PI * tyreRadius))
         }
+
     }
 }

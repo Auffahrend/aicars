@@ -49,7 +49,7 @@ import java.lang.StrictMath.toRadians
 import java.time.Instant.now
 import java.util.*
 
-open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
+open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
 
     // modeling http://s2.postimg.org/p2hqskx09/V6_engine_edited.png
     protected val torqueMap = TorqueMap(
@@ -60,6 +60,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
             Decart(12000.0 / 60, 450.0),
             Decart(14000.0 / 60, 400.0))
     protected val gearbox = Gearbox(this)
+    val maxSpeed = gearbox.maxSpeed(tyreRadius)
     private val laps = 0
     /** *m*  */
     var closestWP: TrackWayPoint
@@ -71,14 +72,18 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
     private var odometer = 0.0
     /** *m/s*  */
     protected var velocity: Vector = ZERO
-    private var accelerationA: Vector = ZERO
-    private var breakingA: Vector = ZERO
-    private var turningA: Vector = ZERO
+    var accelerationA: Vector = ZERO
+        private set
+    var breakingA: Vector = ZERO
+        private set
+    var turningA: Vector = ZERO
+        private set
     /** direction of the car  */
     var heading : Polar
         private set
     /** *rad/s*  */
-    private var carRotationSpeed = 0.0
+    var carRotationSpeed = 0.0
+        private set
     /** direction of steering wheels  */
     var steering = Polar(1.0, 0.0)
         protected set
@@ -91,7 +96,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, private val track: Track) {
 
 
     //////////////// car telemetry
-    val random = Random()
+    private val random = Random()
     val telemetry: CarTelemetry
         get() {
             val carTelemetry = CarTelemetry(this)
