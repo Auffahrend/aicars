@@ -12,14 +12,21 @@ class LinearNN(override val name : String) : NeuralNet(name) {
     internal val inputNodes : MutableList<Double> = mutableListOf()
     internal val outputNodes : MutableList<Double> = mutableListOf()
 
-    override var outputCount: Int = 3
+    override val outputCount: Int = 2
     override var inputCount: Int = 0
 
     init {
-        for (i in 0..outputCount) { outputNodes[i] = 0.0 }
+        for (i in 0..outputCount) { outputNodes.add(0.0) }
 
-        inputCount = normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size
-        for (i in 0..inputCount) { inputNodes[i] = 0.0 }
+        inputCount = normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size-1
+        for (i in 0..inputCount) {
+            inputNodes.add(0.0)
+            nodeConnections.add(mutableListOf())
+            for (o in 0..outputCount) {
+                nodeConnections[i].add(0.0)
+            }
+        }
+
 
     }
 
@@ -28,9 +35,9 @@ class LinearNN(override val name : String) : NeuralNet(name) {
     }
 
     override fun calculateOutput() {
-        for (o : Int in 0..outputNodes.size) {
+        for (o in 0..outputCount) {
             outputNodes[o] = 0.0
-            for (i in 0..inputNodes.size) {
+            for (i in 0..inputCount) {
                 outputNodes[o] += inputNodes[i] * nodeConnections[i][o]
             }
         }

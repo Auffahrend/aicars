@@ -12,6 +12,7 @@ import akostenko.aicars.keyboard.IsKeyDownListener
 import akostenko.aicars.keyboard.SingleKeyAction
 import akostenko.aicars.math.Decart
 import akostenko.aicars.menu.CarPerformanceTests
+import akostenko.aicars.menu.NeuralNetDemo
 import akostenko.aicars.menu.WithPlayer
 import akostenko.aicars.race.car.Car
 import akostenko.aicars.race.car.CarTelemetry.Companion.accelerationColor
@@ -93,6 +94,9 @@ class RaceState : GraphicsGameState() {
                 cars.add(playerCar!!)
             } else if (mode is CarPerformanceTests) {
                 (mode as CarPerformanceTests).drivers
+                        .forEach { driver -> cars.add(Car(driver, track)) }
+            } else if (mode is NeuralNetDemo) {
+                (mode as NeuralNetDemo).drivers
                         .forEach { driver -> cars.add(Car(driver, track)) }
             } else {}
         }

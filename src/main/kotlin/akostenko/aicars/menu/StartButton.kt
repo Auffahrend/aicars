@@ -26,6 +26,7 @@ class StartButton : AbstractSubMenu<MenuItem>() {
 
         private val modeGameStates = mapOf<Mode, KClass<out GameState>>(
                 WithPlayer() to RaceState::class,
+                NeuralNetDemo() to RaceState::class,
                 CarPerformanceTests() to RaceState::class,
                 CarPhysicsTests() to CarPlotsState::class
                 )
