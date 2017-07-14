@@ -5,9 +5,9 @@ import akostenko.math.Line
 import main.kotlin.akostenko.aicars.drawing.StraightLinesBuilder
 import akostenko.math.vector.Polar
 import akostenko.math.vector.Vector
-import java.lang.StrictMath.abs
-import java.lang.StrictMath.signum
-import java.lang.StrictMath.sin
+import org.apache.commons.math3.util.FastMath.abs
+import org.apache.commons.math3.util.FastMath.signum
+import org.apache.commons.math3.util.FastMath.sin
 import java.util.*
 
 class TrackSection internal constructor(distanceFromStart: Int,

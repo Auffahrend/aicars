@@ -1,7 +1,7 @@
 package main.kotlin.akostenko.aicars.plots
 
 import main.kotlin.akostenko.aicars.model.CarModel.mass
-import java.lang.Math.PI
+import org.apache.commons.math3.util.FastMath.PI
 
 import akostenko.math.vector.Polar
 import akostenko.math.vector.Vector

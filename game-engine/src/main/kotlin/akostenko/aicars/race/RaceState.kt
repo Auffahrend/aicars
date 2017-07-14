@@ -37,8 +37,8 @@ import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.StateBasedGame
 import org.slf4j.LoggerFactory
 import java.awt.Font
-import java.lang.Math.PI
-import java.lang.Math.pow
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.pow
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.atomic.AtomicReference
 

@@ -1,9 +1,9 @@
 package akostenko.math.vector
 
-import java.lang.StrictMath.PI
-import java.lang.StrictMath.abs
-import java.lang.StrictMath.cos
-import java.lang.StrictMath.sin
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.abs
+import org.apache.commons.math3.util.FastMath.cos
+import org.apache.commons.math3.util.FastMath.sin
 
 class Polar(
         /** length of vector, always >= 0  */

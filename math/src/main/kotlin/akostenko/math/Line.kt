@@ -3,9 +3,9 @@ package akostenko.math
 import akostenko.math.vector.Decart
 import akostenko.math.MathUtils.linear
 import akostenko.math.vector.Vector
-import java.lang.StrictMath.PI
-import java.lang.StrictMath.abs
-import java.lang.StrictMath.sqrt
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.abs
+import org.apache.commons.math3.util.FastMath.sqrt
 
 sealed class Line(open val collidable: Boolean) {
     abstract fun rotate(radians: Double, center: Vector): Line

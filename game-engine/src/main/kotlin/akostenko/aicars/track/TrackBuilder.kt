@@ -3,8 +3,8 @@ package main.kotlin.akostenko.aicars.track
 import akostenko.math.vector.Decart
 import akostenko.math.vector.Polar
 import akostenko.math.vector.Vector
-import java.lang.Math.toRadians
-import java.lang.StrictMath.PI
+import org.apache.commons.math3.util.FastMath.toRadians
+import org.apache.commons.math3.util.FastMath.PI
 
 internal class TrackBuilder private constructor(private var heading: Double,
                                                 private var currentPosition: Vector,

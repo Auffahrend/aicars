@@ -34,11 +34,11 @@ import org.newdawn.slick.SlickException
 import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.StateBasedGame
 import java.awt.Font
-import java.lang.Math.abs
-import java.lang.StrictMath.PI
-import java.lang.StrictMath.log10
-import java.lang.StrictMath.max
-import java.lang.StrictMath.min
+import org.apache.commons.math3.util.FastMath.abs
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.log10
+import org.apache.commons.math3.util.FastMath.max
+import org.apache.commons.math3.util.FastMath.min
 
 class CarPlotsState : GraphicsGameState() {
     private val font = TrueTypeFont(Font(Font.SANS_SERIF, Font.PLAIN, textSize), true)

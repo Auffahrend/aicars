@@ -3,7 +3,7 @@ package main.kotlin.akostenko.aicars.plots
 import akostenko.math.vector.Decart
 import java.lang.Double.max
 import java.lang.Double.min
-import java.lang.StrictMath.pow
+import org.apache.commons.math3.util.FastMath.pow
 
 internal class Plot(val name: String,
                     val xAxis: String,

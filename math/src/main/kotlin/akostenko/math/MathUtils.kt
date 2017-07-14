@@ -2,9 +2,9 @@ package akostenko.math
 
 import akostenko.math.vector.Decart
 import akostenko.math.vector.Vector
-import java.lang.Math.sqrt
-import java.lang.Math.tan
-import java.lang.StrictMath.abs
+import org.apache.commons.math3.util.FastMath.sqrt
+import org.apache.commons.math3.util.FastMath.tan
+import org.apache.commons.math3.util.FastMath.abs
 
 object MathUtils {
 

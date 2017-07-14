@@ -37,15 +37,15 @@ import main.kotlin.akostenko.aicars.race.car.CarTelemetry.Companion.turningColor
 import main.kotlin.akostenko.aicars.race.car.CarTelemetry.Companion.velocityColor
 import main.kotlin.akostenko.aicars.track.Track
 import main.kotlin.akostenko.aicars.track.TrackWayPoint
-import java.lang.StrictMath.PI
-import java.lang.StrictMath.abs
-import java.lang.StrictMath.atan
-import java.lang.StrictMath.hypot
-import java.lang.StrictMath.min
-import java.lang.StrictMath.signum
-import java.lang.StrictMath.sin
-import java.lang.StrictMath.sqrt
-import java.lang.StrictMath.toRadians
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.abs
+import org.apache.commons.math3.util.FastMath.atan
+import org.apache.commons.math3.util.FastMath.hypot
+import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.signum
+import org.apache.commons.math3.util.FastMath.sin
+import org.apache.commons.math3.util.FastMath.sqrt
+import org.apache.commons.math3.util.FastMath.toRadians
 import java.time.Instant.now
 import java.util.*
 

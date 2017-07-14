@@ -4,8 +4,8 @@ import akostenko.math.StraightLine
 import akostenko.math.vector.Decart
 import akostenko.math.vector.Decart.Companion.ZERO
 import akostenko.math.vector.Polar
-import java.lang.StrictMath.PI
-import java.lang.StrictMath.min
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.min
 
 object Arrow {
     private val start = Polar(1.0, PI)

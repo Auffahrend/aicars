@@ -1,8 +1,8 @@
 package main.kotlin.akostenko.aicars.race
 
 import akostenko.math.MathUtils.linear
-import java.lang.StrictMath.abs
-import java.lang.StrictMath.min
+import org.apache.commons.math3.util.FastMath.abs
+import org.apache.commons.math3.util.FastMath.min
 
 class Player : Driver() {
 

@@ -1,7 +1,7 @@
 package main.kotlin.akostenko.aicars.model
 
-import java.lang.StrictMath.PI
-import java.lang.StrictMath.toRadians
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.toRadians
 
 object CarModel {
     /** *m*  */

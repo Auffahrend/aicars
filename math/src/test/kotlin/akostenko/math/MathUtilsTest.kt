@@ -3,7 +3,7 @@ package akostenko.math
 import akostenko.math.vector.Decart
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.lang.StrictMath.PI
+import org.apache.commons.math3.util.FastMath.PI
 
 class MathUtilsTest {
 

@@ -2,8 +2,8 @@ package akostenko.math.vector
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.lang.StrictMath.PI
-import java.lang.StrictMath.sqrt
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.sqrt
 
 class DecartTest {
 

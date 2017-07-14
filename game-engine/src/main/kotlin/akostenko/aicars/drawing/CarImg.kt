@@ -10,7 +10,7 @@ import main.kotlin.akostenko.aicars.model.CarModel.wheelbase
 import main.kotlin.akostenko.aicars.race.car.Car
 import akostenko.math.Line
 import akostenko.math.StraightLine
-import java.lang.Math.PI
+import org.apache.commons.math3.util.FastMath.PI
 
 object CarImg {
 

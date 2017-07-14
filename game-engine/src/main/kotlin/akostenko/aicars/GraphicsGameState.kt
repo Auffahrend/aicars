@@ -12,9 +12,9 @@ import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.BasicGameState
 import java.awt.Font
 import java.lang.IllegalArgumentException
-import java.lang.Math.max
-import java.lang.Math.min
-import java.lang.Math.toDegrees
+import org.apache.commons.math3.util.FastMath.max
+import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.toDegrees
 
 abstract class GraphicsGameState : BasicGameState() {
 

@@ -3,9 +3,9 @@ package main.kotlin.akostenko.aicars.track
 import akostenko.math.vector.Polar
 import akostenko.math.vector.Vector
 import main.kotlin.akostenko.aicars.menu.MenuItem
-import java.lang.StrictMath.PI
-import java.lang.StrictMath.abs
-import java.lang.StrictMath.signum
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.abs
+import org.apache.commons.math3.util.FastMath.signum
 import java.util.*
 
 abstract class Track : MenuItem {

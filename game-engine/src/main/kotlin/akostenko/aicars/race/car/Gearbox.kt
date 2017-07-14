@@ -2,7 +2,7 @@ package main.kotlin.akostenko.aicars.race.car
 
 import main.kotlin.akostenko.aicars.model.CarModel
 import main.kotlin.akostenko.aicars.model.CarModel.tyreRadius
-import java.lang.StrictMath.PI
+import org.apache.commons.math3.util.FastMath.PI
 
 class Gearbox(private val car: Car<*>) {
     private val gears = mutableListOf<Gear>()

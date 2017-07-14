@@ -9,7 +9,7 @@ import main.kotlin.akostenko.aicars.race.car.Car
 import main.kotlin.akostenko.aicars.track.MonzaTrack
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.lang.StrictMath.toRadians
+import org.apache.commons.math3.util.FastMath.toRadians
 
 class CarTest {
 
