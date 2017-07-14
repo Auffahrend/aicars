@@ -11,8 +11,8 @@ class PolarTest {
     @Test
     @Throws(Exception::class)
     fun dot_orthogonal() {
-        val a = Decart(1.0, 0.0)
-        val b = Decart(0.0, 1.0)
+        val a = Cartesian(1.0, 0.0)
+        val b = Cartesian(0.0, 1.0)
         val result = a.dot(b)
         assertEquals(0.0, result, PRECISION)
     }
@@ -20,8 +20,8 @@ class PolarTest {
     @Test
     @Throws(Exception::class)
     fun dot_collinear() {
-        val a = Decart(2.0, 0.0)
-        val b = Decart(-3.0, 0.0)
+        val a = Cartesian(2.0, 0.0)
+        val b = Cartesian(-3.0, 0.0)
         val result = a.dot(b)
         assertEquals(-6.0, result, PRECISION)
     }
@@ -41,8 +41,8 @@ class PolarTest {
     @Test
     @Throws(Exception::class)
     fun cross_orthogonal() {
-        val a = Decart(2.0, 0.0)
-        val b = Decart(0.0, -3.0)
+        val a = Cartesian(2.0, 0.0)
+        val b = Cartesian(0.0, -3.0)
         val result = a.cross(b)
         assertEquals(-6.0, result, PRECISION)
     }
@@ -50,8 +50,8 @@ class PolarTest {
     @Test
     @Throws(Exception::class)
     fun cross_collinear() {
-        val a = Decart(2.0, 0.0)
-        val b = Decart(-3.0, 0.0)
+        val a = Cartesian(2.0, 0.0)
+        val b = Cartesian(-3.0, 0.0)
         val result = a.cross(b)
         assertEquals(0.0, result, PRECISION)
     }

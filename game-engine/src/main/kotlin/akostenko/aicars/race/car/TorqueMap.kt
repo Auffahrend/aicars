@@ -1,10 +1,10 @@
 package main.kotlin.akostenko.aicars.race.car
 
-import akostenko.math.vector.Decart
+import akostenko.math.vector.Cartesian
 import akostenko.math.MathUtils.linear
 
 /** points' Xs are RPS and Ys are torque.  */
-class TorqueMap(vararg points: Decart) {
+class TorqueMap(vararg points: Cartesian) {
     internal val rpsPoints = mutableListOf<Double>()
     internal val torqueApproximations = mutableListOf<(Double) -> Double>()
 

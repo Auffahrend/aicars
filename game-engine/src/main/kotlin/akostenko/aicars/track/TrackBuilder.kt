@@ -1,6 +1,6 @@
 package main.kotlin.akostenko.aicars.track
 
-import akostenko.math.vector.Decart
+import akostenko.math.vector.Cartesian
 import akostenko.math.vector.Polar
 import akostenko.math.vector.Vector
 import org.apache.commons.math3.util.FastMath.toRadians
@@ -45,7 +45,7 @@ internal class TrackBuilder private constructor(private var heading: Double,
     }
 
     internal companion object {
-        fun start(x: Double, y: Double, heading: Double, width: Double): TrackBuilder = TrackBuilder(heading, Decart(x, y), width, 0)
+        fun start(x: Double, y: Double, heading: Double, width: Double): TrackBuilder = TrackBuilder(heading, Cartesian(x, y), width, 0)
     }
 
 }

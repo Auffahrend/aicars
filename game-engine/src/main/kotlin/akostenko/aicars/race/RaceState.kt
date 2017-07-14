@@ -10,7 +10,7 @@ import main.kotlin.akostenko.aicars.drawing.Scale
 import akostenko.math.StraightLine
 import main.kotlin.akostenko.aicars.keyboard.IsKeyDownListener
 import main.kotlin.akostenko.aicars.keyboard.SingleKeyAction
-import akostenko.math.vector.Decart
+import akostenko.math.vector.Cartesian
 import main.kotlin.akostenko.aicars.menu.CarPerformanceTests
 import main.kotlin.akostenko.aicars.menu.NeuralNetDemo
 import main.kotlin.akostenko.aicars.menu.WithPlayer
@@ -79,7 +79,7 @@ class RaceState : GraphicsGameState() {
 
     private fun debugTrackSections() {
         val firstWP = track.sections.first().wayPoints.first().position
-        logger.debug("Distance between start and finish: ${(firstWP - track.sections.last().wayPoints.last().position).toPolar()}")
+        logger.debug("Distance between start and finish: ${(firstWP - track.sections.last().wayPoints.last().position).asPolar()}")
         logger.debug("Minimal distance between start and last section: ${track.sections.last().wayPoints.map{ (firstWP - it.position).module()}.min()}")
         logger.debug("Total track distance: ${track.sections.flatMap { it.wayPoints }.size}")
     }
@@ -111,7 +111,7 @@ class RaceState : GraphicsGameState() {
                 SingleKeyAction({ changeScale(+1) }, KEY_ADD), SingleKeyAction({ changeScale(-1) }, KEY_SUBTRACT))
 
         container.setTargetFrameRate(100)
-        cameraOffset = Decart((Game.screenWidth / 2).toDouble(), (Game.screenHeight / 2).toDouble())
+        cameraOffset = Cartesian((Game.screenWidth / 2).toDouble(), (Game.screenHeight / 2).toDouble())
     }
 
     private fun changeScale(step: Int) {
@@ -141,7 +141,7 @@ class RaceState : GraphicsGameState() {
     private fun drawCar(g: Graphics, car: Car<*>, camera: Car<*>) {
         CarImg.build(car)
                 .forEach { line -> drawRealLine(g, line, camera.position, scale, textColor, 3f) }
-        val lineToClosestTrackMarker = StraightLine(car.position, car.closestWP.position.toDecart(), false)
+        val lineToClosestTrackMarker = StraightLine(car.position, car.closestWP.position.asCartesian(), false)
         drawRealLine(g, lineToClosestTrackMarker, camera.position, scale, breakingColor, 2f)
     }
 
@@ -155,7 +155,7 @@ class RaceState : GraphicsGameState() {
     }
 
     private var visibilityRadius = scale.from(Game.screenWidth)
-    private fun isVisible(section: TrackSection, camera: Decart): Boolean {
+    private fun isVisible(section: TrackSection, camera: Cartesian): Boolean {
         return section.wayPoints.any { (it.position-camera).module() < visibilityRadius }
     }
 
@@ -215,21 +215,21 @@ class RaceState : GraphicsGameState() {
         currentY.accumulateAndGet(telemetryTextSize + telemetrySpacing, { a, b -> a + b })
     }
 
-    private fun drawTelemetryVector(g: Graphics, car: Car<*>, camera: Decart, item: CarTelemetryVector) {
-        val from = scale.to(car.position + item.appliedTo - camera).toDecart() + cameraOffset
+    private fun drawTelemetryVector(g: Graphics, car: Car<*>, camera: Cartesian, item: CarTelemetryVector) {
+        val from = scale.to(car.position + item.appliedTo - camera).asCartesian() + cameraOffset
         val centerOffset = item.scale.to(item.vector * 0.5)
-        Arrow.build(from + centerOffset, item.scale.to(item.vector.module()), item.vector.toPolar().d, lineWidth)
+        Arrow.build(from + centerOffset, item.scale.to(item.vector.module()), item.vector.asPolar().d, lineWidth)
                 .forEach { line -> drawUILine(g, line, item.color, lineWidth) }
     }
 
     private val arrowSize = 30.0 //px
     private val arrowSpace = 3f //px
     private val grey = Color(40, 40, 40)
-    private val arrowsBlock = Decart((Game.screenWidth - arrowSize * 4), (Game.screenHeight - arrowSize * 3))
-    private val upArrowCenter = arrowsBlock + Decart((arrowSize * 3 / 2), (arrowSize / 2))
-    private val downArrowCenter = arrowsBlock + Decart((arrowSize * 3 / 2), (arrowSize * 3 / 2))
-    private val leftArrowCenter = arrowsBlock + Decart((arrowSize * 1 / 2), (arrowSize * 3 / 2))
-    private val rightArrowCenter = arrowsBlock + Decart((arrowSize * 5 / 2), (arrowSize * 3 / 2))
+    private val arrowsBlock = Cartesian((Game.screenWidth - arrowSize * 4), (Game.screenHeight - arrowSize * 3))
+    private val upArrowCenter = arrowsBlock + Cartesian((arrowSize * 3 / 2), (arrowSize / 2))
+    private val downArrowCenter = arrowsBlock + Cartesian((arrowSize * 3 / 2), (arrowSize * 3 / 2))
+    private val leftArrowCenter = arrowsBlock + Cartesian((arrowSize * 1 / 2), (arrowSize * 3 / 2))
+    private val rightArrowCenter = arrowsBlock + Cartesian((arrowSize * 5 / 2), (arrowSize * 3 / 2))
 
     private fun drawDriverInput(g: Graphics, driver: Driver) {
         val accelerationLinesWidth = if (driver.accelerating() > 0) fatLineWidth else lineWidth

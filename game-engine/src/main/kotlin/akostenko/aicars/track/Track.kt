@@ -35,7 +35,7 @@ abstract class Track : MenuItem {
             markerOffset = Polar(width / 2 + 2, onSection.heading + if (turn.radius > 0) -PI / 2 else (PI / 2))
         } else {
             val center = onSection.start + Polar(onSection.radius, onSection.heading + PI / 2)
-            markerOffset = Polar(width / 2 + 2, (at.position - center).toPolar().d) * signum(turn.radius)
+            markerOffset = Polar(width / 2 + 2, (at.position - center).asPolar().d) * signum(turn.radius)
         }
         return TrackMarker(at.position + markerOffset, text)
     }

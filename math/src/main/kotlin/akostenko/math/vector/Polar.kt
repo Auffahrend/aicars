@@ -12,7 +12,7 @@ class Polar(
         direction: Double) : Vector {
     val r: Double
     val d: Double
-    internal var decart: Decart? = null
+    internal var cartesian: Cartesian? = null
 
     init {
         var d = direction
@@ -25,17 +25,17 @@ class Polar(
         this.r = abs(radius)
     }
 
-    override fun toPolar() = this
+    override fun asPolar() = this
 
-    override fun toDecart() : Decart {
-        if (decart == null) {
-            decart = Decart(r * cos(d), r * sin(d))
-            decart!!.polar = this
+    override fun asCartesian() : Cartesian {
+        if (cartesian == null) {
+            cartesian = Cartesian(r * cos(d), r * sin(d))
+            cartesian!!.polar = this
         }
-        return decart!!
+        return cartesian!!
     }
 
-    override fun plus(v: Vector) = toDecart().plus(v.toDecart()).toPolar()
+    override fun plus(v: Vector) = asCartesian().plus(v.asCartesian()).asPolar()
 
     override fun minus(v: Vector) = plus(-v)
 
@@ -58,12 +58,12 @@ class Polar(
     override fun moduleSqr() = r * r
 
     override fun dot(v: Vector): Double {
-        val other = v.toPolar()
+        val other = v.asPolar()
         return r * other.r * cos(d - other.d)
     }
 
     override fun cross(v: Vector): Double {
-        val other = v.toPolar()
+        val other = v.asPolar()
         return r * other.r * sin(other.d - d)
     }
 
@@ -72,7 +72,7 @@ class Polar(
 
         val polar: Polar
         if (other is Vector) {
-            polar = other.toPolar()
+            polar = other.asPolar()
             return abs(polar.r - r) < Vector.PRECISION && abs(polar.d - d) < Vector.PRECISION
         } else return false
     }

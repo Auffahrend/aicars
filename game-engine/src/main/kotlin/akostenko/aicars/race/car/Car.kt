@@ -3,7 +3,7 @@ package main.kotlin.akostenko.aicars.race.car
 import main.kotlin.akostenko.aicars.GameSettings
 import main.kotlin.akostenko.aicars.drawing.CarImg
 import main.kotlin.akostenko.aicars.drawing.Scale
-import akostenko.math.vector.Decart
+import akostenko.math.vector.Cartesian
 import akostenko.math.MathUtils
 import akostenko.math.vector.Polar
 import akostenko.math.vector.Polar.Companion.ZERO
@@ -53,12 +53,12 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
 
     // modeling http://s2.postimg.org/p2hqskx09/V6_engine_edited.png
     protected val torqueMap = TorqueMap(
-            Decart(4000.0 / 60, 360.0),
-            Decart(6000.0 / 60, 410.0),
-            Decart(8000.0 / 60, 440.0),
-            Decart(10400.0 / 60, 460.0),
-            Decart(12000.0 / 60, 450.0),
-            Decart(14000.0 / 60, 400.0))
+            Cartesian(4000.0 / 60, 360.0),
+            Cartesian(6000.0 / 60, 410.0),
+            Cartesian(8000.0 / 60, 440.0),
+            Cartesian(10400.0 / 60, 460.0),
+            Cartesian(12000.0 / 60, 450.0),
+            Cartesian(14000.0 / 60, 400.0))
     protected val gearbox = Gearbox(this)
     val maxSpeed = gearbox.maxSpeed(tyreRadius)
     private val laps = 0
@@ -67,7 +67,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
         private set
     /** *m*  */
     /** *m*  */
-    var position = Decart.ZERO
+    var position = Cartesian.ZERO
         protected set
     private var odometer = 0.0
     /** *m/s*  */
@@ -185,7 +185,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
     /** kg * m/s^2  */
     protected fun rollingFrictionF(): Vector {
         return if (velocity.module() > PRECISION)
-            Polar(weightF() * tyreRollingFriction / tyreRadius, velocity.toPolar().d + PI)
+            Polar(weightF() * tyreRollingFriction / tyreRadius, velocity.asPolar().d + PI)
         else
             ZERO
     }
@@ -208,7 +208,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
     }
 
     private fun breakingF(): Vector = Polar(weightF() * tyreStiction,
-            if (velocity.module() > 0) velocity.toPolar().d + PI else heading.d + PI) * min(1.0, driver.breaking())
+            if (velocity.module() > 0) velocity.asPolar().d + PI else heading.d + PI) * min(1.0, driver.breaking())
 
     private fun tyresSlipA(): Vector = (rearSlipF() + frontSlipF()) / mass
 
@@ -265,7 +265,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
     init {
         driver.car = this
         heading = Polar(1.0, 0.0)
-        position = track.sections.first().start.toDecart()
+        position = track.sections.first().start.asCartesian()
         closestWP = closestWayPointSelector(track.sections.flatMap { section -> section.wayPoints })
     }
 
@@ -275,7 +275,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
         gearbox.update()
         steering = Polar(1.0, driver.steering() * maxSteering)
         odometer += velocity.module() * seconds
-        position += (velocity * seconds).toDecart()
+        position += (velocity * seconds).asCartesian()
         closestWP = findClosestWayPoint()
 
         applyAccelerationForces(seconds)
@@ -294,7 +294,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
 
             if (collisions.isNotEmpty()) {
                 velocity = ZERO
-                heading = Polar(1.0, (closestWP.position - track.getPreviousWayPoint(closestWP).position).toPolar().d)
+                heading = Polar(1.0, (closestWP.position - track.getPreviousWayPoint(closestWP).position).asPolar().d)
             }
         }
     }
@@ -365,7 +365,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
     }
 
     fun move(position: Vector): Car<DRIVER> {
-        this.position = position.toDecart()
+        this.position = position.asCartesian()
         return this
     }
 }

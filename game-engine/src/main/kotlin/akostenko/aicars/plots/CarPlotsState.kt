@@ -8,7 +8,7 @@ import main.kotlin.akostenko.aicars.GraphicsGameState
 import main.kotlin.akostenko.aicars.drawing.Arrow
 import akostenko.math.StraightLine
 import main.kotlin.akostenko.aicars.keyboard.SingleKeyAction
-import akostenko.math.vector.Decart
+import akostenko.math.vector.Cartesian
 import akostenko.math.MathUtils
 import akostenko.math.vector.Polar
 import main.kotlin.akostenko.aicars.model.CarModel
@@ -124,7 +124,7 @@ class CarPlotsState : GraphicsGameState() {
         listeners.add(SingleKeyAction({ -> resetPlot() }, KEY_SPACE))
         listeners.add(SingleKeyAction({ -> toggleShowZeroY() }, KEY_0))
         listeners.add(SingleKeyAction({ -> toggleShowZeroY() }, KEY_NUMPAD0))
-        cameraOffset = Decart(0.0, 0.0)
+        cameraOffset = Cartesian(0.0, 0.0)
     }
 
     private fun changePlot(change: Int) {
@@ -186,8 +186,8 @@ class CarPlotsState : GraphicsGameState() {
         while (i <= (xAxisLength - marginPx) / gridStepPx) {
             val xPx = marginPx + i * gridStepPx
             drawUILine(g,
-                    StraightLine(Decart(xPx.toDouble(), marginPx.toDouble()),
-                            Decart(xPx.toDouble(), (screenHeight - marginPx).toDouble())),
+                    StraightLine(Cartesian(xPx.toDouble(), marginPx.toDouble()),
+                            Cartesian(xPx.toDouble(), (screenHeight - marginPx).toDouble())),
                     darkGray, 1f)
             g.color = white
             g.drawString(String.format(xValueFormat, from + i * xStep), xPx, xAxisYCoord + textSize / 2)
@@ -195,7 +195,7 @@ class CarPlotsState : GraphicsGameState() {
         }
         // x axis
         g.lineWidth = lineWidth
-        Arrow.build(Decart((screenWidth / 2).toDouble(), xAxisYCoord.toDouble()), xAxisLength, 0.0, lineWidth)
+        Arrow.build(Cartesian((screenWidth / 2).toDouble(), xAxisYCoord.toDouble()), xAxisLength, 0.0, lineWidth)
                 .forEach { line -> drawUILine(g, line, gray, lineWidth) }
         g.color = white
         g.drawString(xName, screenWidth - marginPx - (xName.length * textSize / 2).toFloat(), xAxisYCoord - textSize * 3 / 2)
@@ -217,15 +217,15 @@ class CarPlotsState : GraphicsGameState() {
         while (i <= (yAxisLength - marginPx) / gridStepPx) {
             val yPx = marginPx + i * gridStepPx
             drawUILine(g,
-                    StraightLine(Decart(marginPx.toDouble(), yPx.toDouble()),
-                            Decart((screenWidth - marginPx).toDouble(), yPx.toDouble())),
+                    StraightLine(Cartesian(marginPx.toDouble(), yPx.toDouble()),
+                            Cartesian((screenWidth - marginPx).toDouble(), yPx.toDouble())),
                     darkGray, 1f)
             g.color = white
             g.drawString(String.format(yValueFormat, maxY - i * yStep), yAxisXCoord + textSize, yPx - textSize / 2)
             i++
         }
         // y axis
-        Arrow.build(Decart(yAxisXCoord.toDouble(), (screenHeight / 2).toDouble()), screenHeight - 2 * marginPx, -PI / 2, lineWidth)
+        Arrow.build(Cartesian(yAxisXCoord.toDouble(), (screenHeight / 2).toDouble()), screenHeight - 2 * marginPx, -PI / 2, lineWidth)
                 .forEach { line -> drawUILine(g, line, gray, lineWidth) }
         g.color = white
         g.drawString(yName, yAxisXCoord + (abs(log10(maxY)) + 1.0 + yPrecision.toDouble()).toFloat() * textSize, marginPx - textSize / 2)
@@ -234,14 +234,14 @@ class CarPlotsState : GraphicsGameState() {
         g.drawString(name, (screenWidth / 2 - name.length / 2 * headerTextSize / 3 * 2), marginPx / 2)
     }
 
-    private fun drawPlotData(g: Graphics, plotData: Iterable<Decart>, from: Double, to: Double, minY: Double, maxY: Double) {
+    private fun drawPlotData(g: Graphics, plotData: Iterable<Cartesian>, from: Double, to: Double, minY: Double, maxY: Double) {
         val xAxisLength = screenWidth - 2 * marginPx
         val yAxisLength = screenHeight - 2 * marginPx
         val xToScreenX = { x: Double -> (marginPx + (x - from) * (xAxisLength / (to - from))) }
         val yToScreenY = { y: Double -> (screenHeight.toDouble() - marginPx.toDouble() - (y - minY) * (yAxisLength / (maxY - minY))) }
 
         plotData.forEach { point ->
-            val screenCoordinates = Decart(xToScreenX(point.x), yToScreenY(point.y))
+            val screenCoordinates = Cartesian(xToScreenX(point.x), yToScreenY(point.y))
             drawUILine(g, StraightLine(screenCoordinates, screenCoordinates), white, 1f)
         }
     }

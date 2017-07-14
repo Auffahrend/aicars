@@ -75,6 +75,6 @@ class LinearNN(override val name : String) : NeuralNet(name) {
 
         return trackScalars +
                 carScalars +
-                carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d) else listOf(v.toDecart().x, v.toDecart().y) }
+                carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d) else listOf(v.asCartesian().x, v.asCartesian().y) }
     }
 }

@@ -2,8 +2,8 @@ package akostenko.math.vector
 
 interface Vector {
 
-    fun toPolar(): Polar
-    fun toDecart(): Decart
+    fun asPolar(): Polar
+    fun asCartesian(): Cartesian
     operator fun plus(v: Vector): Vector
     operator fun minus(v: Vector): Vector
     operator fun unaryMinus(): Vector

@@ -1,6 +1,6 @@
 package main.kotlin.akostenko.aicars.plots
 
-import akostenko.math.vector.Decart
+import akostenko.math.vector.Cartesian
 import java.lang.Double.max
 import java.lang.Double.min
 import org.apache.commons.math3.util.FastMath.pow
@@ -19,7 +19,7 @@ internal class Plot(val name: String,
         private set
     var to: Double = 0.0
         private set
-    val plotData = mutableListOf<Decart>()
+    val plotData = mutableListOf<Cartesian>()
     var minY: Double = 0.0
         private set
     var maxY: Double = 0.0
@@ -56,7 +56,7 @@ internal class Plot(val name: String,
         plotData.clear()
         var x = from
         while (x <= to) {
-            plotData.add(Decart(x, plotFunction(x)))
+            plotData.add(Cartesian(x, plotFunction(x)))
             x += dx
         }
 

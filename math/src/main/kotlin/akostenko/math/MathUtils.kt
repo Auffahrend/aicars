@@ -1,6 +1,6 @@
 package akostenko.math
 
-import akostenko.math.vector.Decart
+import akostenko.math.vector.Cartesian
 import akostenko.math.vector.Vector
 import org.apache.commons.math3.util.FastMath.sqrt
 import org.apache.commons.math3.util.FastMath.tan
@@ -53,12 +53,12 @@ object MathUtils {
 
     private fun getStraightsIntersectionPoint(first: StraightLine, second: StraightLine) : Vector {
         if (first.isVertical) {
-            return Decart(first.from.x, second.yFunction(first.from.x))
+            return Cartesian(first.from.x, second.yFunction(first.from.x))
         } else if (second.isVertical) {
-            return Decart(second.from.x, first.yFunction(second.from.x))
+            return Cartesian(second.from.x, first.yFunction(second.from.x))
         } else {
             val x = (second.yFunction(0.0) - first.yFunction(0.0)) / (tan(first.direction) - tan(second.direction))
-            return Decart(x, first.yFunction(x))
+            return Cartesian(x, first.yFunction(x))
         }
     }
 
@@ -77,8 +77,8 @@ object MathUtils {
                 val y1 = second.circle.innerY1Function(movedLine.from.x)
                 val y2 = second.circle.innerY2Function(movedLine.from.x)
                 points = listOf(
-                        Decart(movedLine.from.x, y1),
-                        Decart(movedLine.from.x, y2))
+                        Cartesian(movedLine.from.x, y1),
+                        Cartesian(movedLine.from.x, y2))
                 if (abs(y1-y2) < Vector.PRECISION) points = points.take(1)
 
             }
@@ -88,14 +88,14 @@ object MathUtils {
             val k = tan(movedLine.direction)
             val b = movedLine.yFunction(0.0)
             points = squareRoots(k.sqr() + 1, 2 * k * b, b.sqr() - second.radius.sqr())
-                    .map { x -> Decart(x, movedLine.yFunction(x)) }
+                    .map { x -> Cartesian(x, movedLine.yFunction(x)) }
         }
 
         return points
                 .map { it + second.center }
                 .filter { first.contains(it) }
                 .filter { second.contains(it) }
-                .sortedWith ( compareBy({ it.toDecart().x }, { it.toDecart().y }) )
+                .sortedWith ( compareBy({ it.asCartesian().x }, { it.asCartesian().y }) )
                 .map { Intersection(first, second, it) }
     }
 

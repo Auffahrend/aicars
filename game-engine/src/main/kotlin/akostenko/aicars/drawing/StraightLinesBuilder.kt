@@ -8,7 +8,7 @@ internal class StraightLinesBuilder(val collidable: Boolean = true) {
     private val lines = mutableListOf<StraightLine>()
 
     fun between(from: Vector, to: Vector): StraightLinesBuilder {
-        lines.add(StraightLine(from.toDecart(), to.toDecart(), collidable))
+        lines.add(StraightLine(from.asCartesian(), to.asCartesian(), collidable))
         return this
     }
 
@@ -23,7 +23,7 @@ internal class StraightLinesBuilder(val collidable: Boolean = true) {
     internal class LineFromTo(private val builder: StraightLinesBuilder, val from: Vector, val collidable: Boolean) {
 
         fun towards(direction: Double, size: Double): StraightLinesBuilder {
-            builder.lines.add(StraightLine(from.toDecart(), from.toDecart() + Polar(size, direction), collidable))
+            builder.lines.add(StraightLine(from.asCartesian(), from.asCartesian() + Polar(size, direction), collidable))
             return builder
         }
     }

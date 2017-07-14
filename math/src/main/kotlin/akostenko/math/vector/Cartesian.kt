@@ -6,11 +6,11 @@ import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.atan
 import org.apache.commons.math3.util.FastMath.pow
 
-class Decart(val x: Double, val y: Double) : Vector {
+class Cartesian(val x: Double, val y: Double) : Vector {
 
     internal var polar : Polar? = null
 
-    override fun toPolar(): Polar {
+    override fun asPolar(): Polar {
         if (polar == null) {
             var d: Double
             if (x != 0.0) {
@@ -29,41 +29,41 @@ class Decart(val x: Double, val y: Double) : Vector {
                 d = 0.0
             }
             polar = Polar(hypot(x, y), d)
-            polar!!.decart = this
+            polar!!.cartesian = this
         }
         return polar!!
     }
 
-    override fun toDecart() : Decart = this
+    override fun asCartesian() : Cartesian = this
 
-    override fun plus(v: Vector) : Decart = addDecart(v.toDecart())
+    override fun plus(v: Vector) : Cartesian = addCartesian(v.asCartesian())
 
-    internal fun addDecart(v: Decart) : Decart = Decart(x + v.x, y + v.y)
+    internal fun addCartesian(v: Cartesian) : Cartesian = Cartesian(x + v.x, y + v.y)
 
-    override fun minus(v: Vector) : Decart = plus(-v)
+    override fun minus(v: Vector) : Cartesian = plus(-v)
 
-    override fun unaryMinus(): Decart = times(-1.0)
+    override fun unaryMinus(): Cartesian = times(-1.0)
 
-    override fun times(k: Double): Decart = Decart(x * k, y * k)
+    override fun times(k: Double): Cartesian = Cartesian(x * k, y * k)
 
-    override fun div(k: Double): Decart = times(1.0 / k)
+    override fun div(k: Double): Cartesian = times(1.0 / k)
 
-    override fun rotate(radians: Double): Decart = toPolar().rotate(radians).toDecart()
+    override fun rotate(radians: Double): Cartesian = asPolar().rotate(radians).asCartesian()
 
     override fun module(): Double = hypot(x, y)
 
     override fun moduleSqr(): Double = pow(module(), 2.0)
 
-    override fun dot(v: Vector): Double = toPolar().dot(v.toPolar())
+    override fun dot(v: Vector): Double = asPolar().dot(v.asPolar())
 
-    override fun cross(v: Vector): Double = toPolar().cross(v.toPolar())
+    override fun cross(v: Vector): Double = asPolar().cross(v.asPolar())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
 
         if (other is Vector) {
-            val otherDecart = other.toDecart()
-            return abs(otherDecart.x - x) < Vector.PRECISION && abs(otherDecart.y - y) < Vector.PRECISION
+            val otherCartesian = other.asCartesian()
+            return abs(otherCartesian.x - x) < Vector.PRECISION && abs(otherCartesian.y - y) < Vector.PRECISION
         } else return false
     }
 
@@ -73,10 +73,10 @@ class Decart(val x: Double, val y: Double) : Vector {
         return result
     }
 
-    override fun toString() : String = "Decart(x=$x, y=$y)"
+    override fun toString() : String = "Cartesian(x=$x, y=$y)"
 
     companion object {
-        val ZERO = Decart(0.0, 0.0)
+        val ZERO = Cartesian(0.0, 0.0)
     }
 }
 

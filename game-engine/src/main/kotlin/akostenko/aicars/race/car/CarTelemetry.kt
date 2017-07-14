@@ -1,7 +1,7 @@
 package main.kotlin.akostenko.aicars.race.car
 
 import main.kotlin.akostenko.aicars.drawing.Scale
-import akostenko.math.vector.Decart
+import akostenko.math.vector.Cartesian
 import akostenko.math.vector.Vector
 import org.newdawn.slick.Color
 
@@ -49,5 +49,5 @@ data class CarTelemetryVector(
         val scale: Scale,
         val color: Color) {
 
-    constructor(vector: Vector, scale: Scale, color: Color) : this(Decart.ZERO, vector, scale, color)
+    constructor(vector: Vector, scale: Scale, color: Color) : this(Cartesian.ZERO, vector, scale, color)
 }
