@@ -3,8 +3,11 @@ package akostenko.math.vector
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.abs
 import java.lang.StrictMath.atan
+//import org.apache.commons.math3.util.FastMath.hypot
 import java.lang.StrictMath.hypot
 import java.lang.StrictMath.pow
+import java.lang.StrictMath.sqrt
+import java.time.Instant
 
 class Decart(val x: Double, val y: Double) : Vector {
 
@@ -78,4 +81,20 @@ class Decart(val x: Double, val y: Double) : Vector {
     companion object {
         val ZERO = Decart(0.0, 0.0)
     }
+}
+
+fun main(args: Array<String>) {
+    val x = 50.0
+    val y = -20.0
+    var now = Instant.now().toEpochMilli()
+    for (i in 1..10000000) {
+        hypot(x, y)
+    }
+    println("hypot takes ${Instant.now().toEpochMilli() - now} ms")
+
+    now = Instant.now().toEpochMilli()
+    for (i in 1..10000000) {
+        sqrt(x * x + y * y)
+    }
+    println("manually takes ${Instant.now().toEpochMilli() - now} ms")
 }
