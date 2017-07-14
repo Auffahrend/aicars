@@ -4,6 +4,8 @@ import org.apache.commons.math3.util.FastMath.hypot
 import org.apache.commons.math3.util.FastMath.PI
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.atan
+import org.apache.commons.math3.util.FastMath.cos
+import org.apache.commons.math3.util.FastMath.sin
 import org.apache.commons.math3.util.FastMath.pow
 
 class Cartesian(val x: Double, val y: Double) : Vector {
@@ -48,15 +50,25 @@ class Cartesian(val x: Double, val y: Double) : Vector {
 
     override fun div(k: Double): Cartesian = times(1.0 / k)
 
-    override fun rotate(radians: Double): Cartesian = asPolar().rotate(radians).asCartesian()
+    override fun rotate(radians: Double): Cartesian {
+        val cos = cos(radians)
+        val sin = sin(radians)
+        return Cartesian(x * cos - y * sin, x * sin + y * cos)
+    }
 
     override fun module(): Double = hypot(x, y)
 
     override fun moduleSqr(): Double = pow(module(), 2.0)
 
-    override fun dot(v: Vector): Double = asPolar().dot(v.asPolar())
+    override fun dot(v: Vector): Double {
+        val other = v.asCartesian()
+        return x * other.x + y * other.y
+    }
 
-    override fun cross(v: Vector): Double = asPolar().cross(v.asPolar())
+    override fun cross(v: Vector): Double {
+        val other = v.asCartesian()
+        return x * other.y - y * other.x
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

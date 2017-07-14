@@ -35,11 +35,11 @@ class Polar(
         return cartesian!!
     }
 
-    override fun plus(v: Vector) = asCartesian().plus(v.asCartesian()).asPolar()
+    override fun plus(v: Vector) = asCartesian().plus(v.asCartesian())
 
     override fun minus(v: Vector) = plus(-v)
 
-    override fun unaryMinus() = times(-1.0)
+    override fun unaryMinus() : Polar = times(-1.0)
 
     override fun times(k: Double): Polar {
         if (k == 0.0) {

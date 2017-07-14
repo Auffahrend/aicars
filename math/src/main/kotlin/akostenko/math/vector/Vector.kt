@@ -18,7 +18,7 @@ interface Vector {
 
     /** vector product a x b
      * @return Since we are using 2D vectors, the abs(result) == a*b*sin(a^b),
-     * * and result > 0 if direction of turning a towards b is the same as direction of x-axis toward y-axis, and vise versa
+     * and result > 0 if direction of turning a towards b is the same as direction of x-axis toward y-axis, and vise versa
      */
     fun cross(v: Vector): Double
 
