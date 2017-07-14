@@ -1,6 +1,6 @@
 package akostenko.aicars.race
 
-import akostenko.aicars.math.MathUtils.linear
+import akostenko.math.MathUtils.linear
 import java.lang.StrictMath.abs
 import java.lang.StrictMath.min
 

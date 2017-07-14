@@ -1,8 +1,8 @@
 package akostenko.aicars.race.car
 
 import akostenko.aicars.drawing.Scale
-import akostenko.aicars.math.Decart
-import akostenko.aicars.math.Vector
+import akostenko.math.vector.Decart
+import akostenko.math.vector.Vector
 import org.newdawn.slick.Color
 
 class CarTelemetry(val car: Car<*>) {

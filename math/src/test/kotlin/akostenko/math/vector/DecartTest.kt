@@ -1,10 +1,9 @@
-package akostenko.aicars.math
+package akostenko.math.vector
 
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.sqrt
-import org.junit.Assert.*
-
-import org.junit.Test
 
 class DecartTest {
 

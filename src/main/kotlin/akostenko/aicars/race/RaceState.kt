@@ -7,10 +7,10 @@ import akostenko.aicars.GraphicsGameState
 import akostenko.aicars.drawing.Arrow
 import akostenko.aicars.drawing.CarImg
 import akostenko.aicars.drawing.Scale
-import akostenko.aicars.drawing.StraightLine
+import akostenko.math.StraightLine
 import akostenko.aicars.keyboard.IsKeyDownListener
 import akostenko.aicars.keyboard.SingleKeyAction
-import akostenko.aicars.math.Decart
+import akostenko.math.vector.Decart
 import akostenko.aicars.menu.CarPerformanceTests
 import akostenko.aicars.menu.NeuralNetDemo
 import akostenko.aicars.menu.WithPlayer

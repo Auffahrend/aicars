@@ -1,7 +1,7 @@
 package akostenko.aicars.race.car
 
-import akostenko.aicars.math.Decart
-import akostenko.aicars.math.MathUtils.linear
+import akostenko.math.vector.Decart
+import akostenko.math.MathUtils.linear
 
 /** points' Xs are RPS and Ys are torque.  */
 class TorqueMap(vararg points: Decart) {

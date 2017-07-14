@@ -1,8 +1,8 @@
-package akostenko.aicars.drawing
+package akostenko.math
 
-import akostenko.aicars.math.Decart
-import akostenko.aicars.math.MathUtils.linear
-import akostenko.aicars.math.Vector
+import akostenko.math.vector.Decart
+import akostenko.math.MathUtils.linear
+import akostenko.math.vector.Vector
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.abs
 import java.lang.StrictMath.sqrt
@@ -13,8 +13,8 @@ sealed class Line(open val collidable: Boolean) {
 
 data class StraightLine(val from: Decart, val to: Decart, override val collidable: Boolean = true) : Line(collidable) {
     override fun rotate(radians: Double, center: Vector) = StraightLine(
-            (from-center).rotate(radians) + center,
-            (to-center).rotate(radians) + center,
+            (from - center).rotate(radians) + center,
+            (to - center).rotate(radians) + center,
             collidable)
 
     val direction by lazy { (to-from).toPolar().d }

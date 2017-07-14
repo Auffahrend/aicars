@@ -1,8 +1,9 @@
 package akostenko.aicars.drawing
 
-import akostenko.aicars.math.Decart
-import akostenko.aicars.math.Decart.Companion.ZERO
-import akostenko.aicars.math.Polar
+import akostenko.math.StraightLine
+import akostenko.math.vector.Decart
+import akostenko.math.vector.Decart.Companion.ZERO
+import akostenko.math.vector.Polar
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.min
 
@@ -28,6 +29,6 @@ object Arrow {
                 .build()
                 .map { (from, to, collidable) -> StraightLine(scale.to(from).toDecart(), scale.to(to).toDecart(), collidable) }
                 .map { line -> line.rotate(rotation, ZERO) }
-                .map { (from, to, collidable) -> StraightLine(center + from, center + to, collidable)  }
+                .map { (from, to, collidable) -> StraightLine(center + from, center + to, collidable) }
     }
 }

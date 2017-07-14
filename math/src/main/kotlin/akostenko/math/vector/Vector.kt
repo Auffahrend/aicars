@@ -1,4 +1,4 @@
-package akostenko.aicars.math
+package akostenko.math.vector
 
 interface Vector {
 

@@ -1,6 +1,6 @@
-package akostenko.aicars.math
+package akostenko.math.vector
 
-import akostenko.aicars.math.Vector.Companion.PRECISION
+import akostenko.math.vector.Vector.Companion.PRECISION
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.StrictMath.PI

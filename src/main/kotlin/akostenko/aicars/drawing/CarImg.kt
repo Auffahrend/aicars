@@ -1,13 +1,15 @@
 package akostenko.aicars.drawing
 
-import akostenko.aicars.math.Decart
-import akostenko.aicars.math.Decart.Companion.ZERO
+import akostenko.math.vector.Decart
+import akostenko.math.vector.Decart.Companion.ZERO
 import akostenko.aicars.model.CarModel.axleTrack
 import akostenko.aicars.model.CarModel.frontWeightPercent
 import akostenko.aicars.model.CarModel.rearWeightPercent
 import akostenko.aicars.model.CarModel.tyreRadius
 import akostenko.aicars.model.CarModel.wheelbase
 import akostenko.aicars.race.car.Car
+import akostenko.math.Line
+import akostenko.math.StraightLine
 import java.lang.Math.PI
 
 object CarImg {
@@ -41,7 +43,7 @@ object CarImg {
                 .between(carAxis_p1, carAxis_p2)
                 .build()
                 .map { line -> line.rotate(car.heading.toPolar().d, ZERO) }
-                .map { (from, to, collidable) -> StraightLine(from+car.position, to+car.position, collidable) }
+                .map { (from, to, collidable) -> StraightLine(from + car.position, to + car.position, collidable) }
 
     }
 

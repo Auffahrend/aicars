@@ -43,7 +43,7 @@ abstract class NeuralNet(open val name : String) {
 
     companion object {
         fun bestDrivers() : List<Driver> {
-            return IntRange(1, 10)
+            return IntRange(1, 50)
                     .map { LinearNN("Linear #$it") }
                     .map { setRandomConnections(it) }
                     .map { NNDriver(it) }

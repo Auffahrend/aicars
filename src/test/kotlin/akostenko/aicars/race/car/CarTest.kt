@@ -1,6 +1,6 @@
 package akostenko.aicars.race.car
 
-import akostenko.aicars.math.Vector.Companion.PRECISION
+import akostenko.math.vector.Vector.Companion.PRECISION
 import akostenko.aicars.model.CarModel.maxSteering
 import akostenko.aicars.model.CarModel.peakLateralForceAngle
 import akostenko.aicars.model.CarModel.tyreStiction

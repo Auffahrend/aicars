@@ -3,8 +3,8 @@ package akostenko.aicars.plots
 import akostenko.aicars.model.CarModel.mass
 import java.lang.Math.PI
 
-import akostenko.aicars.math.Polar
-import akostenko.aicars.math.Vector
+import akostenko.math.vector.Polar
+import akostenko.math.vector.Vector
 import akostenko.aicars.race.Driver
 import akostenko.aicars.race.car.Car
 import akostenko.aicars.track.Track

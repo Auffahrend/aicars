@@ -1,10 +1,10 @@
 package akostenko.aicars
 
-import akostenko.aicars.drawing.ArcLine
-import akostenko.aicars.drawing.Line
+import akostenko.math.ArcLine
+import akostenko.math.Line
 import akostenko.aicars.drawing.Scale
-import akostenko.aicars.drawing.StraightLine
-import akostenko.aicars.math.Decart
+import akostenko.math.StraightLine
+import akostenko.math.vector.Decart
 import akostenko.aicars.track.TrackMarker
 import org.newdawn.slick.Color
 import org.newdawn.slick.Graphics
@@ -40,7 +40,7 @@ abstract class GraphicsGameState : BasicGameState() {
         if (text.length > 5) text = text.substring(0..4)
 
         //1.5 is character's height/width
-        val textOffset = Decart(-text.length.toFloat()/2 * size/1.5, -size/2.0)
+        val textOffset = Decart(-text.length.toFloat() / 2 * size / 1.5, -size / 2.0)
         g.color = color
         g.font = trackTextFontsBySize.computeIfAbsent(scale.to(size.toDouble()).toInt(),
                 { TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, max(it, 1)), true) })

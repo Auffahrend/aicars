@@ -1,6 +1,6 @@
 package akostenko.aicars.neural
 
-import akostenko.aicars.math.Polar
+import akostenko.math.vector.Polar
 import akostenko.aicars.plots.EmptyDriver
 import akostenko.aicars.race.car.Car
 import akostenko.aicars.track.DebugTrack

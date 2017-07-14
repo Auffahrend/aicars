@@ -1,4 +1,4 @@
-package akostenko.aicars.math
+package akostenko.math.vector
 
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.abs
@@ -8,27 +8,31 @@ import java.lang.StrictMath.pow
 
 class Decart(val x: Double, val y: Double) : Vector {
 
-    private val polar : Polar by lazy {
-        var d: Double
-        if (x != 0.0) {
-            d = atan(y / x)
-            if (d < 0) {
-                d += PI
-            } else if (y == 0.0 && x < 0) {
-                d += PI
-            }
-            if (y < 0) {
-                d += PI
-            }
-        } else if (y != 0.0) {
-            d = if (y > 0) PI / 2 else 3 * PI / 2
-        } else {
-            d = 0.0
-        }
-        Polar(hypot(x, y), d)
-    }
+    internal var polar : Polar? = null
 
-    override fun toPolar(): Polar = polar
+    override fun toPolar(): Polar {
+        if (polar == null) {
+            var d: Double
+            if (x != 0.0) {
+                d = atan(y / x)
+                if (d < 0) {
+                    d += PI
+                } else if (y == 0.0 && x < 0) {
+                    d += PI
+                }
+                if (y < 0) {
+                    d += PI
+                }
+            } else if (y != 0.0) {
+                d = if (y > 0) PI / 2 else 3 * PI / 2
+            } else {
+                d = 0.0
+            }
+            polar = Polar(hypot(x, y), d)
+            polar!!.decart = this
+        }
+        return polar!!
+    }
 
     override fun toDecart() : Decart = this
 

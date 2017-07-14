@@ -6,11 +6,11 @@ import akostenko.aicars.GameSettings
 import akostenko.aicars.GameStateIds
 import akostenko.aicars.GraphicsGameState
 import akostenko.aicars.drawing.Arrow
-import akostenko.aicars.drawing.StraightLine
+import akostenko.math.StraightLine
 import akostenko.aicars.keyboard.SingleKeyAction
-import akostenko.aicars.math.Decart
-import akostenko.aicars.math.MathUtils
-import akostenko.aicars.math.Polar
+import akostenko.math.vector.Decart
+import akostenko.math.MathUtils
+import akostenko.math.vector.Polar
 import akostenko.aicars.model.CarModel
 import akostenko.aicars.model.CarModel.maxSteering
 import akostenko.aicars.model.EnvironmentModel.SECONDS_PER_MINUTE

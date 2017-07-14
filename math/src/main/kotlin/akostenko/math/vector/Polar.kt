@@ -1,4 +1,4 @@
-package akostenko.aicars.math
+package akostenko.math.vector
 
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.abs
@@ -7,27 +7,33 @@ import java.lang.StrictMath.sin
 
 class Polar(
         /** length of vector, always >= 0  */
-        r: Double, d: Double) : Vector {
-    /** direction, *radians*, measured from X axis towards Y axis, always within [-PI, +PI]  */
+        radius: Double,
+        /** direction, *radians*, measured from X axis towards Y axis, always within [-PI, +PI]  */
+        direction: Double) : Vector {
     val r: Double
     val d: Double
-    // TODO reuse this into Decart.polar and vise versa
-    private val decart : Decart by lazy { Decart(r * cos(d), r * sin(d)) }
+    internal var decart: Decart? = null
 
     init {
-        var d = d
-        if (r < 0) {
+        var d = direction
+        if (radius < 0) {
             d += PI
         }
         while (d < -PI) d += 2 * PI
         while (d > PI) d -= 2 * PI
         this.d = d
-        this.r = abs(r)
+        this.r = abs(radius)
     }
 
     override fun toPolar() = this
 
-    override fun toDecart() = decart
+    override fun toDecart() : Decart {
+        if (decart == null) {
+            decart = Decart(r * cos(d), r * sin(d))
+            decart!!.polar = this
+        }
+        return decart!!
+    }
 
     override fun plus(v: Vector) = toDecart().plus(v.toDecart()).toPolar()
 
@@ -39,7 +45,7 @@ class Polar(
         if (k == 0.0) {
             return ZERO
         } else {
-            return Polar(r * abs(k), d + if (k > 0) 0.0 else StrictMath.PI)
+            return Polar(r * abs(k), d + if (k > 0) 0.0 else PI)
         }
     }
 

@@ -1,6 +1,6 @@
 package akostenko.aicars.plots
 
-import akostenko.aicars.math.Decart
+import akostenko.math.vector.Decart
 import java.lang.Double.max
 import java.lang.Double.min
 import java.lang.StrictMath.pow

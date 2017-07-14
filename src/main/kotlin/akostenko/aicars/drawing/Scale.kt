@@ -1,6 +1,6 @@
 package akostenko.aicars.drawing
 
-import akostenko.aicars.math.Vector
+import akostenko.math.vector.Vector
 
 data class Scale(val size: Double, val pixels: Float) {
     fun to(value: Double) : Float = value.toFloat() / size.toFloat() * pixels

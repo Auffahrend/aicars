@@ -1,8 +1,7 @@
-package akostenko.aicars.math
+package akostenko.math
 
-import akostenko.aicars.drawing.ArcLine
-import akostenko.aicars.drawing.Line
-import akostenko.aicars.drawing.StraightLine
+import akostenko.math.vector.Decart
+import akostenko.math.vector.Vector
 import java.lang.Math.sqrt
 import java.lang.Math.tan
 import java.lang.StrictMath.abs
@@ -88,7 +87,7 @@ object MathUtils {
             // (k**2+1) x**2 + 2kb x + b**2 - r**2 = 0
             val k = tan(movedLine.direction)
             val b = movedLine.yFunction(0.0)
-            points = squareRoots(k.sqr() + 1, 2*k*b, b.sqr() - second.radius.sqr())
+            points = squareRoots(k.sqr() + 1, 2 * k * b, b.sqr() - second.radius.sqr())
                     .map { x -> Decart(x, movedLine.yFunction(x)) }
         }
 

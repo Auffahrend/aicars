@@ -1,4 +1,4 @@
-package akostenko.aicars.math
+package akostenko.math
 
 class Matrix(val n: Int, val m: Int) {
     constructor(n: Int) : this(n, n)

@@ -1,7 +1,6 @@
-package akostenko.aicars.math
+package akostenko.math
 
-import akostenko.aicars.drawing.ArcLine
-import akostenko.aicars.drawing.StraightLine
+import akostenko.math.vector.Decart
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.lang.StrictMath.PI
@@ -22,7 +21,7 @@ class MathUtilsTest {
         val line1 = StraightLine(Decart(0.0, 0.0), Decart(1.0, 2.0))
         val line2 = StraightLine(Decart(0.75, 0.0), Decart(0.75, 1000.0))
         assertEquals(
-                listOf(MathUtils.Intersection(line1, line2, Decart(0.75, 0.75*2))),
+                listOf(MathUtils.Intersection(line1, line2, Decart(0.75, 0.75 * 2))),
                 MathUtils.findIntersection(line1 to line2))
     }
 

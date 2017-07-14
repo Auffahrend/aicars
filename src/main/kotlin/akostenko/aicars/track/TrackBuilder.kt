@@ -1,17 +1,15 @@
 package akostenko.aicars.track
 
-import akostenko.aicars.math.Decart
-import akostenko.aicars.math.Polar
-import akostenko.aicars.math.Vector
-import org.slf4j.LoggerFactory
+import akostenko.math.vector.Decart
+import akostenko.math.vector.Polar
+import akostenko.math.vector.Vector
 import java.lang.Math.toRadians
 import java.lang.StrictMath.PI
-import java.util.*
 
 internal class TrackBuilder private constructor(private var heading: Double,
-                            private var currentPosition: Vector,
-                            private val width: Double,
-                            private var totalLength: Int) {
+                                                private var currentPosition: Vector,
+                                                private val width: Double,
+                                                private var totalLength: Int) {
 
     private val sections = mutableListOf<TrackSection>()
 

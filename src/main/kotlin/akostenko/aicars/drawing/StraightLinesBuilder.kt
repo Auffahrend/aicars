@@ -1,7 +1,8 @@
 package akostenko.aicars.drawing
 
-import akostenko.aicars.math.Polar
-import akostenko.aicars.math.Vector
+import akostenko.math.StraightLine
+import akostenko.math.vector.Polar
+import akostenko.math.vector.Vector
 
 internal class StraightLinesBuilder(val collidable: Boolean = true) {
     private val lines = mutableListOf<StraightLine>()

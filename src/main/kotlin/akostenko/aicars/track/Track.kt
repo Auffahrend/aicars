@@ -1,7 +1,7 @@
 package akostenko.aicars.track
 
-import akostenko.aicars.math.Polar
-import akostenko.aicars.math.Vector
+import akostenko.math.vector.Polar
+import akostenko.math.vector.Vector
 import akostenko.aicars.menu.MenuItem
 import java.lang.StrictMath.PI
 import java.lang.StrictMath.abs
@@ -32,10 +32,10 @@ abstract class Track : MenuItem {
     private fun createMarker(onSection: TrackSection, turn: TrackSection, at: TrackWayPoint, text: String): TrackMarker {
         val markerOffset : Vector
         if (onSection.isStraight) {
-            markerOffset = Polar(width / 2 + 2, onSection.heading + if (turn.radius > 0) -PI/2 else (PI/2))
+            markerOffset = Polar(width / 2 + 2, onSection.heading + if (turn.radius > 0) -PI / 2 else (PI / 2))
         } else {
-            val center = onSection.start + Polar(onSection.radius, onSection.heading + PI/2)
-            markerOffset = Polar(width/2 + 2, (at.position - center).toPolar().d) * signum(turn.radius)
+            val center = onSection.start + Polar(onSection.radius, onSection.heading + PI / 2)
+            markerOffset = Polar(width / 2 + 2, (at.position - center).toPolar().d) * signum(turn.radius)
         }
         return TrackMarker(at.position + markerOffset, text)
     }
