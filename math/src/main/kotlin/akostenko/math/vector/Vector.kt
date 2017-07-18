@@ -10,6 +10,7 @@ interface Vector {
     operator fun times(k: Double): Vector
     operator fun div(k: Double): Vector
     fun rotate(radians: Double): Vector
+    fun normal(): Vector
     fun module(): Double
     fun moduleSqr(): Double
 

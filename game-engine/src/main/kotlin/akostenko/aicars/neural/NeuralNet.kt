@@ -4,7 +4,7 @@ import akostenko.aicars.race.Driver
 import akostenko.aicars.race.car.Car
 import java.util.*
 
-abstract class NeuralNet(open val name : String) {
+abstract class NeuralNet(open val name: String) {
 
     private val maxOutput = 1.0
     private val maxAcceleration = 1.0
@@ -20,14 +20,16 @@ abstract class NeuralNet(open val name : String) {
         calculateOutput()
     }
 
-    abstract val outputCount : Int
-    abstract val inputCount : Int
+    abstract val outputCount: Int
+    abstract val inputCount: Int
 
     abstract internal fun readCarParametersToInput(car: Car<*>)
 
     abstract internal fun calculateOutput()
 
     abstract internal fun output(index: Int): Double
+
+    abstract fun serialize(): String
 
     fun accelerating(): Double {
         return output(accelerationOutput) / maxOutput * maxAcceleration
@@ -38,11 +40,47 @@ abstract class NeuralNet(open val name : String) {
     }
 
     fun steering(): Double {
-        return output(steeringOutput) / maxOutput * maxSteering
+        return (output(steeringOutput) / maxOutput - 0.5) * 2 * maxSteering
     }
 
     companion object {
-        fun bestDrivers() : List<Driver> {
+        private val typeDelimiter = "|"
+        private val typeDelimiterRegex = typeDelimiter.toRegex()
+
+        fun serializePopulation(population: List<NNDriver>): String {
+            return buildString {
+                // each line contains a single net
+                population.map { "${typeOf(it)}$typeDelimiter${it.neural.serialize()}" }
+                        .forEach { append(it).appendln() }
+            }
+
+        }
+
+        private fun typeOf(driver: NNDriver): String {
+            return when (driver.neural) {
+                is LinearNN -> LinearNN.type
+                else -> {
+                    throw IllegalArgumentException("Unknown neural type ${driver.neural}")
+                }
+            }
+        }
+
+        fun deserializePopulation(text: String): List<NNDriver> {
+            return text.reader().readLines()
+                    .map { it.split(typeDelimiterRegex) }
+                    .map { restoreNetOfType(it.first(), it[1]) }
+        }
+
+        private fun restoreNetOfType(type: String, content: String): NNDriver {
+            return when (type) {
+                LinearNN.type -> NNDriver(LinearNN.deserialize(content))
+                else -> {
+                    throw IllegalArgumentException("Unknown neural type $type")
+                }
+            }
+        }
+
+        fun generatePopulation(): List<Driver> {
             return IntRange(1, 100)
                     .map { LinearNN("Linear #$it") }
                     .map { setRandomConnections(it) }

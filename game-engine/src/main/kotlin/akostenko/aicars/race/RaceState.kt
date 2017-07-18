@@ -7,10 +7,8 @@ import akostenko.aicars.GraphicsGameState
 import akostenko.aicars.drawing.Arrow
 import akostenko.aicars.drawing.CarImg
 import akostenko.aicars.drawing.Scale
-import akostenko.math.StraightLine
 import akostenko.aicars.keyboard.IsKeyDownListener
 import akostenko.aicars.keyboard.SingleKeyAction
-import akostenko.math.vector.Cartesian
 import akostenko.aicars.menu.CarPerformanceTests
 import akostenko.aicars.menu.NeuralNetDemo
 import akostenko.aicars.menu.WithPlayer
@@ -22,6 +20,10 @@ import akostenko.aicars.race.car.CarTelemetryScalar
 import akostenko.aicars.race.car.CarTelemetryVector
 import akostenko.aicars.track.Track
 import akostenko.aicars.track.TrackSection
+import akostenko.math.StraightLine
+import akostenko.math.vector.Cartesian
+import org.apache.commons.math3.util.FastMath.PI
+import org.apache.commons.math3.util.FastMath.pow
 import org.lwjgl.input.Keyboard.KEY_ADD
 import org.lwjgl.input.Keyboard.KEY_DOWN
 import org.lwjgl.input.Keyboard.KEY_LEFT
@@ -37,8 +39,6 @@ import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.StateBasedGame
 import org.slf4j.LoggerFactory
 import java.awt.Font
-import org.apache.commons.math3.util.FastMath.PI
-import org.apache.commons.math3.util.FastMath.pow
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.atomic.AtomicReference
 
@@ -100,6 +100,7 @@ class RaceState : GraphicsGameState() {
                         .forEach { driver -> cars.add(Car(driver, track)) }
             } else {}
         }
+        scale = GameSettings.instance.scale
 
         val trackStart = track.sections.first()
         cars.forEach { car -> car.turn(trackStart.heading).move(trackStart.start) }
@@ -147,7 +148,6 @@ class RaceState : GraphicsGameState() {
 
     private fun drawTrack(g: Graphics, focused: Car<*>, track: Track) {
         track.sections
-//                .filter { isVisible(it, focused.position) }
                 .forEach { drawTrackSection(g, focused, it) }
 
         track.markers

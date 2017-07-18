@@ -1,5 +1,6 @@
 package akostenko.aicars
 
+import akostenko.aicars.drawing.Scale
 import akostenko.aicars.keyboard.ComboKeyAction
 import akostenko.aicars.keyboard.GameAction
 import akostenko.aicars.keyboard.KeyboardHelper
@@ -30,30 +31,40 @@ class GameSettings {
     var mode: Mode = WithPlayer()
     var debug: DebugMode = DebugMode.defaultMode
     var collisions: CollisionsMode = CollisionsMode.defaultMode
+    var scale: Scale = Scale(1.0, 5f)
 
     fun save() {
-        val content = listOf(trackToken + track.title, modeToken + mode.title,
-                debugToken + debug.title, collisionsToken + collisions.title)
-        try {
-            if (Files.exists(settingsPath)) {
-                Files.write(settingsPath, content, TRUNCATE_EXISTING, WRITE)
-            } else {
-                Files.write(settingsPath, content, CREATE_NEW, WRITE)
-            }
-        } catch (e: IOException) {
-            throw RuntimeException(e)
-        }
+        GameSettings.save(this)
     }
 
     companion object {
 
         private val settingsPath = Paths.get("settings.ini")
+        private val populationPath = Paths.get("last.population")
         private val trackToken = "track="
         private val modeToken = "mode="
         private val debugToken = "debug="
         private val collisionsToken = "collisions="
+        private val scaleToken = "scale="
 
         val instance: GameSettings by lazy { restore() }
+
+        private fun save(settings: GameSettings) {
+            with(settings) {
+                val content = listOf(trackToken + track.title, modeToken + mode.title,
+                        debugToken + debug.title, collisionsToken + collisions.title,
+                        scaleToken + Scale.serialize(scale))
+                try {
+                    if (Files.exists(settingsPath)) {
+                        Files.write(settingsPath, content, TRUNCATE_EXISTING, WRITE)
+                    } else {
+                        Files.write(settingsPath, content, CREATE_NEW, WRITE)
+                    }
+                } catch (e: IOException) {
+                    throw RuntimeException(e)
+                }
+            }
+        }
 
         private fun restore(): GameSettings {
             val gameSettings: GameSettings
@@ -84,6 +95,9 @@ class GameSettings {
                             }
                             if (line.startsWith(collisionsToken)) {
                                 settings.collisions = CollisionsMode.forName(line.split(collisionsToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
+                            }
+                            if (line.startsWith(scaleToken)) {
+                                settings.scale = Scale.deserialize(line.split(collisionsToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
                             }
                         }
             } catch (e: IOException) {

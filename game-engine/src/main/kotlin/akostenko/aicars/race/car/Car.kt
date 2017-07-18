@@ -3,12 +3,6 @@ package akostenko.aicars.race.car
 import akostenko.aicars.GameSettings
 import akostenko.aicars.drawing.CarImg
 import akostenko.aicars.drawing.Scale
-import akostenko.math.vector.Cartesian
-import akostenko.math.MathUtils
-import akostenko.math.vector.Polar
-import akostenko.math.vector.Polar.Companion.ZERO
-import akostenko.math.vector.Vector
-import akostenko.math.vector.Vector.Companion.PRECISION
 import akostenko.aicars.model.CarModel.axleTrack
 import akostenko.aicars.model.CarModel.cx
 import akostenko.aicars.model.CarModel.cy
@@ -37,6 +31,12 @@ import akostenko.aicars.race.car.CarTelemetry.Companion.turningColor
 import akostenko.aicars.race.car.CarTelemetry.Companion.velocityColor
 import akostenko.aicars.track.Track
 import akostenko.aicars.track.TrackWayPoint
+import akostenko.math.MathUtils
+import akostenko.math.vector.Cartesian
+import akostenko.math.vector.Polar
+import akostenko.math.vector.Polar.Companion.ZERO
+import akostenko.math.vector.Vector
+import akostenko.math.vector.Vector.Companion.PRECISION
 import org.apache.commons.math3.util.FastMath.PI
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.atan
@@ -226,9 +226,9 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
         return axleWeight * tyreSlipForceFunction
     }
 
-    protected fun frontSlipF(): Vector = (headingNormal().rotate(steering.d)) * (-tyreSlipForce(frontSlipAngle(), frontAxleWeightF()))
+    protected fun frontSlipF(): Vector = (heading.normal().rotate(steering.d)) * (-tyreSlipForce(frontSlipAngle(), frontAxleWeightF()))
 
-    protected fun rearSlipF(): Vector = headingNormal() * (-tyreSlipForce(rearSlipAngle(), rearAxleWeightF()))
+    protected fun rearSlipF(): Vector = heading.normal() * (-tyreSlipForce(rearSlipAngle(), rearAxleWeightF()))
 
     private fun frontSlipAngle(): Double {
         return if (velocity.module() > 0)
@@ -245,21 +245,16 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
     }
 
     private fun lateralVelocity(): Double {
-        return headingNormal().dot(velocity)
+        return heading.normal().dot(velocity)
     }
 
     private fun longitudeVelocity(): Double {
         return heading.dot(velocity)
     }
 
-    private fun headingNormal(): Vector {
-        return heading.rotate(PI / 2)
-    }
-
     private fun rotationTorque(): Double {
-        return frontSlipF().dot(headingNormal()) *
-                hypot(wheelbase * frontWeightPercent, axleTrack / 2) - rearSlipF().dot(headingNormal()) *
-                hypot(wheelbase * rearWeightPercent, axleTrack / 2)
+        return frontSlipF().dot(heading.normal()) * hypot(wheelbase * frontWeightPercent, axleTrack / 2) -
+                rearSlipF().dot(heading.normal()) * hypot(wheelbase * rearWeightPercent, axleTrack / 2)
     }
 
     init {

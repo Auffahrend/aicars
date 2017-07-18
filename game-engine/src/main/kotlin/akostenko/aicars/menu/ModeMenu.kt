@@ -27,7 +27,7 @@ class NeuralNetDemo : Mode() {
     override val title: String
         get() = NAME
 
-    val drivers = NeuralNet.bestDrivers()
+    val drivers = NeuralNet.generatePopulation()
 
     companion object {
         internal val NAME = "Neural"

@@ -1,16 +1,17 @@
 package akostenko.math.vector
 
-import org.apache.commons.math3.util.FastMath.hypot
 import org.apache.commons.math3.util.FastMath.PI
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.atan
 import org.apache.commons.math3.util.FastMath.cos
-import org.apache.commons.math3.util.FastMath.sin
+import org.apache.commons.math3.util.FastMath.hypot
 import org.apache.commons.math3.util.FastMath.pow
+import org.apache.commons.math3.util.FastMath.sin
 
 class Cartesian(val x: Double, val y: Double) : Vector {
 
     internal var polar : Polar? = null
+    internal var normal : Cartesian? = null
 
     override fun asPolar(): Polar {
         if (polar == null) {
@@ -54,6 +55,13 @@ class Cartesian(val x: Double, val y: Double) : Vector {
         val cos = cos(radians)
         val sin = sin(radians)
         return Cartesian(x * cos - y * sin, x * sin + y * cos)
+    }
+
+    override fun normal(): Cartesian {
+        if (normal == null) {
+            normal = Cartesian(-y, x)
+        }
+        return normal!!
     }
 
     override fun module(): Double = hypot(x, y)

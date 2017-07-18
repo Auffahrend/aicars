@@ -13,6 +13,7 @@ class Polar(
     val r: Double
     val d: Double
     internal var cartesian: Cartesian? = null
+    internal var normal: Polar? = null
 
     init {
         var d = direction
@@ -52,6 +53,13 @@ class Polar(
     override fun div(k: Double) = times(1.0 / k)
 
     override fun rotate(radians: Double) = Polar(r, d + radians)
+
+    override fun normal() : Polar {
+        if (normal == null) {
+            normal = Polar(r, d+PI/2)
+        }
+        return normal!!
+    }
 
     override fun module() = r
 
