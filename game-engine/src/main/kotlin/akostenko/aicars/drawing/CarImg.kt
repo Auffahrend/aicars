@@ -1,13 +1,13 @@
-package main.kotlin.akostenko.aicars.drawing
+package akostenko.aicars.drawing
 
 import akostenko.math.vector.Cartesian
 import akostenko.math.vector.Cartesian.Companion.ZERO
-import main.kotlin.akostenko.aicars.model.CarModel.axleTrack
-import main.kotlin.akostenko.aicars.model.CarModel.frontWeightPercent
-import main.kotlin.akostenko.aicars.model.CarModel.rearWeightPercent
-import main.kotlin.akostenko.aicars.model.CarModel.tyreRadius
-import main.kotlin.akostenko.aicars.model.CarModel.wheelbase
-import main.kotlin.akostenko.aicars.race.car.Car
+import akostenko.aicars.model.CarModel.axleTrack
+import akostenko.aicars.model.CarModel.frontWeightPercent
+import akostenko.aicars.model.CarModel.rearWeightPercent
+import akostenko.aicars.model.CarModel.tyreRadius
+import akostenko.aicars.model.CarModel.wheelbase
+import akostenko.aicars.race.car.Car
 import akostenko.math.Line
 import akostenko.math.StraightLine
 import org.apache.commons.math3.util.FastMath.PI

@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.race
+package akostenko.aicars.race
 
 import akostenko.math.MathUtils.linear
 import org.apache.commons.math3.util.FastMath.abs

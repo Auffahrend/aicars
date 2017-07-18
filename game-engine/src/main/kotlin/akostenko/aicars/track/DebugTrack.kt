@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.track
+package akostenko.aicars.track
 
 class DebugTrack : Track() {
     override val title = NAME

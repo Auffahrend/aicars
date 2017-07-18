@@ -1,9 +1,9 @@
-package main.kotlin.akostenko.aicars.menu
+package akostenko.aicars.menu
 
-import main.kotlin.akostenko.aicars.track.DebugTrack
-import main.kotlin.akostenko.aicars.track.IndySpeedway
-import main.kotlin.akostenko.aicars.track.MonzaTrack
-import main.kotlin.akostenko.aicars.track.Track
+import akostenko.aicars.track.DebugTrack
+import akostenko.aicars.track.IndySpeedway
+import akostenko.aicars.track.MonzaTrack
+import akostenko.aicars.track.Track
 
 class TrackMenu : AbstractSubMenu<Track>() {
 

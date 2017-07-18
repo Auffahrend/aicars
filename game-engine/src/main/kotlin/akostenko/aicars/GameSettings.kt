@@ -1,15 +1,15 @@
-package main.kotlin.akostenko.aicars
+package akostenko.aicars
 
-import main.kotlin.akostenko.aicars.keyboard.ComboKeyAction
-import main.kotlin.akostenko.aicars.keyboard.GameAction
-import main.kotlin.akostenko.aicars.keyboard.KeyboardHelper
-import main.kotlin.akostenko.aicars.keyboard.SingleKeyAction
-import main.kotlin.akostenko.aicars.menu.CollisionsMode
-import main.kotlin.akostenko.aicars.menu.DebugMode
-import main.kotlin.akostenko.aicars.menu.Mode
-import main.kotlin.akostenko.aicars.menu.WithPlayer
-import main.kotlin.akostenko.aicars.track.MonzaTrack
-import main.kotlin.akostenko.aicars.track.Track
+import akostenko.aicars.keyboard.ComboKeyAction
+import akostenko.aicars.keyboard.GameAction
+import akostenko.aicars.keyboard.KeyboardHelper
+import akostenko.aicars.keyboard.SingleKeyAction
+import akostenko.aicars.menu.CollisionsMode
+import akostenko.aicars.menu.DebugMode
+import akostenko.aicars.menu.Mode
+import akostenko.aicars.menu.WithPlayer
+import akostenko.aicars.track.MonzaTrack
+import akostenko.aicars.track.Track
 import org.lwjgl.input.Keyboard.KEY_ESCAPE
 import org.lwjgl.input.Keyboard.KEY_Q
 import org.lwjgl.input.Keyboard.KEY_R

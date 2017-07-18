@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.menu
+package akostenko.aicars.menu
 
 interface SubMenu<ITEM : MenuItem> {
     val title: String

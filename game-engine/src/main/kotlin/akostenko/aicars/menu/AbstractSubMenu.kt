@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.menu
+package akostenko.aicars.menu
 
 abstract class AbstractSubMenu<ITEM : MenuItem> : SubMenu<ITEM> {
 

@@ -1,7 +1,7 @@
-package main.kotlin.akostenko.aicars.race.cartest
+package akostenko.aicars.race.cartest
 
-import main.kotlin.akostenko.aicars.model.CarModel
-import main.kotlin.akostenko.aicars.race.Driver
+import akostenko.aicars.model.CarModel
+import akostenko.aicars.race.Driver
 
 class CircularCruiseTest : Driver() {
     override fun accelerating(): Double {

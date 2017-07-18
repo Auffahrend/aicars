@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.model
+package akostenko.aicars.model
 
 import org.apache.commons.math3.util.FastMath.PI
 import org.apache.commons.math3.util.FastMath.toRadians

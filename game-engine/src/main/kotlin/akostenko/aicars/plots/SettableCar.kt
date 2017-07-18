@@ -1,13 +1,13 @@
-package main.kotlin.akostenko.aicars.plots
+package akostenko.aicars.plots
 
-import main.kotlin.akostenko.aicars.model.CarModel.mass
+import akostenko.aicars.model.CarModel.mass
 import org.apache.commons.math3.util.FastMath.PI
 
 import akostenko.math.vector.Polar
 import akostenko.math.vector.Vector
-import main.kotlin.akostenko.aicars.race.Driver
-import main.kotlin.akostenko.aicars.race.car.Car
-import main.kotlin.akostenko.aicars.track.Track
+import akostenko.aicars.race.Driver
+import akostenko.aicars.race.car.Car
+import akostenko.aicars.track.Track
 
 internal class SettableCar<DRIVER : Driver>(driver: DRIVER, track: Track) : Car<DRIVER>(driver, track) {
 

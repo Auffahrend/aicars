@@ -1,6 +1,6 @@
-package main.kotlin.akostenko.aicars.plots
+package akostenko.aicars.plots
 
-import main.kotlin.akostenko.aicars.race.Driver
+import akostenko.aicars.race.Driver
 
 class EmptyDriver : Driver() {
     override fun accelerating(): Double {

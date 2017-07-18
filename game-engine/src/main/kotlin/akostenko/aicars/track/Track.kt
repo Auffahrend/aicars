@@ -1,8 +1,8 @@
-package main.kotlin.akostenko.aicars.track
+package akostenko.aicars.track
 
 import akostenko.math.vector.Polar
 import akostenko.math.vector.Vector
-import main.kotlin.akostenko.aicars.menu.MenuItem
+import akostenko.aicars.menu.MenuItem
 import org.apache.commons.math3.util.FastMath.PI
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.signum

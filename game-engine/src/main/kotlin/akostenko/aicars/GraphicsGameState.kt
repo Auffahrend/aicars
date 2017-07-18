@@ -1,11 +1,11 @@
-package main.kotlin.akostenko.aicars
+package akostenko.aicars
 
 import akostenko.math.ArcLine
 import akostenko.math.Line
-import main.kotlin.akostenko.aicars.drawing.Scale
+import akostenko.aicars.drawing.Scale
 import akostenko.math.StraightLine
 import akostenko.math.vector.Cartesian
-import main.kotlin.akostenko.aicars.track.TrackMarker
+import akostenko.aicars.track.TrackMarker
 import org.newdawn.slick.Color
 import org.newdawn.slick.Graphics
 import org.newdawn.slick.TrueTypeFont

@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.model
+package akostenko.aicars.model
 
 object EnvironmentModel {
     /** *m/s^2*  */

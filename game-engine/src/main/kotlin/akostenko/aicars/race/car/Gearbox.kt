@@ -1,7 +1,7 @@
-package main.kotlin.akostenko.aicars.race.car
+package akostenko.aicars.race.car
 
-import main.kotlin.akostenko.aicars.model.CarModel
-import main.kotlin.akostenko.aicars.model.CarModel.tyreRadius
+import akostenko.aicars.model.CarModel
+import akostenko.aicars.model.CarModel.tyreRadius
 import org.apache.commons.math3.util.FastMath.PI
 
 class Gearbox(private val car: Car<*>) {

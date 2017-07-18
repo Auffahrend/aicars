@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.track
+package akostenko.aicars.track
 
 import akostenko.math.vector.Cartesian
 import akostenko.math.vector.Polar

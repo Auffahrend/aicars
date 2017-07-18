@@ -1,7 +1,7 @@
-package main.kotlin.akostenko.aicars.neural
+package akostenko.aicars.neural
 
-import main.kotlin.akostenko.aicars.race.Driver
-import main.kotlin.akostenko.aicars.race.car.Car
+import akostenko.aicars.race.Driver
+import akostenko.aicars.race.car.Car
 import java.util.*
 
 abstract class NeuralNet(open val name : String) {

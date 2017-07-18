@@ -1,6 +1,6 @@
-package main.kotlin.akostenko.aicars.race
+package akostenko.aicars.race
 
-import main.kotlin.akostenko.aicars.race.car.Car
+import akostenko.aicars.race.car.Car
 
 abstract class Driver {
     lateinit var car: Car<*>

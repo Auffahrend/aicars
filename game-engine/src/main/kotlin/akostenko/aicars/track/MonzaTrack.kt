@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.track
+package akostenko.aicars.track
 
 class MonzaTrack : Track() {
     override val width = 10.0 // m

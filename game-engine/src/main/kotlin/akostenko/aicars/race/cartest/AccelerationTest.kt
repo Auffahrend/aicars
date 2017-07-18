@@ -1,6 +1,6 @@
-package main.kotlin.akostenko.aicars.race.cartest
+package akostenko.aicars.race.cartest
 
-import main.kotlin.akostenko.aicars.race.Driver
+import akostenko.aicars.race.Driver
 
 class AccelerationTest(private val targetSpeed: Double // km/h
 ) : Driver() {

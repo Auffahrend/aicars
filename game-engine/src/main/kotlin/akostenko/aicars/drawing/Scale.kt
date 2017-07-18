@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.drawing
+package akostenko.aicars.drawing
 
 import akostenko.math.vector.Vector
 

@@ -1,8 +1,8 @@
-package main.kotlin.akostenko.aicars.track
+package akostenko.aicars.track
 
 import akostenko.math.ArcLine
 import akostenko.math.Line
-import main.kotlin.akostenko.aicars.drawing.StraightLinesBuilder
+import akostenko.aicars.drawing.StraightLinesBuilder
 import akostenko.math.vector.Polar
 import akostenko.math.vector.Vector
 import org.apache.commons.math3.util.FastMath.abs

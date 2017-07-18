@@ -1,6 +1,6 @@
-package main.kotlin.akostenko.aicars.race.car
+package akostenko.aicars.race.car
 
-import main.kotlin.akostenko.aicars.drawing.Scale
+import akostenko.aicars.drawing.Scale
 import akostenko.math.vector.Cartesian
 import akostenko.math.vector.Vector
 import org.newdawn.slick.Color

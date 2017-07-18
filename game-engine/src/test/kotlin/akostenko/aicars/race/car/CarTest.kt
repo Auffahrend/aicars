@@ -1,12 +1,12 @@
 package test.kotlin.akostenko.aicars.race.car
 
 import akostenko.math.vector.Vector.Companion.PRECISION
-import main.kotlin.akostenko.aicars.model.CarModel.maxSteering
-import main.kotlin.akostenko.aicars.model.CarModel.peakLateralForceAngle
-import main.kotlin.akostenko.aicars.model.CarModel.tyreStiction
-import main.kotlin.akostenko.aicars.plots.EmptyDriver
-import main.kotlin.akostenko.aicars.race.car.Car
-import main.kotlin.akostenko.aicars.track.MonzaTrack
+import akostenko.aicars.model.CarModel.maxSteering
+import akostenko.aicars.model.CarModel.peakLateralForceAngle
+import akostenko.aicars.model.CarModel.tyreStiction
+import akostenko.aicars.plots.EmptyDriver
+import akostenko.aicars.race.car.Car
+import akostenko.aicars.track.MonzaTrack
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.apache.commons.math3.util.FastMath.toRadians

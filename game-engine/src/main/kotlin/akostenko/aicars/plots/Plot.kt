@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.plots
+package akostenko.aicars.plots
 
 import akostenko.math.vector.Cartesian
 import java.lang.Double.max

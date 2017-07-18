@@ -1,6 +1,6 @@
-package main.kotlin.akostenko.aicars.neural
+package akostenko.aicars.neural
 
-import main.kotlin.akostenko.aicars.race.Driver
+import akostenko.aicars.race.Driver
 
 
 class NNDriver(val neural : NeuralNet)

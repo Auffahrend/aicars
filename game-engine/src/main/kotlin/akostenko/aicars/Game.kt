@@ -1,9 +1,9 @@
-package main.kotlin.akostenko.aicars
+package akostenko.aicars
 
-import main.kotlin.akostenko.aicars.keyboard.GameAction
-import main.kotlin.akostenko.aicars.menu.MenuState
-import main.kotlin.akostenko.aicars.plots.CarPlotsState
-import main.kotlin.akostenko.aicars.race.RaceState
+import akostenko.aicars.keyboard.GameAction
+import akostenko.aicars.menu.MenuState
+import akostenko.aicars.plots.CarPlotsState
+import akostenko.aicars.race.RaceState
 import org.newdawn.slick.AppGameContainer
 import org.newdawn.slick.GameContainer
 import org.newdawn.slick.SlickException

@@ -1,10 +1,10 @@
-package main.kotlin.akostenko.aicars.menu
+package akostenko.aicars.menu
 
-import main.kotlin.akostenko.aicars.Game
-import main.kotlin.akostenko.aicars.GameSettings
-import main.kotlin.akostenko.aicars.GameStateIds
-import main.kotlin.akostenko.aicars.plots.CarPlotsState
-import main.kotlin.akostenko.aicars.race.RaceState
+import akostenko.aicars.Game
+import akostenko.aicars.GameSettings
+import akostenko.aicars.GameStateIds
+import akostenko.aicars.plots.CarPlotsState
+import akostenko.aicars.race.RaceState
 import org.newdawn.slick.state.GameState
 import org.newdawn.slick.state.transition.EmptyTransition
 import org.newdawn.slick.state.transition.FadeInTransition

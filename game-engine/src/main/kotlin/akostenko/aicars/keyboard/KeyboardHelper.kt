@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.keyboard
+package akostenko.aicars.keyboard
 
 import org.lwjgl.input.Keyboard
 import org.newdawn.slick.KeyListener

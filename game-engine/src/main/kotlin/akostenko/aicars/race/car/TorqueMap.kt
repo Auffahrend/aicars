@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.race.car
+package akostenko.aicars.race.car
 
 import akostenko.math.vector.Cartesian
 import akostenko.math.MathUtils.linear

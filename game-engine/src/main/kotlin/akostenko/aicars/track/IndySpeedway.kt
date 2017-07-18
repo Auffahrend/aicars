@@ -1,4 +1,4 @@
-package main.kotlin.akostenko.aicars.track
+package akostenko.aicars.track
 
 class IndySpeedway : Track() {
     override val width = 16.0

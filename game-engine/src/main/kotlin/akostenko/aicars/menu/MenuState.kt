@@ -1,10 +1,10 @@
-package main.kotlin.akostenko.aicars.menu
+package akostenko.aicars.menu
 
-import main.kotlin.akostenko.aicars.Game
-import main.kotlin.akostenko.aicars.GameSettings
-import main.kotlin.akostenko.aicars.GameStateIds
-import main.kotlin.akostenko.aicars.keyboard.KeyboardHelper
-import main.kotlin.akostenko.aicars.keyboard.SingleKeyAction
+import akostenko.aicars.Game
+import akostenko.aicars.GameSettings
+import akostenko.aicars.GameStateIds
+import akostenko.aicars.keyboard.KeyboardHelper
+import akostenko.aicars.keyboard.SingleKeyAction
 import org.lwjgl.input.Keyboard.KEY_DOWN
 import org.lwjgl.input.Keyboard.KEY_LEFT
 import org.lwjgl.input.Keyboard.KEY_RETURN

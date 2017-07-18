@@ -1,9 +1,9 @@
-package main.kotlin.akostenko.aicars.neural
+package akostenko.aicars.neural
 
 import akostenko.math.vector.Polar
-import main.kotlin.akostenko.aicars.plots.EmptyDriver
-import main.kotlin.akostenko.aicars.race.car.Car
-import main.kotlin.akostenko.aicars.track.DebugTrack
+import akostenko.aicars.plots.EmptyDriver
+import akostenko.aicars.race.car.Car
+import akostenko.aicars.track.DebugTrack
 
 
 class LinearNN(override val name : String) : NeuralNet(name) {

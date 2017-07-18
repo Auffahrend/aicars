@@ -1,9 +1,9 @@
-package main.kotlin.akostenko.aicars.menu
+package akostenko.aicars.menu
 
-import main.kotlin.akostenko.aicars.neural.NeuralNet
-import main.kotlin.akostenko.aicars.race.cartest.AccelerationAndBreakingTest
-import main.kotlin.akostenko.aicars.race.cartest.AccelerationTest
-import main.kotlin.akostenko.aicars.race.cartest.CircularCruiseTest
+import akostenko.aicars.neural.NeuralNet
+import akostenko.aicars.race.cartest.AccelerationAndBreakingTest
+import akostenko.aicars.race.cartest.AccelerationTest
+import akostenko.aicars.race.cartest.CircularCruiseTest
 import java.util.*
 
 class ModeMenu : AbstractSubMenu<Mode>() {
