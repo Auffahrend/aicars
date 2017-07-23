@@ -1,6 +1,6 @@
 package akostenko.aicars.menu
 
-import akostenko.aicars.neural.NeuralNet
+import akostenko.aicars.GameSettings
 import akostenko.aicars.race.cartest.AccelerationAndBreakingTest
 import akostenko.aicars.race.cartest.AccelerationTest
 import akostenko.aicars.race.cartest.CircularCruiseTest
@@ -11,7 +11,13 @@ class ModeMenu : AbstractSubMenu<Mode>() {
 
     override fun enter() {}
 
-    override val items: List<Mode> = listOf(WithPlayer(), NeuralNetDemo(), CarPerformanceTests(), CarPhysicsTests())
+    override val items: List<Mode> = listOf(
+            WithPlayer(),
+            NeuralNetDemo(),
+            NeuralNetTraining()
+//            CarPerformanceTests(),
+//            CarPhysicsTests()
+    )
 }
 
 class WithPlayer : Mode() {
@@ -27,10 +33,19 @@ class NeuralNetDemo : Mode() {
     override val title: String
         get() = NAME
 
-    val drivers = NeuralNet.generatePopulation()
+    val drivers = GameSettings.instance.population()
 
     companion object {
         internal val NAME = "Neural"
+    }
+}
+
+class NeuralNetTraining : Mode() {
+    override val title: String
+        get() = NAME
+
+    companion object {
+        internal val NAME = "Training"
     }
 }
 
@@ -75,6 +90,7 @@ abstract class Mode : MenuItem {
             when (name) {
                 WithPlayer.NAME -> return WithPlayer()
                 NeuralNetDemo.NAME -> return NeuralNetDemo()
+                NeuralNetTraining.NAME -> return NeuralNetTraining()
                 CarPerformanceTests.NAME -> return CarPerformanceTests()
                 CarPhysicsTests.NAME -> return CarPhysicsTests()
                 else -> return defaultMode()

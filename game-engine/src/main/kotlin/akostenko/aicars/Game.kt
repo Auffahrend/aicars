@@ -2,6 +2,7 @@ package akostenko.aicars
 
 import akostenko.aicars.keyboard.GameAction
 import akostenko.aicars.menu.MenuState
+import akostenko.aicars.neural.NeuralNetTrainingState
 import akostenko.aicars.plots.CarPlotsState
 import akostenko.aicars.race.RaceState
 import org.newdawn.slick.AppGameContainer
@@ -41,7 +42,9 @@ class Game : StateBasedGame(GAME_NAME) {
         if (GameStateIds.getId(MenuState::class) == id) {
             // quit the game
             container.exit()
-        } else if (GameStateIds.getId(RaceState::class) == id || GameStateIds.getId(CarPlotsState::class) == id) {
+        } else if (GameStateIds.getId(RaceState::class) == id
+                || GameStateIds.getId(CarPlotsState::class) == id
+                || GameStateIds.getId(NeuralNetTrainingState::class) == id) {
             enterState(GameStateIds.getId(MenuState::class))
         }
     }

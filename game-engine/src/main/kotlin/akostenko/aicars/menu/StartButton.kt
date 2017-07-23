@@ -3,6 +3,7 @@ package akostenko.aicars.menu
 import akostenko.aicars.Game
 import akostenko.aicars.GameSettings
 import akostenko.aicars.GameStateIds
+import akostenko.aicars.neural.NeuralNetTrainingState
 import akostenko.aicars.plots.CarPlotsState
 import akostenko.aicars.race.RaceState
 import org.newdawn.slick.state.GameState
@@ -28,6 +29,7 @@ class StartButton : AbstractSubMenu<MenuItem>() {
                 WithPlayer() to RaceState::class,
                 NeuralNetDemo() to RaceState::class,
                 CarPerformanceTests() to RaceState::class,
+                NeuralNetTraining() to NeuralNetTrainingState::class,
                 CarPhysicsTests() to CarPlotsState::class
                 )
     }

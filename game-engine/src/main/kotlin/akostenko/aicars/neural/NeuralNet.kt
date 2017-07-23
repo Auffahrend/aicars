@@ -44,15 +44,12 @@ abstract class NeuralNet(open val name: String) {
     }
 
     companion object {
-        private val typeDelimiter = "|"
+        private val typeDelimiter = "#"
         private val typeDelimiterRegex = typeDelimiter.toRegex()
 
-        fun serializePopulation(population: List<NNDriver>): String {
-            return buildString {
-                // each line contains a single net
-                population.map { "${typeOf(it)}$typeDelimiter${it.neural.serialize()}" }
-                        .forEach { append(it).appendln() }
-            }
+        fun serializePopulation(population: List<NNDriver>): List<String> {
+            // each line contains a single net
+            return population.map { "${typeOf(it)}$typeDelimiter${it.neural.serialize()}" }
 
         }
 
@@ -65,8 +62,8 @@ abstract class NeuralNet(open val name: String) {
             }
         }
 
-        fun deserializePopulation(text: String): List<NNDriver> {
-            return text.reader().readLines()
+        fun deserializePopulation(nets: List<String>): List<NNDriver> {
+            return nets
                     .map { it.split(typeDelimiterRegex) }
                     .map { restoreNetOfType(it.first(), it[1]) }
         }
@@ -80,7 +77,7 @@ abstract class NeuralNet(open val name: String) {
             }
         }
 
-        fun generatePopulation(): List<Driver> {
+        fun generatePopulation(): List<NNDriver> {
             return IntRange(1, 100)
                     .map { LinearNN("Linear #$it") }
                     .map { setRandomConnections(it) }

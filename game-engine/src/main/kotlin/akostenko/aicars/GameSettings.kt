@@ -9,21 +9,28 @@ import akostenko.aicars.menu.CollisionsMode
 import akostenko.aicars.menu.DebugMode
 import akostenko.aicars.menu.Mode
 import akostenko.aicars.menu.WithPlayer
+import akostenko.aicars.neural.NNDriver
+import akostenko.aicars.neural.NeuralNet
+import akostenko.aicars.race.Driver
 import akostenko.aicars.track.MonzaTrack
 import akostenko.aicars.track.Track
 import org.lwjgl.input.Keyboard.KEY_ESCAPE
 import org.lwjgl.input.Keyboard.KEY_Q
 import org.lwjgl.input.Keyboard.KEY_R
 import org.newdawn.slick.KeyListener
+import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.nio.file.Files
+import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
 import java.nio.file.StandardOpenOption.CREATE_NEW
 import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
 import java.nio.file.StandardOpenOption.WRITE
 
 class GameSettings {
+    private val log  = LoggerFactory.getLogger(this.javaClass)
 
     var globalListeners: List<KeyListener> = emptyList()
         private set
@@ -35,6 +42,20 @@ class GameSettings {
 
     fun save() {
         GameSettings.save(this)
+    }
+
+    fun population(): List<NNDriver> {
+        if (Files.exists(populationPath)) {
+            return NeuralNet.deserializePopulation(Files.readAllLines(populationPath))
+        } else {
+            log.warn("Population not found under $populationPath. It will be generated.")
+            return NeuralNet.generatePopulation()
+        }
+    }
+
+    fun savePopulation(population: List<NNDriver>) {
+        Files.write(populationPath, NeuralNet.serializePopulation(population),
+                StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
     }
 
     companion object {
@@ -118,6 +139,7 @@ class GameSettings {
                             predicate = { -> KeyboardHelper.isCtrlDown() }).listeners().toTypedArray())
             return defaults
         }
+
     }
 }
 
