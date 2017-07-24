@@ -10,6 +10,7 @@ import org.apache.commons.math3.util.FastMath.min
 
 class LinearNN(override val name : String) : NeuralNet(name) {
 
+    /** all connections are [-1, 1] */
     internal var nodeConnections : MutableList<MutableList<Double>> = mutableListOf()
     internal val inputNodes : MutableList<Double> = mutableListOf()
     internal val outputNodes : MutableList<Double> = mutableListOf()

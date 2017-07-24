@@ -11,23 +11,27 @@ import akostenko.aicars.menu.Mode
 import akostenko.aicars.menu.WithPlayer
 import akostenko.aicars.neural.NNDriver
 import akostenko.aicars.neural.NeuralNet
-import akostenko.aicars.race.Driver
 import akostenko.aicars.track.MonzaTrack
 import akostenko.aicars.track.Track
+import org.apache.commons.io.IOUtils
 import org.lwjgl.input.Keyboard.KEY_ESCAPE
 import org.lwjgl.input.Keyboard.KEY_Q
 import org.lwjgl.input.Keyboard.KEY_R
 import org.newdawn.slick.KeyListener
 import org.slf4j.LoggerFactory
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
 import java.nio.file.StandardOpenOption.CREATE_NEW
 import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
 import java.nio.file.StandardOpenOption.WRITE
+import java.time.LocalDateTime
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 class GameSettings {
     private val log  = LoggerFactory.getLogger(this.javaClass)
@@ -44,24 +48,32 @@ class GameSettings {
         GameSettings.save(this)
     }
 
-    fun population(): List<NNDriver> {
-        if (Files.exists(populationPath)) {
-            return NeuralNet.deserializePopulation(Files.readAllLines(populationPath))
-        } else {
-            log.warn("Population not found under $populationPath. It will be generated.")
-            return NeuralNet.generatePopulation()
+    fun readPopulation(): List<NNDriver> {
+        if (Files.exists(populationsPath) && Files.isDirectory(populationsPath)) {
+            val lastPopulation = Files.readSymbolicLink(lastPopulation)
+            if (Files.exists(lastPopulation)) {
+                val stream = ZipInputStream(FileInputStream(lastPopulation.toFile()))
+                return NeuralNet.deserializePopulation(IOUtils.readLines(stream, StandardCharsets.UTF_8))
+            }
         }
+        log.warn("Population not found under $populationsPath. It will be generated.")
+        return NeuralNet.generatePopulation()
     }
 
     fun savePopulation(population: List<NNDriver>) {
-        Files.write(populationPath, NeuralNet.serializePopulation(population),
-                StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
+        val path = populationsPath.resolve("p${LocalDateTime.now()}.zip")
+        val stream = ZipOutputStream(FileOutputStream(path.toFile()))
+        IOUtils.writeLines(NeuralNet.serializePopulation(population), System.lineSeparator(), stream, StandardCharsets.UTF_8)
+
+        Files.deleteIfExists(lastPopulation)
+        Files.createSymbolicLink(lastPopulation, path)
     }
 
     companion object {
 
         private val settingsPath = Paths.get("settings.ini")
-        private val populationPath = Paths.get("last.population")
+        private val populationsPath = Paths.get("populations")
+        private val lastPopulation = populationsPath.resolve("last")
         private val trackToken = "track="
         private val modeToken = "mode="
         private val debugToken = "debug="

@@ -1,8 +1,8 @@
 package akostenko.aicars.neural
 
-import akostenko.aicars.race.Driver
 import akostenko.aicars.race.car.Car
 import java.util.*
+import java.util.zip.ZipOutputStream
 
 abstract class NeuralNet(open val name: String) {
 
@@ -27,6 +27,7 @@ abstract class NeuralNet(open val name: String) {
 
     abstract internal fun calculateOutput()
 
+    /** output value must be within [0, 1] */
     abstract internal fun output(index: Int): Double
 
     abstract fun serialize(): String
@@ -88,7 +89,7 @@ abstract class NeuralNet(open val name: String) {
             val random = Random()
             for (i in 0..net.inputCount) {
                 for (o in 0..net.outputCount) {
-                    net.nodeConnections[i][o] = random.nextDouble()
+                    net.nodeConnections[i][o] = random.nextDouble() * 2 - 1
                 }
             }
             return net

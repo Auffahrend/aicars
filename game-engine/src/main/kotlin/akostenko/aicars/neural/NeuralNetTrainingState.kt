@@ -52,13 +52,14 @@ class NeuralNetTrainingState : GraphicsGameState() {
     }
 
     private fun reset() {
-        newPopulation(GameSettings.instance.population())
+        newPopulation(GameSettings.instance.readPopulation())
         populationIndex = 0
 
         runTraining()
     }
 
     private fun newPopulation(newPopulation: List<NNDriver>) {
+        GameSettings.instance.savePopulation(population.map{ it.driver })
         population = newPopulation.map { DriverTracker(it) }
         cars = population.map { Car(it.driver, GameSettings.instance.track) }
         populationIndex++
