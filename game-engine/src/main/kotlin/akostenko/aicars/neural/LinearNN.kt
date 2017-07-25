@@ -83,6 +83,12 @@ class LinearNN(override val name : String) : NeuralNet(name) {
         return LinearNN.serialize(this)
     }
 
+    override fun copy(newName: String): LinearNN {
+        val copy = LinearNN(newName)
+        copy.nodeConnections = nodeConnections.map { row -> row.toMutableList() }.toMutableList()
+        return copy
+    }
+
     companion object {
         val type = "Linear"
 

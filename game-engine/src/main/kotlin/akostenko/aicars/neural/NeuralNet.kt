@@ -2,7 +2,6 @@ package akostenko.aicars.neural
 
 import akostenko.aicars.race.car.Car
 import java.util.*
-import java.util.zip.ZipOutputStream
 
 abstract class NeuralNet(open val name: String) {
 
@@ -31,6 +30,8 @@ abstract class NeuralNet(open val name: String) {
     abstract internal fun output(index: Int): Double
 
     abstract fun serialize(): String
+
+    abstract fun copy(newName: String): NeuralNet
 
     fun accelerating(): Double {
         return output(accelerationOutput) / maxOutput * maxAcceleration
