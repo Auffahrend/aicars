@@ -6,9 +6,12 @@ import akostenko.aicars.track.DebugTrack
 import akostenko.math.vector.Polar
 import org.apache.commons.math3.util.FastMath.max
 import org.apache.commons.math3.util.FastMath.min
+import org.slf4j.LoggerFactory
 
 
-class LinearNN(override val name : String) : NeuralNet(name) {
+class LinearNN(override val generation: Int,
+               override val mutations: Int,
+               override val crosses: Int) : NeuralNet() {
 
     /** all connections are [-1, 1] */
     internal var nodeConnections : MutableList<MutableList<Double>> = mutableListOf()
@@ -17,6 +20,8 @@ class LinearNN(override val name : String) : NeuralNet(name) {
 
     override val outputCount: Int = 2
     override var inputCount: Int = 0
+
+    override val name = "LG${generation}C${crosses}M${mutations}"
 
     init {
         for (i in 0..outputCount) { outputNodes.add(0.0) }
@@ -83,13 +88,16 @@ class LinearNN(override val name : String) : NeuralNet(name) {
         return LinearNN.serialize(this)
     }
 
-    override fun copy(newName: String): LinearNN {
-        val copy = LinearNN(newName)
+    override fun copy(isMutant: Boolean, isCrossingover: Boolean): LinearNN {
+        val copy = LinearNN(generation+1, mutations + if (isMutant) 1 else 0, crosses + if (isCrossingover) 1 else 0)
         copy.nodeConnections = nodeConnections.map { row -> row.toMutableList() }.toMutableList()
         return copy
     }
 
     companion object {
+        @Suppress("JAVA_CLASS_ON_COMPANION")
+        private val logger = LoggerFactory.getLogger(this.javaClass)
+
         val type = "Linear"
 
         private val nameDelimiter = ":"
@@ -98,7 +106,9 @@ class LinearNN(override val name : String) : NeuralNet(name) {
 
         fun serialize(net: LinearNN): String {
             return buildString {
-                append(net.name).append(nameDelimiter)
+                append(net.generation).append(nameDelimiter)
+                append(net.mutations).append(nameDelimiter)
+                append(net.crosses).append(nameDelimiter)
 
                 net.nodeConnections.forEach { row ->
                     row.forEach { value -> append(value.toString()).append(valueDelimiter) }
@@ -108,9 +118,16 @@ class LinearNN(override val name : String) : NeuralNet(name) {
         }
 
         fun deserialize(line: String): LinearNN {
-            val lineParts = line.split(nameDelimiter.toRegex())
-            val net = LinearNN(lineParts[0])
-            net.nodeConnections = with(lineParts[1]) {
+            val nameParts = line.split(nameDelimiter.toRegex())
+            val net: LinearNN
+            if (nameParts.size >= 3) {
+                net = LinearNN(nameParts[0].toInt(), nameParts[1].toInt(), nameParts[2].toInt())
+            } else {
+                logger.warn("Invalid format, there is only ${nameParts.size} parts for name")
+                net = LinearNN(0, 0, 0)
+            }
+
+            net.nodeConnections = with(nameParts.last()) {
                 split(rowDelimiter.toRegex())
                         .takeWhile { it.isNotEmpty() }
                         .map {

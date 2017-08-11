@@ -3,7 +3,7 @@ package akostenko.aicars.neural
 import akostenko.aicars.race.car.Car
 import java.util.*
 
-abstract class NeuralNet(open val name: String) {
+abstract class NeuralNet {
 
     private val maxOutput = 1.0
     private val maxAcceleration = 1.0
@@ -19,6 +19,11 @@ abstract class NeuralNet(open val name: String) {
         calculateOutput()
     }
 
+    abstract val name: String
+    abstract val generation: Int
+    abstract val mutations: Int
+    abstract val crosses: Int
+
     abstract val outputCount: Int
     abstract val inputCount: Int
 
@@ -31,7 +36,7 @@ abstract class NeuralNet(open val name: String) {
 
     abstract fun serialize(): String
 
-    abstract fun copy(newName: String): NeuralNet
+    abstract fun copy(isMutant: Boolean, isCrossingover: Boolean): NeuralNet
 
     fun accelerating(): Double {
         return output(accelerationOutput) / maxOutput * maxAcceleration
@@ -81,7 +86,7 @@ abstract class NeuralNet(open val name: String) {
 
         fun generatePopulation(): List<NNDriver> {
             return IntRange(1, 100)
-                    .map { LinearNN("Linear #$it") }
+                    .map { LinearNN(0, 0, 0)}
                     .map { setRandomConnections(it) }
                     .map { NNDriver(it) }
         }
