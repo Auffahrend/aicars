@@ -12,25 +12,24 @@ import org.slf4j.LoggerFactory
 class LinearNN(override val generation: Int,
                override val mutations: Int,
                override val crosses: Int) : NeuralNet() {
-
     /** all connections are [-1, 1] */
     internal var nodeConnections : MutableList<MutableList<Double>> = mutableListOf()
+
     internal val inputNodes : MutableList<Double> = mutableListOf()
     internal val outputNodes : MutableList<Double> = mutableListOf()
+    override val outputCount: Int = 3
 
-    override val outputCount: Int = 2
     override var inputCount: Int = 0
-
     override val name = "LG${generation}C${crosses}M${mutations}"
 
     init {
-        for (i in 0..outputCount) { outputNodes.add(0.0) }
+        for (i in 1..outputCount) { outputNodes.add(0.0) }
 
-        inputCount = normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size-1
-        for (i in 0..inputCount) {
+        inputCount = normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size
+        for (i in 0..inputCount-1) {
             inputNodes.add(0.0)
             nodeConnections.add(mutableListOf())
-            for (o in 0..outputCount) {
+            for (o in 1..outputCount) {
                 nodeConnections[i].add(0.0)
             }
         }
@@ -41,9 +40,9 @@ class LinearNN(override val generation: Int,
     }
 
     override fun calculateOutput() {
-        for (o in 0..outputCount) {
+        for (o in 0..outputCount-1) {
             outputNodes[o] = 0.0
-            for (i in 0..inputCount) {
+            for (i in 0..inputCount-1) {
                 outputNodes[o] += inputNodes[i] * nodeConnections[i][o]
             }
         }
@@ -53,7 +52,7 @@ class LinearNN(override val generation: Int,
 
         val parameters = normalizeCarParameters(car)
 
-        for (i in 0..inputCount) { inputNodes[i] = parameters[i] }
+        for (i in 0..inputCount-1) { inputNodes[i] = parameters[i] }
     }
 
     private val distanceToScan = 200
@@ -82,6 +81,13 @@ class LinearNN(override val generation: Int,
         return trackScalars +
                 carScalars +
                 carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d) else listOf(v.asCartesian().x, v.asCartesian().y) }
+    }
+
+    override fun applyMutations(mutationsAmount: Double): LinearNN {
+        for (i in 1..(mutationsAmount * inputCount * outputCount).toInt()) {
+            
+        }
+        return this
     }
 
     override fun serialize(): String {
