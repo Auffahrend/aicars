@@ -7,6 +7,7 @@ import akostenko.math.vector.Polar
 import org.apache.commons.math3.util.FastMath.max
 import org.apache.commons.math3.util.FastMath.min
 import org.slf4j.LoggerFactory
+import java.util.concurrent.ThreadLocalRandom
 
 
 class LinearNN(override val generation: Int,
@@ -15,18 +16,18 @@ class LinearNN(override val generation: Int,
     /** all connections are [-1, 1] */
     internal var nodeConnections : MutableList<MutableList<Double>> = mutableListOf()
 
-    internal val inputNodes : MutableList<Double> = mutableListOf()
-    internal val outputNodes : MutableList<Double> = mutableListOf()
+    private val inputNodes : MutableList<Double> = mutableListOf()
+    private val outputNodes : MutableList<Double> = mutableListOf()
     override val outputCount: Int = 3
 
     override var inputCount: Int = 0
-    override val name = "LG${generation}C${crosses}M${mutations}"
+    override val name = "LinGen${generation}Cr${crosses}Mu${mutations}"
 
     init {
         for (i in 1..outputCount) { outputNodes.add(0.0) }
 
         inputCount = normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size
-        for (i in 0..inputCount-1) {
+        for (i in 0 until inputCount) {
             inputNodes.add(0.0)
             nodeConnections.add(mutableListOf())
             for (o in 1..outputCount) {
@@ -40,9 +41,9 @@ class LinearNN(override val generation: Int,
     }
 
     override fun calculateOutput() {
-        for (o in 0..outputCount-1) {
+        for (o in 0 until outputCount) {
             outputNodes[o] = 0.0
-            for (i in 0..inputCount-1) {
+            for (i in 0 until inputCount) {
                 outputNodes[o] += inputNodes[i] * nodeConnections[i][o]
             }
         }
@@ -52,7 +53,7 @@ class LinearNN(override val generation: Int,
 
         val parameters = normalizeCarParameters(car)
 
-        for (i in 0..inputCount-1) { inputNodes[i] = parameters[i] }
+        for (i in 0 until inputCount) { inputNodes[i] = parameters[i] }
     }
 
     private val distanceToScan = 200
@@ -83,11 +84,37 @@ class LinearNN(override val generation: Int,
                 carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d) else listOf(v.asCartesian().x, v.asCartesian().y) }
     }
 
-    override fun applyMutations(mutationsAmount: Double): LinearNN {
+    override fun copyAndMutate(mutationsAmount: Double): LinearNN {
+        val copy = copy(true, false)
+        val random = ThreadLocalRandom.current()
         for (i in 1..(mutationsAmount * inputCount * outputCount).toInt()) {
-            
+            copy.nodeConnections[random.nextInt(inputCount)][random.nextInt(outputCount)] += random.nextDouble() - 0.5
         }
-        return this
+        return copy
+    }
+
+    override fun <N: NeuralNet> breed(second: N): N {
+        if (second !is LinearNN) {
+            throw IllegalArgumentException("Breeding is possible only between same classes of nets. Found $second")
+        }
+        val child = copy(false, true)
+        val crossingOverPoint = ThreadLocalRandom.current().nextInt(inputCount * outputCount - 1) + 1
+        val crossingI = crossingOverPoint / outputCount
+        val crossingJ = crossingOverPoint % outputCount
+        for (j in crossingJ until outputCount) {
+            child.copyConnectionFrom(second, crossingI, j)
+        }
+
+        for (i in crossingI+1 until inputCount) {
+            for (j in 0 until outputCount) {
+                child.copyConnectionFrom(second, i, j)
+            }
+        }
+        return child as N
+    }
+
+    private fun copyConnectionFrom(source: LinearNN, i: Int, j: Int) {
+        nodeConnections[i][j] = source.nodeConnections[i][j]
     }
 
     override fun serialize(): String {

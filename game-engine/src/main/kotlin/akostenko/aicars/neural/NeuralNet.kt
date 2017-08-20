@@ -103,7 +103,8 @@ abstract class NeuralNet {
         return (output(steeringOutput) / maxOutput - 0.5) * 2 * maxSteering
     }
 
-    abstract fun applyMutations(mutationsAmount: Double): NeuralNet
+    abstract fun copyAndMutate(mutationsAmount: Double): NeuralNet
+    abstract fun <N : NeuralNet> breed(second: N): N
 
 }
 

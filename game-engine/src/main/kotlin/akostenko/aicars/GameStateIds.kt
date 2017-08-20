@@ -9,14 +9,10 @@ import java.util.*
 import kotlin.reflect.KClass
 
 object GameStateIds {
-    private val ids = HashMap<KClass<out GameState>, Int>()
-
-    init {
-        ids.put(MenuState::class, 1)
-        ids.put(RaceState::class, 2)
-        ids.put(CarPlotsState::class, 3)
-        ids.put(NeuralNetTrainingState::class, 4)
-    }
+    private val ids = mapOf(MenuState::class to 1,
+            RaceState::class to 2,
+            CarPlotsState::class to 3,
+            NeuralNetTrainingState::class to 4)
 
     fun getId(state: KClass<out GameState>): Int {
         return Optional.ofNullable(ids[state])
