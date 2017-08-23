@@ -13,7 +13,7 @@ class EvolutionEngine {
     private val mutationsAmount = 0.05
 
     fun getNextPopulation(cars: List<Car<NNDriver>>): List<NNDriver> {
-        val best = cars.sortedByDescending { it.trackDistance }
+        val best = cars.sortedByDescending { it.fitness }
                 .map { it.driver }
                 .take(cars.size * (1-crossingoverFraction - mutationFraction).toInt())
 
@@ -22,14 +22,14 @@ class EvolutionEngine {
                 .map { it.copyAndMutate(mutationsAmount) }
                 .map { NNDriver(it) }
 
-        val children = getPairForBreeding(best, cars.size - best.size - mutants.size)
+        val children = getPairsForBreeding(best, cars.size - best.size - mutants.size)
                 .map { breed(it.first.neural, it.second.neural)}
                 .map { NNDriver(it) }
 
         return best + mutants + children
     }
 
-    private fun getPairForBreeding(drivers: List<NNDriver>, amount: Int) : List<Pair<NNDriver, NNDriver>> {
+    private fun getPairsForBreeding(drivers: List<NNDriver>, amount: Int) : List<Pair<NNDriver, NNDriver>> {
         return drivers.takeRandom(amount)
                 .map { first -> first to drivers.filter { it != first }
                         .get( ThreadLocalRandom.current().nextInt(drivers.size - 1 )) }

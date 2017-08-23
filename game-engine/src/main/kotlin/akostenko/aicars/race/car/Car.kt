@@ -363,4 +363,6 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
         this.position = position.asCartesian()
         return this
     }
+
+    var fitness: Double = trackDistance.toDouble()
 }
