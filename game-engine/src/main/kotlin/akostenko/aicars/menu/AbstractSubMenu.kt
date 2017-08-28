@@ -13,7 +13,7 @@ abstract class AbstractSubMenu<ITEM : MenuItem> : SubMenu<ITEM> {
 
     override var current: ITEM
         get() = items[currentIndex]
-        set(value) {currentIndex = items.indexOf(value)}
+        set(value) { currentIndex = items.indexOf(value) }
 
     override fun isCurrent(item: MenuItem): Boolean {
         return items.indexOf(item) == currentIndex

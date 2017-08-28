@@ -4,23 +4,22 @@ import akostenko.aicars.neural.LinearNN
 import akostenko.aicars.neural.NNDriver
 import akostenko.aicars.neural.NeuralNet
 import akostenko.aicars.race.car.Car
-import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
 class EvolutionEngine {
 
-    private val crossingoverFraction = 0.40
+    private val crossOverFraction = 0.40
     private val mutationFraction = 0.1
-    private val mutationsAmount = 0.05
+    private val mutationsFactor = 0.05
 
     fun getNextPopulation(cars: List<Car<NNDriver>>): List<NNDriver> {
         val best = cars.sortedByDescending { it.fitness }
                 .map { it.driver }
-                .take(cars.size * (1-crossingoverFraction - mutationFraction).toInt())
+                .take(cars.size * (1-crossOverFraction - mutationFraction).toInt())
 
         val mutants = best.takeRandom((cars.size*mutationFraction).toInt())
                 .map { it.neural }
-                .map { it.copyAndMutate(mutationsAmount) }
+                .map { it.copyAndMutate(mutationsFactor) }
                 .map { NNDriver(it) }
 
         val children = getPairsForBreeding(best, cars.size - best.size - mutants.size)
@@ -38,9 +37,7 @@ class EvolutionEngine {
 
     private fun <N: NeuralNet> breed(first: N, second: N): N {
         return when (first) {
-            is LinearNN -> {
-                first.breed(second)
-            }
+            is LinearNN -> first.breed(second)
             else -> throw IllegalArgumentException("Breeding for ${first.javaClass} is not implemented.")
         }
     }

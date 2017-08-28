@@ -48,8 +48,8 @@ abstract class NeuralNet {
 
         private fun setRandomConnections(net: LinearNN): LinearNN {
             val random = Random()
-            for (i in 0..net.inputCount-1) {
-                for (o in 0..net.outputCount-1) {
+            for (i in 0 until net.inputCount) {
+                for (o in 0 until net.outputCount) {
                     net.nodeConnections[i][o] = random.nextDouble() * 2 - 1
                 }
             }
@@ -89,7 +89,7 @@ abstract class NeuralNet {
 
     abstract fun serialize(): String
 
-    abstract fun copy(isMutant: Boolean, isCrossingover: Boolean): NeuralNet
+    abstract fun copy(isMutant: Boolean, isCrossOver: Boolean): NeuralNet
 
     fun accelerating(): Double {
         return output(accelerationOutput) / maxOutput * maxAcceleration
@@ -103,7 +103,7 @@ abstract class NeuralNet {
         return (output(steeringOutput) / maxOutput - 0.5) * 2 * maxSteering
     }
 
-    abstract fun copyAndMutate(mutationsAmount: Double): NeuralNet
+    abstract fun copyAndMutate(mutationsFactor: Double): NeuralNet
     abstract fun <N : NeuralNet> breed(second: N): N
 
 }

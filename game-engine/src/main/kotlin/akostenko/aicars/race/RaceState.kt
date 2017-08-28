@@ -89,16 +89,15 @@ class RaceState : GraphicsGameState() {
         playerCar = null
         this.track = GameSettings.instance.track
         with(GameSettings.instance) {
-            if (mode is WithPlayer) {
-                playerCar = Car(Player(), track)
-                cars.add(playerCar!!)
-            } else if (mode is CarPerformanceTests) {
-                (mode as CarPerformanceTests).drivers
-                        .forEach { driver -> cars.add(Car(driver, track)) }
-            } else if (mode is NeuralNetDemo) {
-                (mode as NeuralNetDemo).drivers
-                        .forEach { driver -> cars.add(Car(driver, track)) }
-            } else {}
+            when (mode) {
+                is WithPlayer -> {
+                    playerCar = Car(Player(), track)
+                    cars.add(playerCar!!)
+                }
+                is CarPerformanceTests -> (mode as CarPerformanceTests).drivers.forEach { cars.add(Car(it, track)) }
+                is NeuralNetDemo -> (mode as NeuralNetDemo).drivers.forEach { cars.add(Car(it, track)) }
+                else -> {}
+            }
         }
         scale = GameSettings.instance.scale
 

@@ -84,10 +84,10 @@ class LinearNN(override val generation: Int,
                 carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d) else listOf(v.asCartesian().x, v.asCartesian().y) }
     }
 
-    override fun copyAndMutate(mutationsAmount: Double): LinearNN {
+    override fun copyAndMutate(mutationsFactor: Double): LinearNN {
         val copy = copy(true, false)
         val random = ThreadLocalRandom.current()
-        for (i in 1..(mutationsAmount * inputCount * outputCount).toInt()) {
+        for (i in 1..(mutationsFactor * inputCount * outputCount).toInt()) {
             copy.nodeConnections[random.nextInt(inputCount)][random.nextInt(outputCount)] += random.nextDouble() - 0.5
         }
         return copy
@@ -98,14 +98,14 @@ class LinearNN(override val generation: Int,
             throw IllegalArgumentException("Breeding is possible only between same classes of nets. Found $second")
         }
         val child = copy(false, true)
-        val crossingOverPoint = ThreadLocalRandom.current().nextInt(inputCount * outputCount - 1) + 1
-        val crossingI = crossingOverPoint / outputCount
-        val crossingJ = crossingOverPoint % outputCount
-        for (j in crossingJ until outputCount) {
-            child.copyConnectionFrom(second, crossingI, j)
+        val crossOverPoint = ThreadLocalRandom.current().nextInt(inputCount * outputCount - 1) + 1
+        val crossI = crossOverPoint / outputCount
+        val crossJ = crossOverPoint % outputCount
+        for (j in crossJ until outputCount) {
+            child.copyConnectionFrom(second, crossI, j)
         }
 
-        for (i in crossingI+1 until inputCount) {
+        for (i in crossI+1 until inputCount) {
             for (j in 0 until outputCount) {
                 child.copyConnectionFrom(second, i, j)
             }
@@ -121,8 +121,8 @@ class LinearNN(override val generation: Int,
         return LinearNN.serialize(this)
     }
 
-    override fun copy(isMutant: Boolean, isCrossingover: Boolean): LinearNN {
-        val copy = LinearNN(generation+1, mutations + if (isMutant) 1 else 0, crosses + if (isCrossingover) 1 else 0)
+    override fun copy(isMutant: Boolean, isCrossOver: Boolean): LinearNN {
+        val copy = LinearNN(generation+1, mutations + if (isMutant) 1 else 0, crosses + if (isCrossOver) 1 else 0)
         copy.nodeConnections = nodeConnections.map { row -> row.toMutableList() }.toMutableList()
         return copy
     }
