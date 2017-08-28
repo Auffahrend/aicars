@@ -4,6 +4,7 @@ import akostenko.aicars.neural.LinearNN
 import akostenko.aicars.neural.NNDriver
 import akostenko.aicars.neural.NeuralNet
 import akostenko.aicars.race.car.Car
+import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
 class EvolutionEngine {

@@ -94,6 +94,12 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
                 .sortedBy({ wp -> (wp.position - position).module() })
                 .first() }
 
+    val trackDistance: Int
+        get() = closestWP.distanceFromTrackStart
+
+    val fitness: Double
+        get() = trackDistance.toDouble()
+
 
     //////////////// car telemetry
     private val random = Random()
@@ -352,8 +358,6 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
         }
     }
 
-    val trackDistance: Int = closestWP.distanceFromTrackStart
-
     fun turn(heading: Double): Car<DRIVER> {
         this.heading = Polar(1.0, heading)
         return this
@@ -363,6 +367,4 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
         this.position = position.asCartesian()
         return this
     }
-
-    var fitness: Double = trackDistance.toDouble()
 }
