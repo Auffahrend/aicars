@@ -33,7 +33,8 @@ class NeuralNetDemo : Mode() {
     override val title: String
         get() = NAME
 
-    val drivers = GameSettings.instance.readPopulation()
+    val drivers
+        get() = GameSettings.instance.readPopulation()
 
     companion object {
         internal val NAME = "Neural"
