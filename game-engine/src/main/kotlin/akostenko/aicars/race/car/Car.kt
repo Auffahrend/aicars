@@ -90,8 +90,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
     private val velocityScale = Scale(100.0, 200f)
     private val gScale = Scale(5.0, 200f)
     private val closestWayPointSelector: (Collection<TrackWayPoint>) -> TrackWayPoint = {
-        waypoints -> waypoints
-                .sortedBy({ wp -> (wp.position - position).module() })
+        it.sortedBy({ wp -> (wp.position - position).module() })
                 .first() }
 
     val trackDistance: Int

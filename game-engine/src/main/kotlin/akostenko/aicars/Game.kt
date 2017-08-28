@@ -17,6 +17,7 @@ class Game : StateBasedGame(GAME_NAME) {
         addState(MenuState())
         addState(RaceState())
         addState(CarPlotsState())
+        addState(NeuralNetTrainingState())
     }
 
     fun noticeAction(gameAction: GameAction) {

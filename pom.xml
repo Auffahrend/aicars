@@ -19,6 +19,8 @@
 
         <mvn.compile.source>1.8</mvn.compile.source>
         <kotlin.version>1.1.4-2</kotlin.version>
+
+        <lwjgl.version>3.1.2</lwjgl.version>
     </properties>
 
     <dependencyManagement>
@@ -64,6 +66,19 @@
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>${lwjgl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>${lwjgl.natives}</classifier>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
@@ -192,4 +207,18 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>lwjgl-natives-linux</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <os><family>unix</family></os>
+            </activation>
+            <properties>
+                <lwjgl.natives>natives-linux</lwjgl.natives>
+            </properties>
+        </profile>
+    </profiles>
 </project>
+

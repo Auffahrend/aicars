@@ -87,13 +87,13 @@ abstract class Mode : MenuItem {
 
     companion object {
         fun forName(name: String): Mode {
-            when (name) {
-                WithPlayer.NAME -> return WithPlayer()
-                NeuralNetDemo.NAME -> return NeuralNetDemo()
-                NeuralNetTraining.NAME -> return NeuralNetTraining()
-                CarPerformanceTests.NAME -> return CarPerformanceTests()
-                CarPhysicsTests.NAME -> return CarPhysicsTests()
-                else -> return defaultMode()
+            return when (name) {
+                WithPlayer.NAME -> WithPlayer()
+                NeuralNetDemo.NAME -> NeuralNetDemo()
+                NeuralNetTraining.NAME -> NeuralNetTraining()
+                CarPerformanceTests.NAME -> CarPerformanceTests()
+                CarPhysicsTests.NAME -> CarPhysicsTests()
+                else -> defaultMode()
             }
         }
 

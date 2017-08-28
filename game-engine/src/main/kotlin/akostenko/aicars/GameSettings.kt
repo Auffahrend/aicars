@@ -130,7 +130,7 @@ class GameSettings {
                                 settings.collisions = CollisionsMode.forName(line.split(collisionsToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
                             }
                             if (line.startsWith(scaleToken)) {
-                                settings.scale = Scale.deserialize(line.split(collisionsToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
+                                settings.scale = Scale.deserialize(line.split(scaleToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
                             }
                         }
             } catch (e: IOException) {

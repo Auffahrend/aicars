@@ -34,7 +34,7 @@ class NeuralNetTrainingState : GraphicsGameState() {
 
     private lateinit var evolutionEngine: EvolutionEngine
 
-    private lateinit var population: List<DriverTracker>
+    private var population: List<DriverTracker> = emptyList()
     private lateinit var cars: List<Car<NNDriver>>
     private var populationIndex = 0
     private var currentProgress = 0
