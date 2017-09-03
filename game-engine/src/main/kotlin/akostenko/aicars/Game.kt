@@ -9,6 +9,7 @@ import org.newdawn.slick.AppGameContainer
 import org.newdawn.slick.GameContainer
 import org.newdawn.slick.SlickException
 import org.newdawn.slick.state.StateBasedGame
+import java.util.concurrent.ForkJoinPool
 
 class Game : StateBasedGame(GAME_NAME) {
 
@@ -64,6 +65,8 @@ class Game : StateBasedGame(GAME_NAME) {
 
         @Throws(SlickException::class)
         @JvmStatic fun main(args: Array<String>) {
+            ForkJoinPool.commonPool().uncaughtExceptionHandler //= {}
+
             instance = Game()
             val app = AppGameContainer(instance)
             screenHeight = app.screenHeight.toFloat()

@@ -15,7 +15,7 @@ class EvolutionEngine {
     fun getNextPopulation(cars: List<Car<NNDriver>>): List<NNDriver> {
         val best = cars.sortedByDescending { it.fitness }
                 .map { it.driver }
-                .take(cars.size * (1-crossOverFraction - mutationFraction).toInt())
+                .take((cars.size * (1-crossOverFraction - mutationFraction)).toInt())
 
         val mutants = best.takeRandom((cars.size*mutationFraction).toInt())
                 .map { it.neural }
@@ -41,9 +41,15 @@ class EvolutionEngine {
             else -> throw IllegalArgumentException("Breeding for ${first.javaClass} is not implemented.")
         }
     }
+
+    companion object {
+        val instance = EvolutionEngine()
+    }
 }
 
 private fun <E> List<E>.takeRandom(n: Int): List<E> {
+    if (n < 0) throw IllegalArgumentException("Positive integer expected. Got $n")
+    if (n == 0) return emptyList()
     val random = ThreadLocalRandom.current()
     val indexes = mutableSetOf<Int>()
 
