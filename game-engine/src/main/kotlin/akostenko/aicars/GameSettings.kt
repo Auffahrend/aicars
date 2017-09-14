@@ -31,11 +31,13 @@ import java.nio.file.Paths
 import java.nio.file.StandardOpenOption.CREATE_NEW
 import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
 import java.nio.file.StandardOpenOption.WRITE
+import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.attribute.FileAttribute
 import java.nio.file.attribute.PosixFilePermission
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.function.BiPredicate
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 
@@ -90,7 +92,10 @@ class GameSettings {
 
     private fun findLatestPopulation(): Path? {
         return Files.list(populationsPath)
-                .filter( { p -> p != null && p.startsWith("p") && p.endsWith(".zip")})
+                .filter {
+                    it.run { getName(nameCount - 1).toString() }
+                            .run { startsWith("p") && endsWith(".zip") }
+                }
                 .sorted(reverseOrder())
                 .findFirst().orElse(null)
     }

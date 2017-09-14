@@ -51,27 +51,32 @@ class NeuralNetTrainingState : GraphicsGameState() {
     override fun enter(container: GameContainer, game: StateBasedGame?) {
         super.enter(container, game)
         listeners.forEach { listener -> container.input.addKeyListener(listener) }
+        run = true
         reset()
     }
 
     private fun reset() {
-        newPopulation(GameSettings.instance.readPopulation())
-        populationIndex = 0
+        newPopulation(GameSettings.instance.readPopulation(), false)
 
         runTraining()
     }
 
-    private fun newPopulation(newPopulation: List<NNDriver>) {
-        GameSettings.instance.savePopulation(population.map { it.driver })
+    private fun newPopulation(newPopulation: List<NNDriver>, save : Boolean = true) {
+        if (save) {
+            GameSettings.instance.savePopulation(population.map { it.driver })
+        }
         population = newPopulation.map { DriverTracker(it) }
+        populationIndex = population.map { it.driver.neural.generation }.max() ?: 0
+
         cars = population.map { Car(it.driver, GameSettings.instance.track) }
-        populationIndex++
         runTraining()
     }
 
     override fun leave(container: GameContainer, game: StateBasedGame?) {
         super.leave(container, game)
         listeners.forEach { listener -> container.input.removeKeyListener(listener) }
+        run = false
+        pauseTraining()
     }
 
     override fun init(container: GameContainer, game: StateBasedGame?) {
@@ -106,7 +111,7 @@ class NeuralNetTrainingState : GraphicsGameState() {
         ForkJoinPool.commonPool().submit({
             try {
                 log.info("Calculating population #$populationIndex")
-                currentTasks.map { it.join() }
+                currentTasks.filter { !it.isCancelled }.map { it.join() }
                 log.info("Population #$populationIndex calculated")
                 if (run) {
                     log.info("Evolving population #$populationIndex")
