@@ -57,8 +57,6 @@ class NeuralNetTrainingState : GraphicsGameState() {
 
     private fun reset() {
         newPopulation(GameSettings.instance.readPopulation(), false)
-
-        runTraining()
     }
 
     private fun newPopulation(newPopulation: List<NNDriver>, save : Boolean = true) {
@@ -73,10 +71,10 @@ class NeuralNetTrainingState : GraphicsGameState() {
     }
 
     override fun leave(container: GameContainer, game: StateBasedGame?) {
-        super.leave(container, game)
-        listeners.forEach { listener -> container.input.removeKeyListener(listener) }
         run = false
         pauseTraining()
+        listeners.forEach { listener -> container.input.removeKeyListener(listener) }
+        super.leave(container, game)
     }
 
     override fun init(container: GameContainer, game: StateBasedGame?) {
