@@ -39,6 +39,9 @@ import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.StateBasedGame
 import org.slf4j.LoggerFactory
 import java.awt.Font
+import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.atomic.AtomicReference
 
@@ -63,7 +66,7 @@ class RaceState : GraphicsGameState() {
     private var scale = Scale(1.0, 5f)
     private val trackBorder = Color(100, 100, 100)
 
-    private val executor = ForkJoinPool.commonPool()
+    private lateinit var executor : ExecutorService
 
     override fun getID(): Int {
         return GameStateIds.getId(this::class)
@@ -88,6 +91,7 @@ class RaceState : GraphicsGameState() {
         cars = mutableListOf()
         playerCar = null
         this.track = GameSettings.instance.track
+        executor = if (GameSettings.instance.concurrency.isOn) ForkJoinPool.commonPool() else Executors.newSingleThreadExecutor()
         with(GameSettings.instance) {
             when (mode) {
                 is WithPlayer -> {
@@ -273,7 +277,7 @@ class RaceState : GraphicsGameState() {
         msSinceLastCarUpdates += delta
 
         cars.map {car -> executor.submit({ car.update(msSinceLastCarUpdates) } )}
-                .forEach { it.join()}
+                .forEach { it.get()}
         msSinceLastCarUpdates = 0
     }
 

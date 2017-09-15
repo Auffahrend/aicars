@@ -5,10 +5,7 @@ import akostenko.aicars.keyboard.ComboKeyAction
 import akostenko.aicars.keyboard.GameAction
 import akostenko.aicars.keyboard.KeyboardHelper
 import akostenko.aicars.keyboard.SingleKeyAction
-import akostenko.aicars.menu.CollisionsMode
-import akostenko.aicars.menu.DebugMode
-import akostenko.aicars.menu.Mode
-import akostenko.aicars.menu.WithPlayer
+import akostenko.aicars.menu.*
 import akostenko.aicars.neural.NNDriver
 import akostenko.aicars.neural.NeuralNet
 import akostenko.aicars.track.MonzaTrack
@@ -52,6 +49,7 @@ class GameSettings {
     var mode: Mode = WithPlayer()
     var debug: DebugMode = DebugMode.defaultMode
     var collisions: CollisionsMode = CollisionsMode.defaultMode
+    var concurrency: ConcurrencyMode = ConcurrencyMode.defaultMode
     var scale: Scale = Scale(1.0, 5f)
 
     fun save() {
@@ -109,6 +107,7 @@ class GameSettings {
         private val modeToken = "mode="
         private val debugToken = "debug="
         private val collisionsToken = "collisions="
+        private val concurrencyToken = "concurrency="
         private val scaleToken = "scale="
 
         val instance: GameSettings by lazy { restore() }
@@ -116,7 +115,7 @@ class GameSettings {
         private fun save(settings: GameSettings) {
             with(settings) {
                 val content = listOf(trackToken + track.title, modeToken + mode.title,
-                        debugToken + debug.title, collisionsToken + collisions.title,
+                        debugToken + debug.title, collisionsToken + collisions.title, concurrencyToken + concurrency.title,
                         scaleToken + Scale.serialize(scale))
                 try {
                     if (Files.exists(settingsPath)) {
@@ -159,6 +158,9 @@ class GameSettings {
                             }
                             if (line.startsWith(collisionsToken)) {
                                 settings.collisions = CollisionsMode.forName(line.split(collisionsToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
+                            }
+                            if (line.startsWith(concurrencyToken)) {
+                                settings.concurrency = ConcurrencyMode.forName(line.split(collisionsToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
                             }
                             if (line.startsWith(scaleToken)) {
                                 settings.scale = Scale.deserialize(line.split(scaleToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])

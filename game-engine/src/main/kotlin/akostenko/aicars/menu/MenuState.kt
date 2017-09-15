@@ -40,6 +40,7 @@ class MenuState : BasicGameState() {
     private val trackMenu = TrackMenu()
     private val debugMenu = DebugMenu()
     private val collisionsMenu = CollisionsMenu()
+    private val concurrencyMenu = ConcurrencyMenu()
     private val menu = listOf(startButton, modeMenu, trackMenu, collisionsMenu, debugMenu)
 
     private var currentMenu = 0
@@ -146,6 +147,7 @@ class MenuState : BasicGameState() {
         GameSettings.instance.mode = modeMenu.current
         GameSettings.instance.debug = debugMenu.current
         GameSettings.instance.collisions = collisionsMenu.current
+        GameSettings.instance.concurrency = concurrencyMenu.current
     }
 
     @Throws(SlickException::class)
@@ -155,6 +157,7 @@ class MenuState : BasicGameState() {
         modeMenu.current = GameSettings.instance.mode
         debugMenu.current = GameSettings.instance.debug
         collisionsMenu.current = GameSettings.instance.collisions
+        concurrencyMenu.current = GameSettings.instance.concurrency
         listeners.forEach { listener -> container!!.input.addKeyListener(listener) }
 
     }

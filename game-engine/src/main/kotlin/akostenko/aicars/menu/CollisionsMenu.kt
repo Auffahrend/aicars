@@ -1,58 +1,25 @@
 package akostenko.aicars.menu
 
-import java.util.*
-
 class CollisionsMenu : AbstractSubMenu<CollisionsMode>() {
     override val title: String = "Collisions"
 
     override fun enter() {}
 
-    override val items: List<CollisionsMode> = listOf(CollisionsOff(), CollisionsOn())
+    override val items: List<CollisionsMode> = listOf(CollisionsMode.OFF, CollisionsMode.ON)
 }
 
-private class CollisionsOff : CollisionsMode() {
-    override val isOn = false
-    override val title: String
-            get() = NAME
+enum class CollisionsMode(override val title : String, val isOn: Boolean) : MenuItem {
 
-    companion object {
-        internal val NAME = "Off"
-    }
-}
-
-private class CollisionsOn : CollisionsMode() {
-
-    override val isOn = true
-    override val title: String
-            get() = NAME
-
-    companion object {
-        internal val NAME = "On"
-    }
-}
-
-abstract class CollisionsMode : MenuItem {
-
-    abstract val isOn : Boolean
-
-    override fun hashCode(): Int {
-        return Objects.hash(title)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return other is CollisionsMode && title == other.title
-    }
+    ON("On", true), OFF("Off", false);
 
     companion object {
         fun forName(name: String): CollisionsMode {
-            when (name) {
-                CollisionsOn.NAME -> return CollisionsOn()
-                CollisionsOff.NAME -> return CollisionsOff()
-                else -> return defaultMode
-            }
+            return CollisionsMode.values()
+                    .firstOrNull { it.title == name }
+                    ?: defaultMode
         }
 
-        val defaultMode: CollisionsMode = CollisionsOff()
+        val defaultMode: CollisionsMode = OFF
     }
 }
 

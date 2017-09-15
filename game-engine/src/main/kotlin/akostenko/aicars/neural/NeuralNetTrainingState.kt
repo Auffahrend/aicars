@@ -16,8 +16,7 @@ import org.newdawn.slick.TrueTypeFont
 import org.newdawn.slick.state.StateBasedGame
 import org.slf4j.LoggerFactory
 import java.awt.Font
-import java.util.concurrent.ForkJoinPool
-import java.util.concurrent.ForkJoinTask
+import java.util.concurrent.*
 
 class NeuralNetTrainingState : GraphicsGameState() {
 
@@ -43,6 +42,8 @@ class NeuralNetTrainingState : GraphicsGameState() {
     private var currentProgress = 0
     private var currentTasks: List<ForkJoinTask<*>> = emptyList()
     private var run = true
+
+    private val executor = ForkJoinPool.commonPool()
 
     override fun getID(): Int {
         return GameStateIds.getId(this::class)
@@ -93,7 +94,7 @@ class NeuralNetTrainingState : GraphicsGameState() {
         currentTasks = population
                 .filter { !it.isDone }
                 .map {
-                    ForkJoinPool.commonPool().submit({
+                    executor.submit({
                         try {
                             while (run && !it.isDone) {
                                 it.driver.car.update(timeStep)
@@ -106,7 +107,7 @@ class NeuralNetTrainingState : GraphicsGameState() {
                     })
                 }
 
-        ForkJoinPool.commonPool().submit({
+        executor.submit({
             try {
                 log.info("Calculating population #$populationIndex")
                 currentTasks.filter { !it.isCancelled }.map { it.join() }
