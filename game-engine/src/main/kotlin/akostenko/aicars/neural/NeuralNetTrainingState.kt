@@ -28,11 +28,11 @@ class NeuralNetTrainingState : GraphicsGameState() {
     private val listeners = mutableListOf<KeyListener>()
     private val lineWidth = 3f
     private val fontColor = Color(220, 200, 50)
-    private val subMenuHeight = 36f
     private val subMenuItemHeight = 24f
     private val itemFont = TrueTypeFont(Font(Font.SANS_SERIF, Font.BOLD, subMenuItemHeight.toInt()), true)
     private val leftMargin = Game.screenWidth * 0.2f
     private val topMargin = Game.screenHeight * 0.2f
+    private val verticalSpacing = (2*subMenuItemHeight).toInt()
 
     private val evolutionEngine = EvolutionEngine.instance
 
@@ -114,12 +114,25 @@ class NeuralNetTrainingState : GraphicsGameState() {
                 log.info("Population #$populationIndex calculated")
                 if (run) {
                     log.info("Evolving population #$populationIndex")
+                    updatePopulationStatistics()
                     newPopulation(evolutionEngine.getNextPopulation(cars))
                 }
             } catch (e : Throwable) {
                 log.error("Next population generation error", e)
             }
         })
+    }
+
+    private fun updatePopulationStatistics() {
+        var minDistance = Int.MAX_VALUE
+        var maxDistance = 0
+
+        population.forEach {
+            minDistance = minOf(minDistance, it.driver.car.trackDistance)
+            maxDistance = maxOf(maxDistance, it.driver.car.trackDistance)
+        }
+
+        previousPopulationStatistics = listOf("distance $minDistance - $maxDistance m")
     }
 
     private fun pauseTraining() {
@@ -129,17 +142,31 @@ class NeuralNetTrainingState : GraphicsGameState() {
     }
 
     override fun update(container: GameContainer?, game: StateBasedGame?, delta: Int) {
-        currentProgress = 100 * population.sumBy { it.timeDriven } / (population.size * assessmentTime)
+        // 1/1000 is to remove overflow of Int on big populations
+        currentProgress = 100 * population.sumBy { it.timeDriven / 1000 } / (population.size * assessmentTime / 1000)
     }
+
+    private var previousPopulationStatistics: List<String> = emptyList()
 
     override fun render(container: GameContainer, game: StateBasedGame, g: Graphics) {
         g.font = itemFont
         g.color = fontColor
-        g.drawString("Population #$populationIndex, $currentProgress %", leftMargin, topMargin)
+        g.lineWidth = lineWidth
+        var y = topMargin
+        g.drawString("Population #$populationIndex, $currentProgress %", leftMargin, y)
+        y += verticalSpacing
+
+        g.drawString("Previous population statistics:", leftMargin, y)
+        y += verticalSpacing
+
+        var i = 0
+        previousPopulationStatistics.forEach {
+            s -> g.drawString(s, 2*leftMargin, y + verticalSpacing * i++)
+        }
     }
 }
 
 internal class DriverTracker(val driver: NNDriver) {
-    var timeDriven: Int = 0
+    var timeDriven: Int = 0 // ms
     var isDone = false
 }

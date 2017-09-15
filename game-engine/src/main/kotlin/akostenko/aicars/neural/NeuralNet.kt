@@ -6,6 +6,8 @@ import java.util.*
 abstract class NeuralNet {
 
     companion object {
+        private val populationSize = 250
+
         private val typeDelimiter = "#"
         private val typeDelimiterRegex = typeDelimiter.toRegex()
 
@@ -40,7 +42,7 @@ abstract class NeuralNet {
         }
 
         fun generatePopulation(): List<NNDriver> {
-            return IntRange(1, 100)
+            return IntRange(1, populationSize)
                     .map { LinearNN(0, 0, 0)}
                     .map { setRandomConnections(it) }
                     .map { NNDriver(it) }
@@ -79,6 +81,8 @@ abstract class NeuralNet {
     abstract val outputCount: Int
 
     abstract val inputCount: Int
+
+    abstract var fitness: Double
 
     abstract internal fun readCarParametersToInput(car: Car<*>)
 

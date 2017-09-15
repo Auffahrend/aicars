@@ -96,10 +96,6 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
     val trackDistance: Int
         get() = closestWP.distanceFromTrackStart
 
-    val fitness: Double
-        get() = trackDistance.toDouble()
-
-
     //////////////// car telemetry
     private val random = Random()
     val telemetry: CarTelemetry
@@ -294,7 +290,7 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
 
             if (collisions.isNotEmpty()) {
                 velocity = ZERO
-                heading = Polar(1.0, (closestWP.position - track.getPreviousWayPoint(closestWP).position).asPolar().d)
+//                heading = Polar(1.0, (closestWP.position - track.getPreviousWayPoint(closestWP).position).asPolar().d)
             }
         }
     }

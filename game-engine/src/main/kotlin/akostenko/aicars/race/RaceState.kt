@@ -99,7 +99,10 @@ class RaceState : GraphicsGameState() {
                     cars.add(playerCar!!)
                 }
                 is CarPerformanceTests -> (mode as CarPerformanceTests).drivers.forEach { cars.add(Car(it, track)) }
-                is NeuralNetDemo -> (mode as NeuralNetDemo).drivers.forEach { cars.add(Car(it, track)) }
+                is NeuralNetDemo -> (mode as NeuralNetDemo).drivers
+                        .sortedBy { it.neural.fitness }
+                        .take(20)
+                        .forEach { cars.add(Car(it, track)) }
                 else -> {}
             }
         }

@@ -10,10 +10,11 @@ class EvolutionEngine {
 
     private val crossOverFraction = 0.40
     private val mutationFraction = 0.1
-    private val mutationsFactor = 0.05
+    private val mutationsFactor = 0.1
 
     fun getNextPopulation(cars: List<Car<NNDriver>>): List<NNDriver> {
-        val best = cars.sortedByDescending { it.fitness }
+        cars.forEach { it.driver.neural.fitness = it.trackDistance.toDouble() }
+        val best = cars.sortedByDescending { it.driver.neural.fitness }
                 .map { it.driver }
                 .map { it.neural.copy(false, false) }
                 .take((cars.size * (1-crossOverFraction - mutationFraction)).toInt())

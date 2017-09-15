@@ -13,6 +13,8 @@ import java.util.concurrent.ThreadLocalRandom
 class LinearNN(override val generation: Int,
                override val mutations: Int,
                override val crosses: Int) : NeuralNet() {
+    override var fitness: Double = 0.0
+
     /** all connections are [-1, 1] */
     internal var nodeConnections : MutableList<MutableList<Double>> = mutableListOf()
 
@@ -57,6 +59,7 @@ class LinearNN(override val generation: Int,
     }
 
     private val distanceToScan = 200
+    private val intervalBetweenWP = 4
 
     private fun normalizeCarParameters(car: Car<*>): List<Double> {
         val trackScalars = listOf(car.track.width)
@@ -75,7 +78,9 @@ class LinearNN(override val generation: Int,
             var wp = closestWP
             for (i in 1..distanceToScan) {
                 wp = track.getNextWayPoint(wp)
-                carVectors.add(wp.position - position)
+                if (i % intervalBetweenWP == 0) {
+                    carVectors.add(wp.position - position)
+                }
             }
         }
 
@@ -122,7 +127,10 @@ class LinearNN(override val generation: Int,
     }
 
     override fun copy(isMutant: Boolean, isCrossOver: Boolean): LinearNN {
-        val copy = LinearNN(generation+1, mutations + if (isMutant) 1 else 0, crosses + if (isCrossOver) 1 else 0)
+        val copy = LinearNN(generation + if (!isMutant && !isCrossOver) 1 else 0,
+                mutations + if (isMutant) 1 else 0,
+                crosses + if (isCrossOver) 1 else 0)
+        copy.fitness = if (!isMutant && !isCrossOver) fitness else 0.0
         copy.nodeConnections = nodeConnections.map { row -> row.toMutableList() }.toMutableList()
         return copy
     }
@@ -142,6 +150,7 @@ class LinearNN(override val generation: Int,
                 append(net.generation).append(nameDelimiter)
                 append(net.mutations).append(nameDelimiter)
                 append(net.crosses).append(nameDelimiter)
+                append(net.fitness).append(nameDelimiter)
 
                 net.nodeConnections.forEach { row ->
                     row.forEach { value -> append(value.toString()).append(valueDelimiter) }
@@ -153,8 +162,9 @@ class LinearNN(override val generation: Int,
         fun deserialize(line: String): LinearNN {
             val nameParts = line.split(nameDelimiter.toRegex())
             val net: LinearNN
-            if (nameParts.size >= 3) {
+            if (nameParts.size >= 4) {
                 net = LinearNN(nameParts[0].toInt(), nameParts[1].toInt(), nameParts[2].toInt())
+                net.fitness = nameParts[3].toDouble()
             } else {
                 logger.warn("Invalid format, there is only ${nameParts.size} parts for name")
                 net = LinearNN(0, 0, 0)
