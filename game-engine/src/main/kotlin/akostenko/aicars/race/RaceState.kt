@@ -145,8 +145,10 @@ class RaceState : GraphicsGameState() {
     private fun drawCar(g: Graphics, car: Car<*>, camera: Car<*>) {
         CarImg.build(car)
                 .forEach { line -> drawRealLine(g, line, camera.position, scale, textColor, 3f) }
-        val lineToClosestTrackMarker = StraightLine(car.position, car.closestWP.position.asCartesian(), false)
-        drawRealLine(g, lineToClosestTrackMarker, camera.position, scale, breakingColor, 2f)
+        if (GameSettings.instance.debug.isOn) {
+            val lineToClosestTrackMarker = StraightLine(car.position, car.closestWP.position.asCartesian(), false)
+            drawRealLine(g, lineToClosestTrackMarker, camera.position, scale, breakingColor, 2f)
+        }
     }
 
     private fun drawTrack(g: Graphics, focused: Car<*>, track: Track) {
@@ -204,7 +206,9 @@ class RaceState : GraphicsGameState() {
 
         val telemetry = car.telemetry
         telemetry.scalars.forEach { item -> drawTelemetryScalar(g, item, currentY) }
-        telemetry.vectors.forEach { vector -> drawTelemetryVector(g, car, car.position, vector) }
+        if (GameSettings.instance.debug.isOn) {
+            telemetry.vectors.forEach { vector -> drawTelemetryVector(g, car, car.position, vector) }
+        }
 
         g.color = textColor
         g.drawRect(telemetryLeftMargin, telemetryTopMargin,

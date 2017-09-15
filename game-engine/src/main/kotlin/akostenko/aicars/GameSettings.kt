@@ -59,7 +59,7 @@ class GameSettings {
     fun readPopulation(): List<NNDriver> {
         if (Files.exists(populationsPath) && Files.isDirectory(populationsPath)) {
             val lastPopulation : Path? =
-            if (linksSupported) {
+            if (linksSupported && Files.exists(GameSettings.lastPopulation)) {
                 Files.readSymbolicLink(GameSettings.lastPopulation)
             } else {
                 findLatestPopulation()
@@ -84,7 +84,7 @@ class GameSettings {
 
         if (linksSupported) {
             Files.deleteIfExists(lastPopulation)
-            Files.createSymbolicLink(lastPopulation, path)
+            Files.createSymbolicLink(lastPopulation, path.toAbsolutePath())
         }
     }
 
@@ -160,7 +160,7 @@ class GameSettings {
                                 settings.collisions = CollisionsMode.forName(line.split(collisionsToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
                             }
                             if (line.startsWith(concurrencyToken)) {
-                                settings.concurrency = ConcurrencyMode.forName(line.split(collisionsToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
+                                settings.concurrency = ConcurrencyMode.forName(line.split(concurrencyToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
                             }
                             if (line.startsWith(scaleToken)) {
                                 settings.scale = Scale.deserialize(line.split(scaleToken.toRegex()).dropLastWhile({ it.isEmpty() })[1])
