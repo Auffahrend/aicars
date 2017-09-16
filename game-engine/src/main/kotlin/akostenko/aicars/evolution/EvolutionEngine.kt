@@ -8,12 +8,12 @@ import java.util.concurrent.ThreadLocalRandom
 
 class EvolutionEngine {
 
-    private val crossOverFraction = 0.40
-    private val mutationFraction = 0.1
-    private val mutationsFactor = 0.1
+    val crossOverFraction = 0.40
+    val mutationFraction = 0.1
+    val mutationsFactor = 0.1
 
     fun getNextPopulation(cars: List<Car<NNDriver>>): List<NNDriver> {
-        cars.forEach { it.driver.neural.fitness = it.trackDistance.toDouble() }
+        cars.forEach { it.driver.neural.fitness = it.odometer }
         val best = cars.sortedByDescending { it.driver.neural.fitness }
                 .map { it.driver }
                 .map { it.neural.copy(false, false) }

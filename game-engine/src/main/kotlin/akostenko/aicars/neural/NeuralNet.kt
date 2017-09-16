@@ -109,6 +109,7 @@ abstract class NeuralNet {
 
     abstract fun copyAndMutate(mutationsFactor: Double): NeuralNet
     abstract fun <N : NeuralNet> breed(second: N): N
+    abstract val genomeSize: Int
 
 }
 

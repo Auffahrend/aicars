@@ -21,9 +21,15 @@ class LinearNN(override val generation: Int,
     private val inputNodes : MutableList<Double> = mutableListOf()
     private val outputNodes : MutableList<Double> = mutableListOf()
     override val outputCount: Int = 3
-
     override var inputCount: Int = 0
+
+    override val genomeSize: Int
+        get() = inputCount * outputCount
+
     override val name = "LinGen${generation}Cr${crosses}Mu${mutations}"
+
+    private val distanceToScan = 200
+    private val intervalBetweenWP = 4
 
     init {
         for (i in 1..outputCount) { outputNodes.add(0.0) }
@@ -58,17 +64,14 @@ class LinearNN(override val generation: Int,
         for (i in 0 until inputCount) { inputNodes[i] = parameters[i] }
     }
 
-    private val distanceToScan = 200
-    private val intervalBetweenWP = 4
-
     private fun normalizeCarParameters(car: Car<*>): List<Double> {
         val trackScalars = listOf(car.track.width)
 
         val carScalars = listOf(car.carRotationSpeed)
 
-        val carVectors = mutableListOf(car.heading,
+        val carVectors = mutableListOf(
+                car.heading,
                 car.speed,
-                car.breaking,
                 car.steering,
                 car.turningA,
                 car.accelerationA,

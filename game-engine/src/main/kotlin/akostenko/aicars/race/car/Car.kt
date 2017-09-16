@@ -69,7 +69,8 @@ open class Car<DRIVER : Driver>(val driver: DRIVER, internal val track: Track) {
     /** *m*  */
     var position = Cartesian.ZERO
         protected set
-    private var odometer = 0.0
+    var odometer = 0.0
+        private set
     /** *m/s*  */
     protected var velocity: Vector = ZERO
     var accelerationA: Vector = ZERO
