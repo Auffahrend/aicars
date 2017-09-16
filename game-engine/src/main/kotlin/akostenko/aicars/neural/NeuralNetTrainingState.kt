@@ -24,6 +24,7 @@ class NeuralNetTrainingState : GraphicsGameState() {
 
     private val timeStep = 30 // ms
     private val assessmentTime = 60000 // ms
+    private val stationaryMaxTime = 5000 // ms
 
     private val listeners = mutableListOf<KeyListener>()
     private val lineWidth = 3f
@@ -99,7 +100,11 @@ class NeuralNetTrainingState : GraphicsGameState() {
                             while (run && !it.isDone) {
                                 it.driver.car.update(timeStep)
                                 it.timeDriven += timeStep
+                                if (it.driver.car.speed.module() < 1.0) {
+                                    it.timeStationary += timeStep
+                                }
                                 it.isDone = it.timeDriven >= assessmentTime
+                                        || it.timeStationary >= stationaryMaxTime
                             }
                         } catch (e : Throwable) {
                             log.error("Calculation error", e)
@@ -181,5 +186,6 @@ class NeuralNetTrainingState : GraphicsGameState() {
 
 internal class DriverTracker(val driver: NNDriver) {
     var timeDriven: Int = 0 // ms
+    var timeStationary: Int = 0 // ms
     var isDone = false
 }
