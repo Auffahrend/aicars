@@ -126,15 +126,19 @@ class NeuralNetTrainingState : GraphicsGameState() {
     private fun updatePopulationStatistics() {
         var minDistance = Int.MAX_VALUE
         var maxDistance = 0
+        var averageFitness = 0.0
 
         population.forEach {
             minDistance = minOf(minDistance, it.driver.car.odometer.toInt())
             maxDistance = maxOf(maxDistance, it.driver.car.odometer.toInt())
+            averageFitness += it.driver.car.odometer
         }
+        averageFitness /= population.size
 
         val genomeSize = population.first().driver.neural.genomeSize
 
         populationStatistics = listOf("distance $minDistance - $maxDistance m",
+                "average fitness $averageFitness",
                 "population size ${population.size}",
                 "genome size $genomeSize",
                 "selection ${1.0 - evolutionEngine.crossOverFraction - evolutionEngine.mutationFraction}",

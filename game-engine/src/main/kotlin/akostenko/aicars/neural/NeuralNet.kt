@@ -6,7 +6,7 @@ import java.util.*
 abstract class NeuralNet {
 
     companion object {
-        private val populationSize = 250
+        private val populationSize = 500
 
         private val typeDelimiter = "#"
         private val typeDelimiterRegex = typeDelimiter.toRegex()

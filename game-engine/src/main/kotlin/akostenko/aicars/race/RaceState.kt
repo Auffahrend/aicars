@@ -100,7 +100,7 @@ class RaceState : GraphicsGameState() {
                 }
                 is CarPerformanceTests -> (mode as CarPerformanceTests).drivers.forEach { cars.add(Car(it, track)) }
                 is NeuralNetDemo -> (mode as NeuralNetDemo).drivers
-                        .sortedBy { it.neural.fitness }
+                        .sortedByDescending { it.neural.fitness }
                         .take(20)
                         .forEach { cars.add(Car(it, track)) }
                 else -> {}
