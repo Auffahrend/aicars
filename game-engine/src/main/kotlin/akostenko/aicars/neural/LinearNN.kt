@@ -20,21 +20,14 @@ class LinearNN(override val generation: Int,
 
     private val inputNodes : MutableList<Double> = mutableListOf()
     private val outputNodes : MutableList<Double> = mutableListOf()
-    override val outputCount: Int = 3
-    override var inputCount: Int = 0
-
-    override val genomeSize: Int
-        get() = inputCount * outputCount
-
     override val name = "LinGen${generation}Cr${crosses}Mu${mutations}"
-
-    private val distanceToScan = 200
-    private val intervalBetweenWP = 4
+    override val outputCount: Int = LinearNN.outputCount
+    override val inputCount: Int = LinearNN.inputCount
+    override val genomeSize: Int = LinearNN.genomeSize
 
     init {
         for (i in 1..outputCount) { outputNodes.add(0.0) }
 
-        inputCount = normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size
         for (i in 0 until inputCount) {
             inputNodes.add(0.0)
             nodeConnections.add(mutableListOf())
@@ -58,38 +51,9 @@ class LinearNN(override val generation: Int,
     }
 
     override fun readCarParametersToInput(car: Car<*>) {
-
         val parameters = normalizeCarParameters(car)
 
         for (i in 0 until inputCount) { inputNodes[i] = parameters[i] }
-    }
-
-    private fun normalizeCarParameters(car: Car<*>): List<Double> {
-        val trackScalars = listOf(car.track.width)
-
-        val carScalars = listOf(car.carRotationSpeed)
-
-        val carVectors = mutableListOf(
-                car.heading,
-                car.speed,
-                car.steering,
-                car.turningA,
-                car.accelerationA,
-                car.breakingA)
-
-        car.apply {
-            var wp = closestWP
-            for (i in 1..distanceToScan) {
-                wp = track.getNextWayPoint(wp)
-                if (i % intervalBetweenWP == 0) {
-                    carVectors.add(wp.position - position)
-                }
-            }
-        }
-
-        return trackScalars +
-                carScalars +
-                carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d) else listOf(v.asCartesian().x, v.asCartesian().y) }
     }
 
     override fun copyAndMutate(mutationsFactor: Double): LinearNN {
@@ -139,6 +103,42 @@ class LinearNN(override val generation: Int,
     }
 
     companion object {
+        val outputCount: Int = 3
+        val inputCount: Int = normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size
+
+        val genomeSize: Int = inputCount * outputCount
+
+        private val distanceToScan = 200
+        private val intervalBetweenWP = 4
+
+        private fun normalizeCarParameters(car: Car<*>): List<Double> {
+            val trackScalars = listOf(car.track.width)
+
+            val carScalars = listOf(car.carRotationSpeed)
+
+            val carVectors = mutableListOf(
+                    car.heading,
+                    car.speed,
+                    car.steering,
+                    car.turningA,
+                    car.accelerationA,
+                    car.breakingA)
+
+            car.apply {
+                var wp = closestWP
+                for (i in 1..distanceToScan) {
+                    wp = track.getNextWayPoint(wp)
+                    if (i % intervalBetweenWP == 0) {
+                        carVectors.add(wp.position - position)
+                    }
+                }
+            }
+
+            return trackScalars +
+                    carScalars +
+                    carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d) else listOf(v.asCartesian().x, v.asCartesian().y) }
+        }
+
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = LoggerFactory.getLogger(this.javaClass)
 

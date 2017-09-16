@@ -50,7 +50,7 @@ private fun <E> List<E>.takeRandom(n: Int): List<E> {
     if (n < 0) throw IllegalArgumentException("Positive integer expected. Got $n")
     if (n == 0) return emptyList()
     val random = ThreadLocalRandom.current()
-    val indexes = mutableSetOf<Int>()
+    val indexes = mutableListOf<Int>()
 
     while (indexes.size < n) {
         indexes.add(random.nextInt(this.size))

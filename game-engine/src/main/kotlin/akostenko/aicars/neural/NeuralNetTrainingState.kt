@@ -92,6 +92,7 @@ class NeuralNetTrainingState : GraphicsGameState() {
     }
 
     private fun runTraining() {
+        log.info("Calculating population #$generation")
         currentTasks = population
                 .filter { !it.isDone }
                 .map {
@@ -114,7 +115,6 @@ class NeuralNetTrainingState : GraphicsGameState() {
 
         executor.submit({
             try {
-                log.info("Calculating population #$generation")
                 currentTasks.filter { !it.isCancelled }.map { it.join() }
                 log.info("Population #$generation calculated")
                 if (run) {
@@ -161,7 +161,7 @@ class NeuralNetTrainingState : GraphicsGameState() {
 
     override fun update(container: GameContainer?, game: StateBasedGame?, delta: Int) {
         // 1/1000 is to remove overflow of Int on big populations
-        currentProgress = 100 * population.sumBy { it.timeDriven / 1000 } / (population.size * assessmentTime / 1000)
+        currentProgress = 100 * population.filter { it.isDone }.size / population.size
     }
 
     private var populationStatistics: List<String> = emptyList()
