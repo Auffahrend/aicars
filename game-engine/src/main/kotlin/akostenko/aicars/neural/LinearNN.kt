@@ -21,8 +21,6 @@ class LinearNN(override val generation: Int,
     private val inputNodes : MutableList<Double> = mutableListOf()
     private val outputNodes : MutableList<Double> = mutableListOf()
     override val name = "LinGen${generation}Cr${crosses}Mu${mutations}"
-    override val outputCount: Int = LinearNN.outputCount
-    override val inputCount: Int = LinearNN.inputCount
     override val genomeSize: Int = LinearNN.genomeSize
 
     init {
@@ -59,7 +57,7 @@ class LinearNN(override val generation: Int,
     override fun copyAndMutate(mutationsFactor: Double): LinearNN {
         val copy = copy(true, false)
         val random = ThreadLocalRandom.current()
-        for (i in 1..(mutationsFactor * inputCount * outputCount).toInt()) {
+        for (i in 1..(mutationsFactor * genomeSize).toInt()) {
             copy.nodeConnections[random.nextInt(inputCount)][random.nextInt(outputCount)] += random.nextDouble() - 0.5
         }
         return copy
@@ -70,7 +68,7 @@ class LinearNN(override val generation: Int,
             throw IllegalArgumentException("Breeding is possible only between same classes of nets. Found $second")
         }
         val child = copy(false, true)
-        val crossOverPoint = ThreadLocalRandom.current().nextInt(inputCount * outputCount - 1) + 1
+        val crossOverPoint = ThreadLocalRandom.current().nextInt(genomeSize - 1) + 1
         val crossI = crossOverPoint / outputCount
         val crossJ = crossOverPoint % outputCount
         for (j in crossJ until outputCount) {
@@ -103,41 +101,7 @@ class LinearNN(override val generation: Int,
     }
 
     companion object {
-        val outputCount: Int = 3
-        val inputCount: Int = normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size
-
         val genomeSize: Int = inputCount * outputCount
-
-        private val distanceToScan = 200
-        private val intervalBetweenWP = 4
-
-        private fun normalizeCarParameters(car: Car<*>): List<Double> {
-            val trackScalars = listOf(car.track.width)
-
-            val carScalars = listOf(car.carRotationSpeed)
-
-            val carVectors = mutableListOf(
-                    car.heading,
-                    car.speed,
-                    car.steering,
-                    car.turningA,
-                    car.accelerationA,
-                    car.breakingA)
-
-            car.apply {
-                var wp = closestWP
-                for (i in 1..distanceToScan) {
-                    wp = track.getNextWayPoint(wp)
-                    if (i % intervalBetweenWP == 0) {
-                        carVectors.add(wp.position - position)
-                    }
-                }
-            }
-
-            return trackScalars +
-                    carScalars +
-                    carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d) else listOf(v.asCartesian().x, v.asCartesian().y) }
-        }
 
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = LoggerFactory.getLogger(this.javaClass)
