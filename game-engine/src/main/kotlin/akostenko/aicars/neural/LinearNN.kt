@@ -1,9 +1,6 @@
 package akostenko.aicars.neural
 
-import akostenko.aicars.plots.EmptyDriver
 import akostenko.aicars.race.car.Car
-import akostenko.aicars.track.DebugTrack
-import akostenko.math.vector.Polar
 import org.apache.commons.math3.util.FastMath.max
 import org.apache.commons.math3.util.FastMath.min
 import org.slf4j.LoggerFactory

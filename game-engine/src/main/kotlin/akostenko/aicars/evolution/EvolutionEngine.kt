@@ -1,6 +1,5 @@
 package akostenko.aicars.evolution
 
-import akostenko.aicars.neural.LinearNN
 import akostenko.aicars.neural.NNDriver
 import akostenko.aicars.neural.NeuralNet
 import akostenko.aicars.race.car.Car
@@ -23,7 +22,7 @@ class EvolutionEngine {
                 .map { it.copyAndMutate(mutationsFactor) }
 
         val children = getPairsForBreeding(best, cars.size - best.size - mutants.size)
-                .map { breed(it.first, it.second)}
+                .map { (first, second) -> first.breed(second) }
 
         return (best + mutants + children).map { NNDriver(it) }
     }
@@ -32,13 +31,6 @@ class EvolutionEngine {
         return drivers.takeRandom(amount)
                 .map { first -> first to drivers.filter { it != first }
                         .get( ThreadLocalRandom.current().nextInt(drivers.size - 1 )) }
-    }
-
-    private fun <N: NeuralNet> breed(first: N, second: N): N {
-        return when (first) {
-            is LinearNN -> first.breed(second)
-            else -> throw IllegalArgumentException("Breeding for ${first.javaClass} is not implemented.")
-        }
     }
 
     companion object {

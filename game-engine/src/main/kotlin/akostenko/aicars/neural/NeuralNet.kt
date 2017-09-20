@@ -31,6 +31,7 @@ abstract class NeuralNet {
         private fun typeOf(driver: NNDriver): String {
             return when (driver.neural) {
                 is LinearNN -> LinearNN.type
+                is TanHyperWith2LayersNN -> TanHyperWith2LayersNN.type
                 else -> {
                     throw IllegalArgumentException("Unknown neural type ${driver.neural}")
                 }
@@ -46,6 +47,7 @@ abstract class NeuralNet {
         private fun restoreNetOfType(type: String, content: String): NNDriver {
             return when (type) {
                 LinearNN.type -> NNDriver(LinearNN.deserialize(content))
+                TanHyperWith2LayersNN.type -> NNDriver(TanHyperWith2LayersNN.deserialize(content))
                 else -> {
                     throw IllegalArgumentException("Unknown neural type $type")
                 }
