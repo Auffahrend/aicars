@@ -3,6 +3,8 @@ package akostenko.aicars.neural;
 import akostenko.aicars.race.car.Car
 import org.apache.commons.math3.util.FastMath
 import org.slf4j.LoggerFactory
+import java.nio.ByteBuffer
+import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
 class TanHyperWith2LayersNN(override val generation: Int,
@@ -102,7 +104,7 @@ class TanHyperWith2LayersNN(override val generation: Int,
     private fun getGeneByGlobalIndex(globalGeneIndex: Int): Triple<Int, Int, MutableList<MutableList<Double>>> {
         return when {
             globalGeneIndex < layer1GenomeSize -> globalGeneIndex to layer1Weights
-            globalGeneIndex < layer2GenomeSize -> (globalGeneIndex - layer1GenomeSize) to layer2Weights
+            globalGeneIndex < layer1GenomeSize + layer2GenomeSize -> (globalGeneIndex - layer1GenomeSize) to layer2Weights
             else -> (globalGeneIndex - layer1GenomeSize - layer2GenomeSize) to outputWeights
         }.let { (index, genome) ->
             val i = index / genome.first().size
@@ -117,7 +119,7 @@ class TanHyperWith2LayersNN(override val generation: Int,
         }
         val child = copy(false, true)
         val crossOverPoint = ThreadLocalRandom.current().nextInt(genomeSize - 1) + 1
-        for (index in crossOverPoint .. genomeSize) {
+        for (index in crossOverPoint until genomeSize) {
             second.getGeneByGlobalIndex(index)
                     .let { (i, o, source) -> child.getGeneByGlobalIndex(index)
                             .let { (_, _, destination) -> destination[i][o] = source[i][o]}}
@@ -137,8 +139,30 @@ class TanHyperWith2LayersNN(override val generation: Int,
         return copy
     }
 
-    override fun serialize(): String {
+    override fun serialize(): ByteBuffer {
         return TanHyperWith2LayersNN.serialize(this)
+    }
+
+    override fun setRandomConnections(): TanHyperWith2LayersNN {
+        val random = Random()
+        for (i in 0..inputCount) {
+            for (o in 0..layer1Size) {
+                layer1Weights[i][o] = random.nextDouble()
+            }
+        }
+
+        for (i in 0..layer1Size) {
+            for (o in 0..layer2Size) {
+                layer2Weights[i][o] = random.nextDouble()
+            }
+        }
+
+        for (i in 0..layer2Size) {
+            for (o in 0..outputCount) {
+                outputWeights[i][o] = random.nextDouble()
+            }
+        }
+        return this
     }
 
     companion object {
@@ -147,43 +171,41 @@ class TanHyperWith2LayersNN(override val generation: Int,
 
         val type = "TanH2L"
 
-        private val nameDelimiter = ":"
-        private val geneDelimiter = ","
-
-        fun serialize(net: TanHyperWith2LayersNN): String {
-            return buildString {
-                append(net.generation).append(nameDelimiter)
-                append(net.mutations).append(nameDelimiter)
-                append(net.crosses).append(nameDelimiter)
-                append(net.fitness).append(nameDelimiter)
+        fun serialize(net: TanHyperWith2LayersNN): ByteBuffer {
+            val byteBuffer = ByteBuffer.allocate((net.genomeSize + 1) * java.lang.Double.BYTES + 3 * Integer.BYTES)
+            byteBuffer.putInt(net.generation)
+            byteBuffer.putInt(net.mutations)
+            byteBuffer.putInt(net.crosses)
+            byteBuffer.putDouble(net.fitness)
 
                 for (i in 0 until net.genomeSize) {
                     net.getGeneByGlobalIndex(i)
                             .let { (i, o, genome) -> genome[i][o] }
-                            .let { value -> append(value.toString()).append(geneDelimiter)}
+                            .let { value -> byteBuffer.putDouble(value)}
                 }
-            }
+            return byteBuffer
         }
 
-        fun deserialize(line: String): TanHyperWith2LayersNN {
-            val nameParts = line.split(nameDelimiter.toRegex())
+        fun deserialize(buffer: ByteBuffer): TanHyperWith2LayersNN {
             val net: TanHyperWith2LayersNN
-            if (nameParts.size >= 4) {
-                net = TanHyperWith2LayersNN(nameParts[0].toInt(), nameParts[1].toInt(), nameParts[2].toInt())
-                net.fitness = nameParts[3].toDouble()
-            } else {
-                logger.warn("Invalid format, there is only ${nameParts.size} parts for name")
-                net = TanHyperWith2LayersNN(0, 0, 0)
-            }
-
-            val genes = nameParts.last().split(geneDelimiter)
+            buffer.rewind()
+            val generation = buffer.int
+            val mutations = buffer.int
+            val crosses = buffer.int
+            net = TanHyperWith2LayersNN(generation, mutations, crosses)
+            net.fitness = buffer.double
 
             for (geneIndex in 0 until net.genomeSize) {
                 net.getGeneByGlobalIndex(geneIndex)
-                        .let { (i, o, genome) -> genome[i][o] = genes[geneIndex].toDouble() }
+                        .let { (i, o, genome) -> genome[i][o] = buffer.double }
             }
 
             return net
         }
+    }
+
+    fun setAcceleration(): TanHyperWith2LayersNN {
+        outputWeights.last()[accelerationOutput] = 1.0
+        return this
     }
 }

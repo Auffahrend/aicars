@@ -4,17 +4,15 @@ import akostenko.aicars.plots.EmptyDriver
 import akostenko.aicars.race.car.Car
 import akostenko.aicars.track.DebugTrack
 import akostenko.math.vector.Polar
-import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.PI
-import java.util.*
+import java.nio.ByteBuffer
 
 abstract class NeuralNet {
 
     companion object {
         val outputCount: Int = 3 // acceleration, braking, steering
         val inputCount: Int by lazy {
-            LinearNN(0,0,0)
-                    .normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size
+            normalizeCarParameters(Car(EmptyDriver(), DebugTrack())).size
         }
 
         private val populationSize = 500
@@ -22,9 +20,40 @@ abstract class NeuralNet {
         private val typeDelimiter = "#"
         private val typeDelimiterRegex = typeDelimiter.toRegex()
 
+        private val distanceToScan = 200
+        private val intervalBetweenWP = 4
+
+        internal fun normalizeCarParameters(car: Car<*>): List<Double> {
+            val trackScalars = listOf(car.track.width)
+
+            val carScalars = listOf(car.carRotationSpeed / PI)
+
+            val carVectors = mutableListOf(
+                    car.heading,
+                    car.speed / 100.0,
+                    car.steering,
+                    car.turningA,
+                    car.accelerationA,
+                    car.breakingA)
+
+            car.apply {
+                var wp = closestWP
+                for (i in 1..distanceToScan) {
+                    wp = track.getNextWayPoint(wp)
+                    if (i % intervalBetweenWP == 0) {
+                        carVectors.add( (wp.position - position) / distanceToScan.toDouble() )
+                    }
+                }
+            }
+
+            return trackScalars +
+                    carScalars +
+                    carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d / PI) else listOf(v.asCartesian().x, v.asCartesian().y) }
+        }
+
         fun serializePopulation(population: List<NNDriver>): List<String> {
             // each line contains a single net
-            return population.map { "${typeOf(it)}$typeDelimiter${it.neural.serialize()}" }
+            return population.map { "${typeOf(it)}$typeDelimiter${String(it.neural.serialize().array())}" }
 
         }
 
@@ -41,10 +70,10 @@ abstract class NeuralNet {
         fun deserializePopulation(nets: List<String>): List<NNDriver> {
             return nets
                     .map { it.split(typeDelimiterRegex) }
-                    .map { restoreNetOfType(it.first(), it[1]) }
+                    .map { restoreNetOfType(it.first(), ByteBuffer.wrap(it[1].toByteArray())) }
         }
 
-        private fun restoreNetOfType(type: String, content: String): NNDriver {
+        private fun restoreNetOfType(type: String, content: ByteBuffer): NNDriver {
             return when (type) {
                 LinearNN.type -> NNDriver(LinearNN.deserialize(content))
                 TanHyperWith2LayersNN.type -> NNDriver(TanHyperWith2LayersNN.deserialize(content))
@@ -56,25 +85,18 @@ abstract class NeuralNet {
 
         fun generatePopulation(): List<NNDriver> {
             return IntRange(1, populationSize)
-                    .map { LinearNN(0, 0, 0) }
-                    .map { setRandomConnections(it) }
+                    .map { TanHyperWith2LayersNN(0, 0, 0) }
+                    .map { it.setRandomConnections() }
+                    .map { it.setAcceleration() }
                     .map { NNDriver(it) }
-        }
-
-        private fun setRandomConnections(net: LinearNN): LinearNN {
-            val random = Random()
-            for (i in 0 until inputCount) {
-                for (o in 0 until outputCount) {
-                    net.nodeConnections[i][o] = random.nextDouble() * 2 - 1
-                }
-            }
-            return net
         }
     }
 
-    private val accelerationOutput = 0
-    private val brakingOutput = 1
-    private val steeringOutput = 2
+    abstract fun setRandomConnections(): NeuralNet
+
+    protected val accelerationOutput = 0
+    protected val brakingOutput = 1
+    protected val steeringOutput = 2
 
     fun updateFromCar(car: Car<*>) {
         readCarParametersToInput(car)
@@ -96,7 +118,7 @@ abstract class NeuralNet {
     /** output value must be within [0, 1] */
     abstract internal fun output(index: Int): Double
 
-    abstract fun serialize(): String
+    abstract fun serialize(): ByteBuffer
 
     abstract fun copy(isMutant: Boolean, isCrossOver: Boolean): NeuralNet
 
@@ -115,37 +137,6 @@ abstract class NeuralNet {
     abstract fun copyAndMutate(mutationsFactor: Double): NeuralNet
     abstract fun <N : NeuralNet> breed(second: N): N
     abstract val genomeSize: Int
-
-    private val distanceToScan = 200
-    private val intervalBetweenWP = 4
-
-    protected fun normalizeCarParameters(car: Car<*>): List<Double> {
-        val trackScalars = listOf(car.track.width)
-
-        val carScalars = listOf(car.carRotationSpeed / PI)
-
-        val carVectors = mutableListOf(
-                car.heading,
-                car.speed / 100.0,
-                car.steering,
-                car.turningA,
-                car.accelerationA,
-                car.breakingA)
-
-        car.apply {
-            var wp = closestWP
-            for (i in 1..distanceToScan) {
-                wp = track.getNextWayPoint(wp)
-                if (i % intervalBetweenWP == 0) {
-                    carVectors.add( (wp.position - position) / distanceToScan.toDouble() )
-                }
-            }
-        }
-
-        return trackScalars +
-                carScalars +
-                carVectors.flatMap { v -> if (v is Polar) listOf(v.r, v.d / PI) else listOf(v.asCartesian().x, v.asCartesian().y) }
-    }
 
 }
 

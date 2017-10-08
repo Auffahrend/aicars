@@ -43,6 +43,7 @@ class NeuralNetTrainingState : GraphicsGameState() {
     private var currentProgress = 0
     private var currentTasks: List<ForkJoinTask<*>> = emptyList()
     private var run = true
+    private var isEvolving = false
 
     private val executor = ForkJoinPool.commonPool()
 
@@ -120,7 +121,9 @@ class NeuralNetTrainingState : GraphicsGameState() {
                 if (run) {
                     log.info("Evolving population #$generation")
                     updatePopulationStatistics()
+                    isEvolving = true
                     newPopulation(evolutionEngine.getNextPopulation(cars))
+                    isEvolving = false
                 }
             } catch (e : Throwable) {
                 log.error("Next population generation error", e)
@@ -154,6 +157,7 @@ class NeuralNetTrainingState : GraphicsGameState() {
     }
 
     private fun pauseTraining() {
+        isEvolving = false
         currentTasks
                 .filter { !it.isDone }
                 .map { it.cancel(true) }
@@ -171,7 +175,8 @@ class NeuralNetTrainingState : GraphicsGameState() {
         g.color = fontColor
         g.lineWidth = lineWidth
         var y = topMargin
-        g.drawString("Population #$generation, $currentProgress %", leftMargin, y)
+        g.drawString("Population #$generation, $currentProgress %" +
+                if (!run) " PAUSED" else if (isEvolving) ", evolving..." else "", leftMargin, y)
         y += verticalSpacing
 
         g.drawString("Population statistics:", leftMargin, y)

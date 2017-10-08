@@ -4,6 +4,8 @@ import akostenko.aicars.race.car.Car
 import org.apache.commons.math3.util.FastMath.max
 import org.apache.commons.math3.util.FastMath.min
 import org.slf4j.LoggerFactory
+import java.nio.ByteBuffer
+import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 
 
@@ -13,15 +15,17 @@ class LinearNN(override val generation: Int,
     override var fitness: Double = 0.0
 
     /** all connections are [-1, 1] */
-    internal var nodeConnections : MutableList<MutableList<Double>> = mutableListOf()
+    internal var nodeConnections: MutableList<MutableList<Double>> = mutableListOf()
 
-    private val inputNodes : MutableList<Double> = mutableListOf()
-    private val outputNodes : MutableList<Double> = mutableListOf()
+    private val inputNodes: MutableList<Double> = mutableListOf()
+    private val outputNodes: MutableList<Double> = mutableListOf()
     override val name = "LinGen${generation}Cr${crosses}Mu${mutations}"
-    override val genomeSize: Int = LinearNN.genomeSize
+    override val genomeSize: Int by lazy { LinearNN.genomeSize }
 
     init {
-        for (i in 1..outputCount) { outputNodes.add(0.0) }
+        for (i in 1..outputCount) {
+            outputNodes.add(0.0)
+        }
 
         for (i in 0 until inputCount) {
             inputNodes.add(0.0)
@@ -48,7 +52,9 @@ class LinearNN(override val generation: Int,
     override fun readCarParametersToInput(car: Car<*>) {
         val parameters = normalizeCarParameters(car)
 
-        for (i in 0 until inputCount) { inputNodes[i] = parameters[i] }
+        for (i in 0 until inputCount) {
+            inputNodes[i] = parameters[i]
+        }
     }
 
     override fun copyAndMutate(mutationsFactor: Double): LinearNN {
@@ -60,7 +66,7 @@ class LinearNN(override val generation: Int,
         return copy
     }
 
-    override fun <N: NeuralNet> breed(second: N): N {
+    override fun <N : NeuralNet> breed(second: N): N {
         if (second !is LinearNN) {
             throw IllegalArgumentException("Breeding is possible only between same classes of nets. Found $second")
         }
@@ -72,7 +78,7 @@ class LinearNN(override val generation: Int,
             child.copyConnectionFrom(second, crossI, j)
         }
 
-        for (i in crossI+1 until inputCount) {
+        for (i in crossI + 1 until inputCount) {
             for (j in 0 until outputCount) {
                 child.copyConnectionFrom(second, i, j)
             }
@@ -84,7 +90,7 @@ class LinearNN(override val generation: Int,
         nodeConnections[i][j] = source.nodeConnections[i][j]
     }
 
-    override fun serialize(): String {
+    override fun serialize(): ByteBuffer {
         return LinearNN.serialize(this)
     }
 
@@ -97,6 +103,16 @@ class LinearNN(override val generation: Int,
         return copy
     }
 
+    override fun setRandomConnections(): LinearNN {
+        val random = Random()
+        for (i in 0 until inputCount) {
+            for (o in 0 until outputCount) {
+                nodeConnections[i][o] = random.nextDouble() * 2 - 1
+            }
+        }
+        return this
+    }
+
     companion object {
         val genomeSize: Int = inputCount * outputCount
 
@@ -105,44 +121,28 @@ class LinearNN(override val generation: Int,
 
         val type = "Linear"
 
-        private val nameDelimiter = ":"
-        private val valueDelimiter = ","
-        private val rowDelimiter = "~~~"
+        fun serialize(net: LinearNN): ByteBuffer {
+            val buffer = ByteBuffer.allocate(Integer.BYTES * 3 +
+                    (net.genomeSize + 1) * java.lang.Double.BYTES)
+            buffer.putInt(net.generation)
+            buffer.putInt(net.mutations)
+            buffer.putInt(net.crosses)
+            buffer.putDouble(net.fitness)
 
-        fun serialize(net: LinearNN): String {
-            return buildString {
-                append(net.generation).append(nameDelimiter)
-                append(net.mutations).append(nameDelimiter)
-                append(net.crosses).append(nameDelimiter)
-                append(net.fitness).append(nameDelimiter)
-
-                net.nodeConnections.forEach { row ->
-                    row.forEach { value -> append(value.toString()).append(valueDelimiter) }
-                    append(rowDelimiter)
-                }
+            net.nodeConnections.forEach { row ->
+                row.forEach { buffer.putDouble(it) }
             }
+            return buffer
         }
 
-        fun deserialize(line: String): LinearNN {
-            val nameParts = line.split(nameDelimiter.toRegex())
-            val net: LinearNN
-            if (nameParts.size >= 4) {
-                net = LinearNN(nameParts[0].toInt(), nameParts[1].toInt(), nameParts[2].toInt())
-                net.fitness = nameParts[3].toDouble()
-            } else {
-                logger.warn("Invalid format, there is only ${nameParts.size} parts for name")
-                net = LinearNN(0, 0, 0)
-            }
+        fun deserialize(buffer: ByteBuffer): LinearNN {
+            val net = LinearNN(buffer.int, buffer.int, buffer.int)
+            net.fitness = buffer.double
 
-            net.nodeConnections = with(nameParts.last()) {
-                split(rowDelimiter.toRegex())
-                        .takeWhile { it.isNotEmpty() }
-                        .map {
-                            it.split(valueDelimiter.toRegex())
-                                    .takeWhile { it.isNotEmpty() }
-                                    .map { it.toDouble() }
-                                    .toMutableList()
-                        }.toMutableList()
+            for (i in 0 until inputCount) {
+                for (o in 1..outputCount) {
+                    net.nodeConnections[i][o] = buffer.double
+                }
             }
 
             return net
